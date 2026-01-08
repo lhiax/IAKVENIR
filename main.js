@@ -1271,26 +1271,44 @@ function initProtocol() {
     }
 
     // Navbar Selector Listener
+    // Navbar Selector Listener (Desktop + Mobile Sync)
+    const navAmbianceSelectMobile = document.getElementById('nav-ambiance-mobile');
+
+    const updateAmbianceUI = (val) => {
+        if (navAmbianceSelect) navAmbianceSelect.value = val;
+        if (navAmbianceSelectMobile) navAmbianceSelectMobile.value = val;
+        handleAmbianceChange(val);
+    };
+
     if (navAmbianceSelect) {
-        navAmbianceSelect.addEventListener('change', (e) => handleAmbianceChange(e.target.value));
+        navAmbianceSelect.addEventListener('change', (e) => updateAmbianceUI(e.target.value));
+    }
+    if (navAmbianceSelectMobile) {
+        navAmbianceSelectMobile.addEventListener('change', (e) => updateAmbianceUI(e.target.value));
     }
 
-    // Volume Control Listener
+    // Volume Control Listener (Desktop + Mobile Sync)
     const volSlider = document.getElementById('vol-control');
+    const volSliderMobile = document.getElementById('vol-control-mobile');
     const volDisplay = document.getElementById('vol-percent');
 
+    const updateVolume = (val) => {
+        const vol = val / 100;
+        if (audioPlayer) audioPlayer.volume = vol;
+        if (volDisplay) volDisplay.innerText = `${val}%`;
+
+        // Sync Inputs
+        if (volSlider) volSlider.value = val;
+        if (volSliderMobile) volSliderMobile.value = val;
+    };
+
     if (volSlider) {
-        volSlider.addEventListener('input', (e) => {
-            const vol = e.target.value / 100;
-            if (audioPlayer) audioPlayer.volume = vol;
-            if (volDisplay) volDisplay.innerText = `${e.target.value}%`;
-
-            // Visual feedback on slider track (optional, but nice)
-            // volSlider.style.background = `linear-gradient(to right, #D4AF37 ${e.target.value}%, #374151 ${e.target.value}%)`;
-        });
-
-        // Init volume from slider (default 30%)
+        volSlider.addEventListener('input', (e) => updateVolume(e.target.value));
+        // Init volume from slider
         if (audioPlayer) audioPlayer.volume = volSlider.value / 100;
+    }
+    if (volSliderMobile) {
+        volSliderMobile.addEventListener('input', (e) => updateVolume(e.target.value));
     }
 
     // Reservation Button Override

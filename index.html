@@ -122,6 +122,44 @@
         <!-- Mobile Menu Overlay -->
         <div id="mobile-menu"
             class="fixed inset-0 bg-space-black/95 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 flex flex-col items-center justify-center gap-8 md:hidden">
+
+            <!-- MOBILE SYSTEM CONTROLS -->
+            <div class="flex flex-col items-center gap-4 bg-black/50 p-6 rounded-lg border border-neon-blue/30 w-3/4">
+                <h3 class="text-neon-blue font-future text-sm tracking-widest mb-2">SYSTÈME AUDIO</h3>
+
+                <!-- Volume Mobile -->
+                <div class="flex items-center gap-4 w-full">
+                    <span class="text-xs font-future text-[#D4AF37]">VOL</span>
+                    <input type="range" id="vol-control-mobile" min="0" max="100" value="30"
+                        class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#D4AF37]">
+                </div>
+
+                <!-- Ambiance Mobile -->
+                <div class="w-full">
+                    <select id="nav-ambiance-mobile"
+                        class="w-full bg-black border border-white/20 text-white text-sm font-future p-2 rounded focus:border-neon-blue focus:outline-none uppercase">
+                        <option value="silence" selected>SILENCE (FURTIF)</option>
+                        <option value="relax">RELAX (LOUNGE)</option>
+                        <option value="futuriste">FUTURISTE (SYNTH)</option>
+                        <option value="retro">RÉTRO (ARCHIVES)</option>
+                        <option value="dab">FIP (NATIONAL)</option>
+                        <option disabled>--- DAB ALSACE ---</option>
+                        <option value="dkl">DKL (DREYECKLAND)</option>
+                        <option value="azur-fm">AZUR FM (CENTRE)</option>
+                        <option value="rdl">RDL 68 (COLMAR)</option>
+                        <option disabled>--- RADIO FG ---</option>
+                        <option value="fg-main">RADIO FG (OFFICIEL)</option>
+                        <option value="fg-chic">FG CHIC (LOUNGE)</option>
+                        <option value="fg-deep">FG DEEP (HOUSE)</option>
+                        <option disabled>--- PULS RADIO ---</option>
+                        <option value="puls-dance">PULS DANCE (CLUB)</option>
+                        <option value="puls-trance">PULS TRANCE (HYPER)</option>
+                        <option value="puls-90">PULS 90 (RETRO)</option>
+                        <option value="puls-2000">PULS 2000 (MILLENNIUM)</option>
+                    </select>
+                </div>
+            </div>
+
             <a href="#about"
                 class="text-2xl font-future text-white hover:text-neon-blue transition-colors mobile-link">LE PILOTE</a>
             <a href="#simulator"
@@ -577,7 +615,7 @@
                     class="gallery-filter px-6 py-2 border border-white/20 text-gray-400 font-future text-xs tracking-widest whitespace-nowrap hover:border-neon-blue hover:text-white transition-all rounded">IMMOBILIER</button>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6" id="gallery-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="gallery-grid">
                 <!-- Gallery items injected by JS -->
             </div>
         </div>
@@ -1102,6 +1140,72 @@
 
     <!-- AI Smart Crop Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/smartcrop/2.0.3/smartcrop.min.js"></script>
+
+    <!-- START OVERLAY (Audio Unlocker for Mobile) -->
+    <div id="start-overlay"
+        class="fixed inset-0 z-[100] bg-space-black flex flex-col items-center justify-center text-center p-6 select-none">
+        <div class="max-w-md w-full animate-pulse mb-8">
+            <h1 class="text-4xl text-white font-future mb-2 tracking-widest">iA_k_venir</h1>
+            <div class="h-1 w-full bg-gradient-to-r from-transparent via-neon-blue to-transparent"></div>
+        </div>
+
+        <p class="text-gray-400 font-body mb-8 text-sm">
+            Veuillez activer le système pour une expérience optimale.<br>
+            (Audio & Assistant Vocal)
+        </p>
+
+        <button id="btn-enter-system"
+            class="group relative px-8 py-4 bg-transparent overflow-hidden rounded border border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all duration-300">
+            <div
+                class="absolute inset-0 w-0 bg-neon-blue transition-all duration-[250ms] ease-out group-hover:w-full opacity-10">
+            </div>
+            <span
+                class="relative text-neon-blue font-future font-bold tracking-widest group-hover:text-white transition-colors">
+                INITIALISER LE SYSTÈME
+            </span>
+        </button>
+
+        <script>
+            // Inline Script to handle immediate unlock logic
+            document.addEventListener('DOMContentLoaded', () => {
+                const overlay = document.getElementById('start-overlay');
+                const btn = document.getElementById('btn-enter-system');
+
+                // If user has already visited/unlocked previously? 
+                // Hard to tell reliable state without cookies. 
+                // Safest is to show it every reload for now to guarantee audio.
+
+                btn.addEventListener('click', () => {
+                    // 1. Create/Resume Audio Context
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        const ctx = new AudioContext();
+                        ctx.resume().then(() => {
+                            // Close immediately (ctx created just to unlock)
+                            ctx.close();
+                        });
+                    }
+
+                    // 2. Unlock Speech Synthesis (Mobile Safari needs this)
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance(''); // Silent
+                        utterance.volume = 0;
+                        window.speechSynthesis.speak(utterance);
+                    }
+
+                    // 3. Trigger Site Start
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 500);
+
+                    // Signal Main JS to start (if needed)
+                    // e.g., Welcome Message
+                    if (typeof initIdentitySync !== 'undefined') {
+                        // Could trigger welcome voice here if not already done
+                    }
+                });
+            });
+        </script>
+    </div>
 
     <!-- Scripts -->
     <script src="main.js"></script>
