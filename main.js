@@ -638,93 +638,72 @@ function renderGallery() {
 
     // 1. FESTIVALS (Real Data from 'assets/gallery/festivals/')
     // 1. FESTIVALS (54 items)
-    const festivalFilenames = [
-        "1_AVICI.jpg", "2_capture_2026.png", "3_Capture d’écran 2026-01-08 à 14.51.47.png",
-        "4_DG.jpg", "5_Capture d’écran 2026-01-08 à 15.05.35.png", "6_DSC_3498.jpg",
-        "7_DSC_3530.jpg", "8_IMG_5808.jpg", "9_IMG_5844.jpg", "Capture d’écran 2026-01-08 à 14.45.20.png",
-        "Capture d’écran 2026-01-08 à 15.10.30.png", "DSC_2331.jpg", "DSC_2925.jpg",
-        "DSC_3226.jpg", "DSC_5921.jpg", "DSC_9042.jpg", "IMG_3317.jpg", "IMG_3674.jpg",
-        "IMG_6051.jpg", "IMG_6105.jpg", "IMG_6179.jpg", "IMG_6235.jpg", "IMG_6838.jpg",
-        "IMG_6852.jpg", "IMG_7259.jpg", "IMG_7554.jpg", "IMG_7560.jpg", "IMG_7625.jpg",
-        "IMG_7671.jpg", "IMG_7713.JPG", "IMG_7849.jpg", "IMG_7955.jpg", "IMG_8167.jpg",
-        "IMG_8338.jpg", "IMG_8492.jpg", "IMG_9023.jpg", "IMG_9331.JPG", "IMG_9349.jpg",
-        "IMG_9774.JPG", "IMG_9786.jpg", "NB.jpg", "NB14.jpg", "NB2.jpg", "NB20.jpg",
-        "NB23.jpg", "NB30.jpg", "NB31.jpg", "NB33.jpg", "NB35.jpg", "NB41.jpg",
-        "NB43.jpg", "NB5.jpg", "NB7.jpg", "NB8.jpg"
-    ];
+    // Auto-generated standard filenames: festival_001.jpg to festival_054.jpg
+    const festivalFilenames = Array.from({ length: 54 }, (_, i) =>
+        `festival_${String(i + 1).padStart(3, '0')}.jpg`
+    );
 
     // 2. GASTRONOMIE (25 items)
-    const gastronomieFilenames = [
-        "_DSC_7815.jpg", "1_DSC_7898.jpg", "10_IMG_6139.jpg", "10DSC_7568.jpg", "2_DSC_7504.jpg",
-        "3_DSC_7699.jpg", "4_DSC_7804.jpg", "5_DSC_7948.jpg", "6_DSC_7928.jpg", "7_DSC_7958.jpg",
-        "8_DSC_7957.jpg", "9_DSC_8013.jpg", "9_DSC_9705f.jpg", "DSC_8276.jpg", "DSC_8288.jpg",
-        "DSC_8297.jpg", "DSC_8356.jpg", "DSC_8801.jpg", "Serge_DUBS.png",
-        "Terkane Culinaire le 30.04.20240052 1.jpg", "Terkane Culinaire le 30.04.20240149 1.jpg",
-        "Terkane Culinaire le 30.04.20240774.jpg", "Terkane Culinaire le 30.04.20240824.jpg",
-        "Terkane Culinaire le 30.04.20240833 1.jpg", "terkane_final.jpg"
-    ];
+    // Auto-generated standard filenames: gastronomie_001.jpg to gastronomie_025.jpg
+    const gastronomieFilenames = Array.from({ length: 25 }, (_, i) =>
+        `gastronomie_${String(i + 1).padStart(3, '0')}.jpg`
+    );
 
     // 3. IMMOBILIER (6 items)
-    const immobilierFilenames = [
-        "DSC_0347.jpg", "DSC_7725.jpg", "DSC_7744.jpg", "DSC_7756.jpg", "DSC_7839.jpg", "DSC_7898.jpg"
-    ];
+    // Auto-generated standard filenames: immobilier_001.jpg to immobilier_006.jpg
+    const immobilierFilenames = Array.from({ length: 6 }, (_, i) =>
+        `immobilier_${String(i + 1).padStart(3, '0')}.jpg`
+    );
 
     // 4. MÉMOIRE (25 items)
-    const memoireFilenames = [
-        "AERO.jpg", "AERO2.jpg", "AREMEE36.jpg", "AREO4.jpg", "ARME3.jpg", "ARMEE.jpg",
-        "ARMEE2.jpg", "ARMEE33.jpg", "ARMEE35.jpg", "ARMEE38.jpg", "ARMEE4.jpg", "ARMEE44.jpg",
-        "ARMEE7.jpg", "ARMEE8.jpg", "NP.jpg", "NP1.jpg", "NP10.jpg", "NP12.jpg", "NP2.jpg",
-        "NP4.jpg", "NP5.jpg", "NP6.jpg", "NP8.jpg", "NP9.jpg", "PATROUILLE.jpg"
-    ];
+    // Auto-generated standard filenames: memoire_001.jpg to memoire_025.jpg
+    const memoireFilenames = Array.from({ length: 25 }, (_, i) =>
+        `memoire_${String(i + 1).padStart(3, '0')}.jpg`
+    );
 
-    // 5. TOURISME (Formerly Salons - 44 items)
-    const tourismeFilenames = [
-        "Capture d’écran 2026-01-08 à 15.27.44.png", "Capture d’écran 2026-01-08 à 15.28.42.png",
-        "Capture d’écran 2026-01-08 à 15.29.07.png", "Capture d’écran 2026-01-08 à 15.36.18.png",
-        "DSC_0329.JPG", "DSC_0360.jpg", "DSC_0387.jpg", "DSC_0485.jpg", "DSC_0507.jpg", "DSC_0562.jpg",
-        "DSC_0580Fj.jpg", "DSC_0627.jpg", "DSC_0642.jpg", "DSC_0647.jpg", "DSC_0723.jpg",
-        "DSC_0758.jpg", "DSC_0788.jpg", "DSC_0793.jpg", "DSC_0796.jpg", "DSC_0815.jpg",
-        "DSC_0823.jpg", "DSC_0840.jpg", "DSC_0868HH.jpg", "DSC_0871.jpg", "DSC_0957D.jpg",
-        "DSC_1007.jpg", "DSC_1018.jpg", "DSC_1034.jpg", "DSC_3925.jpg", "DSC_3957.jpg",
-        "DSC_5703.jpg", "DSC_5807.jpg", "DSC_5831.jpg", "DSC_6254.jpg", "DSC_7770.jpg",
-        "DSC_7900.jpg", "DSC_9438.jpg", "DSC_9455.jpg", "DSC_9571.jpg", "DSC_9619.jpg",
-        "DSC_9690.jpg", "HK.jpg", "HK2.jpg", "IMG_0183.jpg", "IMG_2558.jpg", "MONGOLFIERE 3.jpg",
-        "MONGOLFIERRE 2.jpg", "MONGOLIFIERE.jpg"
-    ];
+    // 5. TOURISME (Formerly Salons - 48 items)
+    // Auto-generated standard filenames: tourisme_001.jpg to tourisme_048.jpg
+    const tourismeFilenames = Array.from({ length: 48 }, (_, i) =>
+        `tourisme_${String(i + 1).padStart(3, '0')}.jpg`
+    );
 
     // --- MAP TO OBJECTS ---
 
+    // Unified Title and Date for Consistency
+    const unifiedTitle = (index) => `PHOTO CERTIFIÉE AUTHENTIQUE PAR LAURENT HABERSETZER #${index + 1}`;
+    const unifiedDate = 'ARCHIVES OFFICIELLES';
+
     const festivalItems = festivalFilenames.map((name, i) => ({
         cat: 'festival',
-        title: `PHOTO CERTIFIÉE AUTHENTIQUE PAR LAURENT HABERSETZER #${i + 1}`,
+        title: unifiedTitle(i),
         date: 'SAISON 2024',
         img: `assets/gallery/festivals/${name}`
     }));
 
     const gastronomieItems = gastronomieFilenames.map((name, i) => ({
         cat: 'gastronomie',
-        title: `GASTRONOMIE #${i + 1}`,
+        title: unifiedTitle(i),
         date: 'ALSACE GOURMANDE',
         img: `assets/gallery/gastronomie/${name}`
     }));
 
     const immobilierItems = immobilierFilenames.map((name, i) => ({
         cat: 'immobilier',
-        title: `IMMOBILIER #${i + 1}`,
+        title: unifiedTitle(i),
         date: 'PROPRIÉTÉS',
         img: `assets/gallery/immobilier/${name}`
     }));
 
     const memoireItems = memoireFilenames.map((name, i) => ({
         cat: 'memoire',
-        title: `MÉMOIRE & EXERCICES #${i + 1}`,
-        date: 'HISTOIRE',
+        title: unifiedTitle(i),
+        date: 'MÉMOIRE & EXERCICES',
         img: `assets/gallery/memoire/${name}`
     }));
 
     const tourismeItems = tourismeFilenames.map((name, i) => ({
         cat: 'tourisme',
-        title: `TOURISME #${i + 1}`,
+        title: unifiedTitle(i),
         date: 'DÉCOUVERTE',
         img: `assets/gallery/tourisme/${name}`
     }));
@@ -754,32 +733,21 @@ function renderGallery() {
         // Render Cards
         itemsToShow.forEach((item, index) => {
             const card = document.createElement('div');
-            card.className = "group relative aspect-video bg-gray-900 overflow-hidden border border-white/10 hover:border-limit-red transition-all cursor-pointer";
+            // CHANGED: aspect-video (16:9) -> aspect-[3/2] (Taller, better for portraits)
+            card.className = "group relative aspect-[3/2] bg-gray-900 overflow-hidden border border-white/10 hover:border-limit-red transition-all cursor-pointer";
 
-            // Generate Content based on Category
-            let overlayContent = '';
-
-            if (item.cat === 'festival') {
-                // HOLOGRAPHIC SEAL (CA-LH)
-                overlayContent = `
-                   <div class="holo-seal">
-                        <div class="holo-seal-main">CA-LH</div>
-                        <div class="holo-seal-sub">CERTIFIÉ<br>AUTHENTIQUE<br>LAURENT H</div>
-                   </div>
-                `;
-            } else {
-                // STANDARD TITLE
-                overlayContent = `
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                        <div class="text-limit-red font-future text-[10px] mb-1 tracking-widest">${item.date}</div>
-                        <div class="text-white font-bold text-sm tracking-wider">${item.title}</div>
-                    </div>
-                `;
-            }
+            // UNIFIED OVERLAY: HOLOGRAPHIC SEAL (CA-LH) FOR ALL
+            const overlayContent = `
+               <div class="holo-seal">
+                    <div class="holo-seal-main">CA-LH</div>
+                    <div class="holo-seal-sub">CERTIFIÉ<br>AUTHENTIQUE<br>LAURENT H</div>
+               </div>
+            `;
 
             card.innerHTML = `
                 <img src="${item.img}" alt="${item.title}" loading="lazy" id="thumb-${index}"
-                    class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 grayscale group-hover:grayscale-0">
+                     class="w-full h-full object-cover transform transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-110"
+                     style="object-position: 50% 0%;">
                 
                 ${overlayContent}
                 
@@ -793,6 +761,7 @@ function renderGallery() {
             `;
 
             // Smart Crop Integration
+            // Reactivating SmartCrop as requested for adaptive composition
             const imgElement = card.querySelector('img');
             imgElement.onload = () => applySmartCrop(imgElement);
 
@@ -809,35 +778,39 @@ function renderGallery() {
 
     // MANUAL CROP OVERRIDES (Fixing specific photos)
     const cropOverrides = {
-        '2_capture_2026.png': '50% 0%', // Updated Filename
-        'IMG_7259.jpg': '50% 0%',
-        'IMG_7560.jpg': '50% 0%',
-        'NB14.jpg': '50% 0%'
+        'festival_027.jpg': '50% 0%',   // Festival #27
+        'gastronomie_018.jpg': '50% 0%', // Gastronomy #18 (Serge Dubs)
+        'gastronomie_015.jpg': '50% 0%', // Gastronomy #15
+        'gastronomie_017.jpg': '50% 0%', // Gastronomy #17
+        'gastronomie_025.jpg': '50% 50%', // Gastronomy #25 (Plate - Center Align)
     };
 
-    // AI Smart Crop Function (Tuned with Top Bias + Manual Overrides)
+    // AI Smart Crop Function (Adaptive Composition)
     const applySmartCrop = (img) => {
-        // 1. Check for Manual Override
-        // The src might be a full URL, split to get filename
-        const filename = img.src.split('/').pop();
+        // Wait for load
+        if (!img.complete || img.naturalWidth === 0) return;
 
+        // 1. Check for Manual Override
+        const filename = img.src.split('/').pop();
         if (cropOverrides[filename]) {
             img.style.objectPosition = cropOverrides[filename];
-            return; // Skip AI
+            return; // Skip AI and use manual value
         }
 
+        // Use Smartcrop for intelligent analysis
         if (typeof smartcrop !== 'undefined') {
             smartcrop.crop(img, {
                 width: 300,
-                height: 169,
-                ruleOfThirds: true,
-                // Heavy bias towards top 60% (Faces usually here)
+                height: 200,
+                minScale: 1.0, // Prevent zooming in too much (cutting heads)
+                ruleOfThirds: true, // Enable artistic composition rules
+                // Strong suggestion to look at the top (Face Zone) but allow deviation if action is elsewhere
                 boost: [{
                     x: 0,
                     y: 0,
                     width: img.naturalWidth,
                     height: img.naturalHeight * 0.6,
-                    weight: 1.0
+                    weight: 3.0
                 }]
             }).then(result => {
                 const crop = result.topCrop;
@@ -846,7 +819,7 @@ function renderGallery() {
                 img.style.objectPosition = `${centerX}% ${centerY}%`;
             });
         } else {
-            // Fallback
+            // Fallback: Smartcrop failed/missing -> Absolute Top
             img.style.objectPosition = '50% 20%';
         }
     };
@@ -869,8 +842,21 @@ function renderGallery() {
         });
     });
 
-    // Initial Render
-    renderItems('all');
+    // Initial Render - Default to 'festival' as requested
+    renderItems('festival');
+
+    // Visually activate the FESTIVAL button
+    const festivalBtn = document.querySelector('button[data-category="festival"]');
+    if (festivalBtn) {
+        // Reset others (if any were hardcoded active html)
+        filterButtons.forEach(b => {
+            b.classList.remove('active', 'bg-neon-blue/20', 'border-neon-blue', 'text-white');
+            b.classList.add('border-white/20', 'text-gray-400');
+        });
+        // Activate this one
+        festivalBtn.classList.add('active', 'bg-neon-blue/20', 'border-neon-blue', 'text-white');
+        festivalBtn.classList.remove('border-white/20', 'text-gray-400');
+    }
 }
 
 function renderDeals() {
@@ -2151,13 +2137,13 @@ function initLightbox() {
             loader.classList.add('hidden');
             img.classList.remove('opacity-50');
 
-            // DELAYED SEAL & VOICE LOGIC
-            if (item.cat === 'festival' && seal) {
+            // DELAYED SEAL & VOICE LOGIC (Universal for All Galleries)
+            if (seal) {
 
-                // If NOT spoken yet: Speak then Show
-                if (!certifiedCategories.has('festival')) {
+                // If NOT spoken yet for this category: Speak then Show
+                if (!certifiedCategories.has(item.cat)) {
                     speak("Ces documents visuels sont certifiés authentiques, par Laurent.");
-                    certifiedCategories.add('festival');
+                    certifiedCategories.add(item.cat);
 
                     // Approximate delay for speech (2.5s)
                     setTimeout(() => {
