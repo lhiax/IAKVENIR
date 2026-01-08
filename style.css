@@ -79,7 +79,7 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -87,12 +87,122 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #00d4ff;
+    background: linear-gradient(180deg, #ff3333 0%, #ff0000 50%, #ff3333 100%);
     border-radius: 4px;
+    box-shadow: 0 0 5px #ff3333, 0 0 10px #ff0000;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #b8ff00;
+    background: #ff0000;
+    box-shadow: 0 0 10px #ff3333, 0 0 20px #ff0000, 0 0 30px #ff3333;
+}
+
+/* CA-LH Holographic Seal */
+.holo-seal {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.1) 100%);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5), inset 0 0 10px rgba(0, 212, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-15deg);
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.holo-seal:hover {
+    transform: rotate(0deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.8), inset 0 0 20px rgba(0, 212, 255, 0.8);
+    border-color: #00d4ff;
+}
+
+.holo-seal-main {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 0 0 5px #00d4ff;
+    line-height: 1;
+}
+
+/* Thumbnail Hover Rotation */
+.group:hover .holo-seal {
+    animation: seal-rotate 1s ease-in-out infinite;
+}
+
+@keyframes seal-rotate {
+    0% {
+        transform: rotate(-15deg);
+    }
+
+    50% {
+        transform: rotate(15deg);
+    }
+
+    100% {
+        transform: rotate(-15deg);
+    }
+}
+
+/* Lightbox Late Appearance */
+.seal-appear {
+    animation: seal-pop-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes seal-pop-in {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(-15deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(-15deg);
+        /* Land on original tilt */
+    }
+}
+
+
+
+.holo-seal-sub {
+    font-family: 'Courier Prime', monospace;
+    font-size: 5px;
+    color: #00d4ff;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3), inset 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 25px rgba(0, 212, 255, 0.6), inset 0 0 25px rgba(0, 212, 255, 0.6);
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Utility Class for Ticket Edges */
@@ -195,7 +305,57 @@
 }
 
 @keyframes scan {
-    to {
-        left: calc(100% + 160px)
+    0% {
+        left: -160px;
     }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* KITT Scroll Animation */
+@keyframes scroll-scanner {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 0% 100%;
+    }
+}
+
+@keyframes scanner-flash {
+
+    0%,
+    100% {
+        box-shadow: inset 0 0 5px #000, 0 0 10px #ff0000, 0 0 20px #ff0000;
+        filter: brightness(1);
+    }
+
+    50% {
+        box-shadow: inset 0 0 5px #000, 0 0 20px #ff0000, 0 0 40px #fff;
+        filter: brightness(1.5);
+    }
+}
+
+body.kitt-scrolling::-webkit-scrollbar-thumb {
+    background-color: #300;
+    /* Darker base for contrast */
+    background-image: linear-gradient(to bottom,
+            rgba(255, 0, 0, 0) 0%,
+            rgba(255, 0, 0, 1) 25%,
+            rgba(255, 255, 255, 1) 50%,
+            rgba(255, 0, 0, 1) 75%,
+            rgba(255, 0, 0, 0) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 25px;
+    /* Fixed height 25px (2x smaller) */
+
+    /* Combined Animations: Movement + Flash */
+    animation:
+        scroll-scanner 0.8s ease-in-out infinite alternate,
+        scanner-flash 0.1s linear infinite;
+
+    border: 1px solid rgba(255, 51, 51, 0.3);
 }
