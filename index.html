@@ -109,6 +109,8 @@
                 <a href="#deals" class="hover:text-[#ff9d00] transition-colors">BONS PLANS</a>
                 <a href="#contact"
                     class="hover:text-white transition-colors border border-transparent hover:border-neon-blue px-3 py-1 rounded">CONTACT</a>
+                <button id="btn-tour-desktop" onclick="startGuidedTour()"
+                    class="bg-neon-blue text-black font-bold px-4 py-1 rounded hover:bg-white hover:text-black transition-all shadow-[0_0_10px_#00d4ff]">AIDE</button>
             </div>
             <!-- Mobile Menu Button -->
             <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none z-50 relative">
@@ -172,6 +174,8 @@
                 PLANS</a>
             <a href="#contact"
                 class="text-2xl font-future text-white border border-neon-blue px-6 py-2 rounded mobile-link">CONTACT</a>
+            <button id="btn-tour-mobile" onclick="startGuidedTour()"
+                class="text-2xl font-future bg-neon-blue text-black px-6 py-2 rounded mobile-link hover:bg-white transition-colors ml-4 shadow-[0_0_15px_#00d4ff]">AIDE</button>
         </div>
     </nav>
 
@@ -223,7 +227,8 @@
                 </div>
 
                 <!-- PASSENGER IDENTITY CARD (New) -->
-                <div class="mt-8 border border-white/20 bg-black/40 backdrop-blur-md p-6 rounded-lg max-w-sm">
+                <div id="tour-identity"
+                    class="mt-8 border border-white/20 bg-black/40 backdrop-blur-md p-6 rounded-lg max-w-sm">
                     <div class="flex items-center gap-2 mb-4 border-b border-white/10 pb-2">
                         <div class="w-2 h-2 bg-neon-green rounded-full animate-pulse"></div>
                         <h3 class="font-future text-xs text-neon-green tracking-widest">IDENTITÉ PASSAGER</h3>
@@ -615,7 +620,7 @@
                     class="gallery-filter px-6 py-2 border border-white/20 text-gray-400 font-future text-xs tracking-widest whitespace-nowrap hover:border-neon-blue hover:text-white transition-all rounded">IMMOBILIER</button>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="gallery-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="gallery-grid">
                 <!-- Gallery items injected by JS -->
             </div>
         </div>
@@ -1141,7 +1146,7 @@
     <!-- AI Smart Crop Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/smartcrop/2.0.3/smartcrop.min.js"></script>
 
-    <!-- START OVERLAY (Audio Unlocker for Mobile) -->
+    <!-- START OVERLAY (Audio Unlocker & Mode Selection) -->
     <div id="start-overlay"
         class="fixed inset-0 z-[100] bg-space-black flex flex-col items-center justify-center text-center p-6 select-none">
         <div class="max-w-md w-full animate-pulse mb-8">
@@ -1166,42 +1171,34 @@
         </button>
 
         <script>
-            // Inline Script to handle immediate unlock logic
             document.addEventListener('DOMContentLoaded', () => {
                 const overlay = document.getElementById('start-overlay');
                 const btn = document.getElementById('btn-enter-system');
 
-                // If user has already visited/unlocked previously? 
-                // Hard to tell reliable state without cookies. 
-                // Safest is to show it every reload for now to guarantee audio.
-
                 btn.addEventListener('click', () => {
-                    // 1. Create/Resume Audio Context
+                    // 1. Audio Context
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     if (AudioContext) {
                         const ctx = new AudioContext();
-                        ctx.resume().then(() => {
-                            // Close immediately (ctx created just to unlock)
-                            ctx.close();
-                        });
+                        ctx.resume().then(() => ctx.close());
                     }
-
-                    // 2. Unlock Speech Synthesis (Mobile Safari needs this)
+                    // 2. Speech Synthesis
                     if ('speechSynthesis' in window) {
-                        const utterance = new SpeechSynthesisUtterance(''); // Silent
+                        const utterance = new SpeechSynthesisUtterance('');
                         utterance.volume = 0;
                         window.speechSynthesis.speak(utterance);
                     }
 
-                    // 3. Trigger Site Start
+                    // 3. Close Overlay
                     overlay.style.opacity = '0';
                     setTimeout(() => overlay.remove(), 500);
 
-                    // Signal Main JS to start (if needed)
-                    // e.g., Welcome Message
-                    if (typeof initIdentitySync !== 'undefined') {
-                        // Could trigger welcome voice here if not already done
-                    }
+                    // 4. Welcome Sound (Optional, but good feedback)
+                    // If we have 'speak' function available globally from main.js? 
+                    // No guarantee main.js is full parsed yet, but usually is.
+                    // Safest is to rely on main.js to speak welcome if needed, or just silent unlock.
+                    // Minimal feedback here:
+                    if (window.speak) setTimeout(() => speak("Système opérationnel."), 600);
                 });
             });
         </script>

@@ -2392,3 +2392,178 @@ function initWebcamNew() {
         btnStart.click(); // Auto-restart
     });
 }
+
+/* =========================================
+   GUIDED ONBOARDING TOUR (INTERACTIVE WIZARD)
+   ========================================= */
+let tourController = null;
+
+window.startGuidedTour = async function () {
+    // TOGGLE: STOP IF RUNNING
+    if (tourController) {
+        console.log("Stopping Tour...");
+        tourController.abort();
+        tourController = null;
+        updateTourButtons("AIDE");
+        return;
+    }
+
+    console.log("Starting Interactive Guided Tour...");
+    tourController = new AbortController();
+    const signal = tourController.signal;
+    updateTourButtons("ARRÊT");
+
+    // Steps Definition
+    const STEPS = [
+        {
+            id: 'nav-ambiance',
+            text: "ÉTAPE 1 : ACTIVATION SONORE. Choisissez votre ambiance et ajustez le volume, puis validez.",
+            mobileFallback: 'mobile-menu-btn'
+        },
+        {
+            id: 'tour-identity',
+            text: "ÉTAPE 2 : IDENTIFICATION. Veuillez renseigner votre Prénom, Nom et Téléphone."
+        },
+        {
+            id: 'simulator',
+            text: "ÉTAPE 3 : NAVIGATION. Saisissez votre départ et arrivée pour calculer la trajectoire."
+        },
+        {
+            id: 'about',
+            text: "ÉTAPE 4 : LE PILOTE. Découvrez qui est aux commandes."
+        },
+        {
+            id: 'archives',
+            text: "ÉTAPE 5 : ARCHIVES. Parcourez les missions visuelles précédentes."
+        },
+        {
+            id: 'deals',
+            text: "ÉTAPE 6 : OFFRES. Sélectionnez une opportunité temporelle."
+        },
+        {
+            id: 'reservation',
+            text: "ÉTAPE 7 : VÉRIFICATION. Contrôlez les données importées dans le module final."
+        },
+        {
+            id: 'camera-container', // Scan step
+            text: "ÉTAPE 8 : SÉCURITÉ. Effectuez le scan biométrique facial. Souriez !"
+        },
+        {
+            id: 'res-notes',
+            text: "ÉTAPE 9 : SPÉCIFICATIONS. Ajoutez une note spéciale si nécessaire."
+        },
+        {
+            id: 'btn-res-build',
+            text: "ÉTAPE 10 : GÉNÉRATION. Créez votre ordre de mission."
+        },
+        {
+            id: 'contact',
+            text: "TERMINÉ. Transmettez le document ou contactez le QG. À bientôt."
+        }
+    ];
+
+    // Helper: Highlight
+    const highlight = (el) => {
+        if (!el) return;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-4', 'ring-neon-blue', 'relative', 'z-20', 'shadow-[0_0_50px_rgba(0,212,255,0.5)]');
+    };
+
+    const removeHighlight = (el) => {
+        if (!el) return;
+        el.classList.remove('ring-4', 'ring-neon-blue', 'relative', 'z-20', 'shadow-[0_0_50px_rgba(0,212,255,0.5)]');
+    };
+
+    // Helper: Update Button Text
+    function updateTourButtons(text) {
+        const dBtn = document.getElementById('btn-tour-desktop');
+        const mBtn = document.getElementById('btn-tour-mobile');
+        if (dBtn) dBtn.innerText = text;
+        if (mBtn) mBtn.innerText = text;
+
+        if (text === "ARRÊT") {
+            if (dBtn) dBtn.classList.replace('bg-neon-blue', 'bg-limit-red');
+            if (mBtn) mBtn.classList.replace('bg-neon-blue', 'bg-limit-red');
+        } else {
+            if (dBtn) dBtn.classList.replace('bg-limit-red', 'bg-neon-blue');
+            if (mBtn) mBtn.classList.replace('bg-limit-red', 'bg-neon-blue');
+        }
+    }
+
+    // Helper: Create Validation Button Promise
+    const waitForValidation = (signal) => {
+        return new Promise((resolve, reject) => {
+            if (signal.aborted) return reject(new Error('Aborted'));
+
+            const btn = document.createElement('button');
+            btn.innerHTML = `<span class="animate-pulse">▶</span> VALIDER & CONTINUER`;
+            btn.className = "fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[100] bg-neon-blue text-black font-future font-bold py-4 px-8 rounded shadow-[0_0_20px_#00d4ff] hover:scale-105 transition-all text-sm tracking-widest border border-white/50";
+            btn.id = "tour-validation-btn";
+
+            const cleanup = () => {
+                if (btn) btn.remove();
+                signal.removeEventListener('abort', onAbort);
+            };
+
+            const onAbort = () => {
+                cleanup();
+                reject(new Error('Aborted'));
+            };
+
+            signal.addEventListener('abort', onAbort);
+
+            btn.onclick = () => {
+                // Click Effect
+                btn.innerHTML = "VALIDÉE ✓";
+                btn.style.backgroundColor = "#b8ff00"; // Neon Green
+                setTimeout(() => {
+                    cleanup();
+                    resolve();
+                }, 300);
+            };
+            document.body.appendChild(btn);
+        });
+    };
+
+    try {
+        // Execution Loop
+        for (const step of STEPS) {
+            if (signal.aborted) break;
+
+            // 1. Find Element
+            let el = document.getElementById(step.id);
+            if (window.innerWidth < 768 && step.mobileFallback) {
+                const mobileEl = document.getElementById(step.mobileFallback);
+                if (mobileEl) el = mobileEl;
+            }
+
+            // 2. Highlight
+            if (el) highlight(el);
+
+            // 3. Speak
+            speak(step.text);
+
+            // 4. Wait
+            await waitForValidation(signal);
+
+            // 5. Cleanup Highlight
+            if (el) removeHighlight(el);
+        }
+    } catch (err) {
+        console.log("Tour stopped:", err.message);
+        document.querySelectorAll('.ring-neon-blue').forEach(el => removeHighlight(el));
+        const vBtn = document.getElementById('tour-validation-btn');
+        if (vBtn) vBtn.remove();
+    } finally {
+        tourController = null;
+        updateTourButtons("AIDE");
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Re-init mainly for safety if missing
+    if (typeof initScrollEffect === 'function') initScrollEffect();
+    if (typeof initTypewriter === 'function') initTypewriter();
+    if (typeof initLightbox === 'function') initLightbox();
+    // initWebcamNew is called inside initLightbox block usually, but fine here
+});
