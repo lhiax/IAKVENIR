@@ -17,6 +17,9 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
+    <!-- jsPDF (PDF Generation) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,6 +50,248 @@
             }
         }
     </script>
+    </script>
+    <style>
+        @keyframes neon-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 60px rgba(0, 212, 255, 0.8), 0 0 100px rgba(0, 212, 255, 0.4);
+            }
+        }
+
+        .animate-neon-pulse {
+            animation: neon-pulse 3s ease-in-out infinite;
+        }
+
+        /* GOLD SPARKLE EFFECTS */
+        /* GREEN PULSE (SUBTLE) */
+        @keyframes subtle-green-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 5px rgba(184, 255, 0, 0.2);
+                border-color: rgba(184, 255, 0, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 15px rgba(184, 255, 0, 0.5);
+                border-color: rgba(184, 255, 0, 0.8);
+            }
+        }
+
+        .animate-subtle-green-pulse {
+            animation: subtle-green-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes gold-sparkle {
+
+            0%,
+            100% {
+                background-color: #D4AF37;
+                box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+                transform: scale(1);
+            }
+
+            50% {
+                background-color: #FFD700;
+                box-shadow: 0 0 40px #FFD700, 0 0 60px #FFD700, 0 0 10px #FFF inset;
+                transform: scale(1.05);
+            }
+        }
+
+        .bg-gold-sparkle {
+            background-color: #D4AF37;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+            /* Static by default */
+        }
+
+        .animate-gold-flash {
+            animation: gold-sparkle 1s ease-in-out 1;
+        }
+
+        /* SHOOTING STARS */
+        @keyframes shooting {
+            0% {
+                transform: translateX(0) translateY(0) rotate(315deg) scale(0.5);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateX(-50px) translateY(50px) rotate(315deg) scale(1);
+            }
+
+            100% {
+                transform: translateX(-500px) translateY(500px) rotate(315deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 150px;
+            /* Longer tail */
+            height: 1px;
+            /* Thinner */
+            background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+        }
+
+        /* LAVA LAMP BREATHING */
+        @keyframes lava-breathe {
+
+            0%,
+            100% {
+                transform: scale(1.05);
+                opacity: 0.5;
+                filter: blur(40px);
+            }
+
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+                filter: blur(50px);
+            }
+        }
+
+        .animate-lava {
+            animation: lava-breathe 8s ease-in-out infinite;
+            will-change: transform, opacity, filter;
+        }
+
+        /* SNAKE BORDER ANIMATION */
+        #lightbox-frame {
+            position: relative;
+            display: inline-block;
+            /* Shrink to fit image */
+            overflow: visible;
+            /* Allow glow/snake to be seen */
+        }
+
+        .snake-border {
+            position: absolute;
+            display: block;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.6;
+            /* More discrete */
+            /* BLUR EFFECT: Softens the line into a glowing trail */
+            filter: blur(8px) drop-shadow(0 0 20px var(--border-color, #00d4ff));
+            mix-blend-mode: screen;
+            /* Blends better with dark background */
+        }
+
+        .snake-border:nth-child(1) {
+            /* TOP */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            /* Slightly thicker for glow */
+            background: linear-gradient(90deg, transparent 20%, var(--border-color, #00d4ff));
+            animation: btn-anim1 var(--snake-speed, 1s) linear infinite;
+            animation-delay: calc(var(--snake-speed, 1s) * (0 + var(--start-offset, 0)));
+        }
+
+        @keyframes btn-anim1 {
+            0% {
+                left: -100%;
+            }
+
+            50%,
+            100% {
+                left: 100%;
+            }
+        }
+
+        .snake-border:nth-child(2) {
+            /* RIGHT */
+            top: -100%;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, var(--border-color, #00d4ff));
+            animation: btn-anim2 var(--snake-speed, 1s) linear infinite;
+            animation-delay: calc(var(--snake-speed, 1s) * (0.25 + var(--start-offset, 0)));
+        }
+
+        @keyframes btn-anim2 {
+            0% {
+                top: -100%;
+            }
+
+            50%,
+            100% {
+                top: 100%;
+            }
+        }
+
+        .snake-border:nth-child(3) {
+            /* BOTTOM */
+            bottom: 0;
+            right: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(270deg, transparent, var(--border-color, #00d4ff));
+            animation: btn-anim3 var(--snake-speed, 1s) linear infinite;
+            animation-delay: calc(var(--snake-speed, 1s) * (0.5 + var(--start-offset, 0)));
+        }
+
+        @keyframes btn-anim3 {
+            0% {
+                right: -100%;
+            }
+
+            50%,
+            100% {
+                right: 100%;
+            }
+        }
+
+        .snake-border:nth-child(4) {
+            /* LEFT */
+            bottom: -100%;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(360deg, transparent, var(--border-color, #00d4ff));
+            animation: btn-anim4 var(--snake-speed, 1s) linear infinite;
+            animation-delay: calc(var(--snake-speed, 1s) * (0.75 + var(--start-offset, 0)));
+        }
+
+        @keyframes btn-anim4 {
+            0% {
+                bottom: -100%;
+            }
+
+            50%,
+            100% {
+                bottom: 100%;
+            }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(0, 0, 0, 0));
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        /* TRANSITIONS FOR AMBILIGHT */
+        #lightbox-img {
+            transition: box-shadow 1s ease-in-out, transform 0.3s ease;
+        }
+    </style>
 </head>
 
 <body class="bg-space-black text-white font-body overflow-x-hidden selection:bg-neon-green selection:text-black">
@@ -61,14 +306,45 @@
     <div class="fixed inset-0 z-50 pointer-events-none noise-overlay opacity-[0.03]"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-40 bg-space-black/80 backdrop-blur-md border-b border-neon-blue/20">
+    <nav
+        class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/5 transition-transform duration-500 ease-in-out">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-future font-bold text-white tracking-widest group">
+            <!-- Logo -->
+            <a href="#" class="text-2xl font-future font-bold text-white tracking-widest group relative">
                 iA_k<span class="text-limit-red group-hover:text-white transition-colors">_venir</span>
+
+                <!-- CONSTELLATION BADGE (Alsace Grid) -->
+                <div id="alsace-constellation"
+                    class="absolute -top-3 -right-24 w-20 h-20 pointer-events-none opacity-80 hidden md:block">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_5px_rgba(0,212,255,0.8)]">
+                        <!-- Route des Vins (Line) -->
+                        <path d="M30,80 L40,50 L70,20" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none"
+                            class="rhythm-path" />
+
+                        <!-- Stars/Cities -->
+                        <circle cx="30" cy="80" r="2" fill="#fff" class="rhythm-star" data-city="Colmar">
+                            <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <text x="15" y="85" fill="rgba(255,255,255,0.5)" font-size="6"
+                            font-family="monospace">COLMAR</text>
+
+                        <circle cx="40" cy="50" r="2" fill="#fff" class="rhythm-star" data-city="Ribeauville">
+                            <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite" />
+                        </circle>
+                        <text x="45" y="52" fill="rgba(255,255,255,0.5)" font-size="6"
+                            font-family="monospace">RIBEAU</text>
+
+                        <circle cx="70" cy="20" r="2" fill="#fff" class="rhythm-star" data-city="Selestat">
+                            <animate attributeName="opacity" values="0.4;1;0.4" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <text x="75" y="22" fill="rgba(255,255,255,0.5)" font-size="6"
+                            font-family="monospace">SELEST</text>
+                    </svg>
+                </div>
             </a>
 
             <!-- iAkvenir System Control (Navbar) -->
-            <div
+            <div id="navbar-audio-group"
                 class="hidden md:flex items-center gap-2 border border-[#D4AF37]/30 bg-black/50 px-3 py-1 rounded backdrop-blur-sm">
                 <!-- Volume Control -->
                 <div class="flex items-center gap-1 mr-2 border-r border-white/10 pr-2">
@@ -102,15 +378,16 @@
                 </select>
             </div>
 
-            <div class="hidden md:flex gap-8 text-sm font-future tracking-widest">
+            <div class="hidden md:flex items-center gap-8 text-sm font-future tracking-widest">
                 <a href="#about" class="hover:text-neon-blue transition-colors">LE PILOTE</a>
                 <a href="#simulator" class="hover:text-neon-green transition-colors">VTC SIMULATOR</a>
                 <a href="#archives" class="hover:text-limit-red transition-colors">ARCHIVES</a>
                 <a href="#deals" class="hover:text-[#ff9d00] transition-colors">BONS PLANS</a>
+                <a href="#reservation" class="hover:text-neon-blue transition-colors">MISSION</a>
                 <a href="#contact"
                     class="hover:text-white transition-colors border border-transparent hover:border-neon-blue px-3 py-1 rounded">CONTACT</a>
                 <button id="btn-tour-desktop" onclick="startGuidedTour()"
-                    class="bg-neon-blue text-black font-bold px-4 py-1 rounded hover:bg-white hover:text-black transition-all shadow-[0_0_10px_#00d4ff]">AIDE</button>
+                    class="bg-neon-green/10 text-neon-green font-bold px-4 py-1 rounded hover:scale-110 transition-all shadow-[0_0_10px_rgba(184,255,0,0.3)] border border-neon-green">AIDE</button>
             </div>
             <!-- Mobile Menu Button -->
             <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none z-50 relative">
@@ -172,10 +449,12 @@
             <a href="#deals"
                 class="text-2xl font-future text-white hover:text-[#ff9d00] transition-colors mobile-link">BONS
                 PLANS</a>
+            <a href="#reservation"
+                class="text-2xl font-future text-white hover:text-neon-blue transition-colors mobile-link">MISSION</a>
             <a href="#contact"
                 class="text-2xl font-future text-white border border-neon-blue px-6 py-2 rounded mobile-link">CONTACT</a>
             <button id="btn-tour-mobile" onclick="startGuidedTour()"
-                class="text-2xl font-future bg-neon-blue text-black px-6 py-2 rounded mobile-link hover:bg-white transition-colors ml-4 shadow-[0_0_15px_#00d4ff]">AIDE</button>
+                class="text-2xl font-future bg-neon-green/10 text-neon-green border border-neon-green px-6 py-2 rounded mobile-link hover:bg-neon-green hover:text-black transition-colors ml-4 shadow-[0_0_10px_rgba(184,255,0,0.3)]">AIDE</button>
         </div>
     </nav>
 
@@ -262,14 +541,15 @@
     </section>
 
     <!-- About / Pilot Section -->
-    <section id="about" class="py-12 md:py-24 relative bg-space-black border-b border-neon-blue/10">
+    <section id="about"
+        class="py-12 md:py-24 relative bg-space-black border-b border-neon-blue/10 min-h-screen flex flex-col justify-center">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-2 gap-16 items-center">
                 <div class="relative group">
                     <div
                         class="absolute -inset-4 bg-gradient-to-r from-neon-blue to-neon-green opacity-20 blur-lg group-hover:opacity-40 transition-opacity duration-500">
                     </div>
-                    <div class="relative border-2 border-neon-blue/30 bg-space-black p-2">
+                    <div id="pilot-container" class="relative border-2 border-neon-blue/30 bg-space-black p-2">
                         <!-- Placeholder for Pilot Image -->
                         <!-- Video Replacement -->
                         <div class="aspect-[4/5] bg-gray-900 relative overflow-hidden group/video">
@@ -461,7 +741,8 @@
     </section>
 
     <!-- Simulator Section -->
-    <section id="simulator" class="py-12 md:py-24 bg-[#050510] relative overflow-hidden">
+    <section id="simulator"
+        class="py-12 md:py-24 bg-[#050510] relative overflow-hidden min-h-screen flex flex-col justify-center">
         <!-- Background Grid -->
         <div
             class="absolute inset-0 bg-[linear-gradient(to_right,#00d4ff05_1px,transparent_1px),linear-gradient(to_bottom,#00d4ff05_1px,transparent_1px)] bg-[size:40px_40px]">
@@ -477,7 +758,7 @@
                 </div>
             </div>
 
-            <div
+            <div id="tour-simulator-card"
                 class="max-w-4xl mx-auto bg-space-black/80 backdrop-blur-xl border border-neon-blue/30 p-8 md:p-12 rounded-2xl shadow-[0_0_50px_rgba(0,212,255,0.1)]">
                 <!-- Interface Header -->
                 <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
@@ -585,7 +866,8 @@
     </section>
 
     <!-- Gallery / Archives -->
-    <section id="archives" class="py-12 md:py-24 bg-space-black border-t border-white/5">
+    <section id="archives"
+        class="py-12 md:py-24 bg-space-black border-t border-white/5 min-h-screen flex flex-col justify-center">
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
                 <h2 class="text-3xl font-future text-white">REPORTAGES <span class="text-limit-red">THÉMATIQUES</span>
@@ -627,7 +909,7 @@
     </section>
 
     <!-- Bons Plans / Temporal Receipts -->
-    <section id="deals" class="py-12 md:py-24 bg-[#0a0a1a] relative">
+    <section id="deals" class="py-12 md:py-24 bg-[#0a0a1a] relative min-h-screen flex flex-col justify-center">
         <div class="container mx-auto px-6 relative z-10">
             <h2 class="font-future text-center text-white text-3xl mb-16 tracking-[0.3em]">
                 <span class="text-[#ff9d00]">OFFRES</span> TEMPORELLES
@@ -640,7 +922,8 @@
     </section>
 
     <!-- Reservation Section -->
-    <section id="reservation" class="py-12 md:py-24 bg-space-black border-t border-white/5 relative overflow-hidden">
+    <section id="reservation"
+        class="py-12 md:py-24 bg-space-black border-t border-white/5 relative overflow-hidden min-h-screen flex flex-col justify-center">
         <!-- Decoration similar to Hero or Deals -->
         <div class="absolute top-0 right-0 w-1/3 h-full bg-neon-blue/5 blur-3xl pointer-events-none"></div>
 
@@ -655,9 +938,10 @@
                 et l'aventure pourra commencer !
             </p>
 
-            <div class="grid md:grid-cols-2 gap-12 items-start max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-12 items-stretch max-w-6xl mx-auto">
                 <!-- Form Panel -->
-                <div class="bg-gray-900 border border-white/10 p-8 rounded-2xl relative shadow-2xl backdrop-blur-sm">
+                <div id="tour-reservation-card"
+                    class="bg-gray-900 border border-white/10 p-8 rounded-2xl relative shadow-2xl backdrop-blur-sm">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-blue to-transparent"></div>
 
                     <div class="space-y-6">
@@ -735,7 +1019,7 @@
                                     class="block text-neon-blue text-xs font-future tracking-widest">DÉPART<br>DATE &
                                     HEURE</label>
                                 <input id="res-pickup-datetime" type="text" placeholder="Sélectionner..."
-                                    class="flatpickr-input w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm">
+                                    class="flatpickr-input w-full bg-[#0d1b2a] text-white border-2 border-neon-green shadow-[0_0_15px_rgba(184,255,0,0.3)] rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm animate-subtle-green-pulse">
                             </div>
                             <div class="space-y-2">
                                 <label for="res-arrival-datetime"
@@ -802,39 +1086,13 @@
                             class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600"></textarea>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex flex-wrap gap-4 pt-4 border-t border-white/10">
-                        <button id="btn-res-build"
-                            class="group w-full bg-neon-blue text-black font-future font-bold py-3 px-6 hover:bg-white transition-all text-xs tracking-widest shadow-lg shadow-neon-blue/20">
-                            <span class="group-hover:hidden">GÉNÉRER LES DOCUMENTS</span>
-                            <span class="hidden group-hover:inline-block">GÉNÉRER & VOCALISER</span>
-                        </button>
-                    </div>
 
-                    <div class="grid grid-cols-2 gap-4 pt-2">
-                        <button id="btn-whatsapp"
-                            class="flex items-center justify-center gap-2 bg-[#25D366]/10 text-[#25D366] border border-[#25D366] py-3 rounded hover:bg-[#25D366] hover:text-white transition-all font-future text-xs">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                            </svg>
-                            WHATSAPP
-                        </button>
-                        <button id="btn-email"
-                            class="flex items-center justify-center gap-2 bg-neon-blue/10 text-neon-blue border border-neon-blue py-3 rounded hover:bg-neon-blue hover:text-black transition-all font-future text-xs">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                            EMAIL
-                        </button>
-                    </div>
 
                 </div>
 
 
                 <!-- Summary / Console Output -->
-                <div class="space-y-6">
+                <div class="space-y-6 flex flex-col h-full">
 
                     <!-- FACE ID SCANNER -->
                     <div
@@ -868,16 +1126,42 @@
                                 <canvas id="webcam-canvas" class="hidden"></canvas>
 
                                 <!-- Result Image -->
-                                <img id="webcam-result" class="absolute inset-0 w-full h-full object-cover hidden"
+                                <img id="webcam-result" class="absolute inset-0 w-full h-full object-contain hidden"
                                     alt="Identité Validée">
 
-                                <!-- Overlay Guide -->
+                                <!-- Overlay Guide (Portrait Zone) -->
                                 <div id="camera-overlay"
-                                    class="absolute inset-0 border-2 border-neon-blue/50 m-4 rounded-lg hidden pointer-events-none">
-                                    <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-neon-blue">
-                                    </div>
+                                    class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
+                                    <!-- Portrait Frame (3:4 Aspect Ratio) -->
                                     <div
-                                        class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-neon-blue">
+                                        class="relative h-[80%] aspect-[3/4] border-2 border-dashed border-neon-blue/50 rounded-lg shadow-[0_0_20px_rgba(0,212,255,0.2)]">
+                                        <!-- Corners -->
+                                        <div
+                                            class="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-neon-blue">
+                                        </div>
+                                        <div
+                                            class="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-neon-blue">
+                                        </div>
+                                        <div
+                                            class="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-neon-blue">
+                                        </div>
+                                        <div
+                                            class="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-neon-blue">
+                                        </div>
+
+                                        <!-- Center Crosshair -->
+                                        <div
+                                            class="absolute top-1/2 left-1/2 w-4 h-0.5 bg-neon-blue/50 -translate-x-1/2 -translate-y-1/2">
+                                        </div>
+                                        <div
+                                            class="absolute top-1/2 left-1/2 w-0.5 h-4 bg-neon-blue/50 -translate-x-1/2 -translate-y-1/2">
+                                        </div>
+
+                                        <div class="absolute -bottom-6 w-full text-center">
+                                            <span
+                                                class="text-[10px] text-neon-blue font-mono bg-black/50 px-2 rounded">ZONE
+                                                ID</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -900,16 +1184,66 @@
                         </div>
                     </div>
                     <div
-                        class="bg-black border border-neon-blue/30 p-1 rounded-lg shadow-[0_0_30px_rgba(0,212,255,0.1)] h-full min-h-[400px] flex flex-col">
+                        class="bg-black border border-neon-blue/30 p-1 rounded-lg shadow-[0_0_30px_rgba(0,212,255,0.1)] flex-1 min-h-[300px] flex flex-col">
                         <div
                             class="bg-[#050510] border-b border-neon-blue/20 px-4 py-2 flex justify-between items-center">
-                            <span class="text-neon-blue font-mono text-xs animate-pulse">● SYSTEM READY</span>
-                            <span class="text-gray-600 font-mono text-[10px]">TERMINAL V2.0</span>
+                            <span class="text-neon-blue font-mono text-xs animate-pulse">● PDF_GENERATOR_READY</span>
+                            <span class="text-gray-600 font-mono text-[10px]">EXPORT_MODULE_V1</span>
                         </div>
-                        <div class="p-6 flex-1 font-mono text-sm text-neon-blue/80 overflow-auto whitespace-pre-wrap leading-relaxed"
-                            id="res-summary">
-                            _EN ATTENTE DE DONNÉES...
-                            _VEUILLEZ REMPLIR LE FORMULAIRE À GAUCHE.
+
+                        <!-- PDF Preview Container -->
+                        <div class="relative flex-1 bg-gray-900 overflow-hidden group">
+                            <iframe id="pdf-preview-frame"
+                                class="w-full h-full border-none opacity-0 transition-opacity duration-500"></iframe>
+
+                            <!-- Placeholder State -->
+                            <div id="pdf-placeholder"
+                                class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                                <div
+                                    class="w-12 h-16 border-2 border-dashed border-gray-600 rounded flex items-center justify-center mb-4">
+                                    <span class="text-gray-600 font-future text-xs">PDF</span>
+                                </div>
+                                <p class="text-gray-500 font-mono text-xs">AWAITING_DATA_COMPILATION...</p>
+                            </div>
+
+                            <!-- View Fullscreen Overlay (On Hover when active) -->
+                            <div id="pdf-actions-overlay"
+                                class="absolute inset-0 bg-black/60 hidden flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button onclick="viewPdfFullscreen()"
+                                    class="bg-white text-black font-future font-bold py-2 px-6 rounded hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                                    VOIR PLEIN ÉCRAN
+                                </button>
+
+                                <button onclick="downloadEmlForMail()"
+                                    class="bg-neon-blue/20 text-neon-blue border border-neon-blue font-future font-bold py-2 px-6 rounded hover:bg-neon-blue hover:text-black hover:scale-105 transition-all text-xs flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    </svg>
+                                    TÉLÉCHARGER (EMAIL)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Bar -->
+                        <div class="bg-[#050510] border-t border-neon-blue/20 p-4 flex flex-col gap-3">
+                            <button onclick="generateRecapPDF()"
+                                class="w-full bg-neon-blue/10 text-neon-blue border border-neon-blue py-3 rounded font-future font-bold text-xs hover:bg-neon-blue hover:text-black transition-all flex items-center justify-center gap-2">
+                                <span class="animate-pulse">⚡</span> GÉNÉRER LE DOCUMENT DE MISSION
+                            </button>
+
+                            <div class="grid grid-cols-2 gap-3" id="share-buttons">
+                                <button onclick="shareWhatsApp()"
+                                    class="bg-[#25D366]/10 text-[#25D366] border border-[#25D366] py-2 rounded font-future text-[10px] hover:bg-[#25D366] hover:text-white transition-all opacity-50 cursor-not-allowed"
+                                    disabled id="btn-share-wa">
+                                    WHATSAPP
+                                </button>
+                                <button onclick="shareEmail()"
+                                    class="bg-white/10 text-white border border-white/50 py-2 rounded font-future text-[10px] hover:bg-white hover:text-black transition-all opacity-50 cursor-not-allowed"
+                                    disabled id="btn-share-mail">
+                                    EMAIL
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -940,7 +1274,7 @@
                                 class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-neon-blue group-hover:text-black transition-colors">Tel</span>
                             <span class="font-mono text-lg">07 50 98 92 97</span>
                         </a>
-                        <a href="mailto:contact@iakvenir.fr"
+                        <a href="javascript:void(0)" onclick="shareEmail()"
                             class="flex items-center gap-4 text-gray-400 hover:text-neon-blue transition-colors group">
                             <span
                                 class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-neon-blue group-hover:text-black transition-colors">@</span>
@@ -1109,6 +1443,13 @@
             </svg>
         </button>
 
+        <!-- YouTube Player (Invisible) -->
+        <div id="youtube-player-container" class="hidden">
+            <div id="youtube-player"></div>
+        </div>
+
+
+
         <button id="lightbox-prev"
             class="absolute left-4 md:left-8 text-gray-400 hover:text-neon-blue transition-colors z-50 p-4 bg-black/20 rounded-full hover:bg-black/50">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1123,9 +1464,20 @@
             </svg>
         </button>
 
-        <div class="relative max-w-[95vw] max-h-[95vh]">
-            <img id="lightbox-img" src="" alt="Full Screen"
-                class="max-h-[85vh] max-w-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 rounded-lg">
+        <div class="relative max-w-[95vw] max-h-[95vh] flex justify-center items-center">
+
+            <!-- Frame Wrapper for Image + Border -->
+            <div id="lightbox-frame">
+                <!-- Snake Borders REMOVED per user request (distracting) -->
+
+                <!-- Ambilight Back Layer -->
+                <img id="lightbox-glow-layer" src="" alt=""
+                    class="absolute inset-0 w-full h-full object-contain blur-3xl opacity-60 scale-110 -z-10 transition-opacity duration-1000">
+
+                <img id="lightbox-img" src="" alt="Full Screen"
+                    class="max-h-[85vh] max-w-full object-contain shadow-[0_0_50px_rgba(0,0,0,0.8)] border-none rounded-lg relative z-10">
+            </div>
+
             <div id="lightbox-caption"
                 class="absolute -bottom-10 left-0 right-0 text-center text-white font-future tracking-widest text-sm text-shadow">
             </div>
@@ -1140,6 +1492,28 @@
                 <div class="holo-seal-main">CA-LH</div>
                 <div class="holo-seal-sub">CERTIFIÉ<br>AUTHENTIQUE<br>LAURENT H</div>
             </div>
+        </div>
+    </div>
+
+    <!-- PDF Fullscreen Overlay -->
+    <div id="pdf-fullscreen-overlay" class="fixed inset-0 z-[80] hidden bg-black/95 backdrop-blur-sm flex flex-col">
+        <!-- Toolbar -->
+        <div class="h-16 bg-space-black border-b border-white/10 flex justify-between items-center px-6 shrink-0">
+            <div class="flex items-center gap-4">
+                <span class="text-neon-blue font-future text-lg tracking-widest">VISUALISEUR_DOCUMENT</span>
+                <span class="text-white/50 font-mono text-xs hidden md:inline-block">MODE_LECTURE_SÉCURISÉ</span>
+            </div>
+            <button onclick="closePdfFullscreen()"
+                class="p-2 hover:bg-limit-red/20 rounded-full transition-colors text-white/80 hover:text-limit-red group border border-transparent hover:border-limit-red/50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <!-- PDF Container -->
+        <div class="flex-1 relative w-full h-full bg-gray-900">
+            <iframe id="pdf-fullscreen-frame" class="w-full h-full border-none"></iframe>
         </div>
     </div>
 
@@ -1205,6 +1579,18 @@
     </div>
 
     <!-- Scripts -->
+    <!-- API Config -->
+    <script src="config.js"></script>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <!-- PDF Generation Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Artist Recognition System -->
+    <script src="artist-recognition.js"></script>
+
     <script src="main.js"></script>
 </body>
 

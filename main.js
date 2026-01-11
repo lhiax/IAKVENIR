@@ -183,6 +183,8 @@ const DEALS = [
 // STATE
 let currentDeal = null;
 let voicesLoaded = false;
+let currentPdfBlob = null; // Store actual blob data
+let currentPdfBlobUrl = null; // Store URL for display
 
 /* =========================================
    AUDIO STREAMING ENGINE (Priority System)
@@ -195,12 +197,12 @@ const RADIO_STREAMS = {
     "dab": "https://icecast.radiofrance.fr/fip-midfi.mp3", // FIP
     // DAB Alsace (Local)
     "dkl": "https://stream.rcs.revma.com/wcrk7f9fkzzuv",
-    "azur-fm": "http://live.radioking.fr/azur-fm-68",
+    "azur-fm": "https://stream.rcs.revma.com/8327h51fkzzuv", // Azur FM (HTTPS Proxy/Alt)
     "rdl": "https://stream.rcs.revma.com/aguwyw7fkzzuv.mp3", // RDL 68 (Colmar) - HTTPS
     // Radio FG
-    "fg-main": "http://radiofg.impek.com/fg",
+    "fg-main": "https://stream.rcs.revma.com/fg00000000001", // Radio FG HTTPS
     "fg-chic": "https://stream.rcs.revma.com/8actzfn0742vv.mp3",
-    "fg-deep": "http://radiofg.impek.com/fgd",
+    "fg-deep": "https://stream.rcs.revma.com/fg64000000001", // FG Deep HTTPS
     // PulsRadio Channels
     "puls-dance": "https://icecast.pulsradio.com/pulsHD.mp3",
     "puls-trance": "https://icecast.pulsradio.com/pulstranceHD.mp3",
@@ -214,6 +216,14 @@ let isRadioActive = false; // Is a station selected?
 let isDucked = false;      // Is audio suppressed by higher priority?
 
 function playRadio(ambianceKey) {
+    if (!RADIO_STREAMS[ambianceKey]) return;
+
+    // 1. Set Rhythm (Visuals)
+    if (typeof rhythmEngine !== 'undefined') {
+        rhythmEngine.setMode(ambianceKey);
+    }
+
+    // 2. Play Audio
     // Stop current
     if (audioPlayer) {
         audioPlayer.pause();
@@ -224,21 +234,38 @@ function playRadio(ambianceKey) {
     isRadioActive = false;
 
     const streamUrl = RADIO_STREAMS[ambianceKey];
-    if (!streamUrl) return; // Silence
 
     // Setup New Stream
     isRadioActive = true;
     audioPlayer.src = streamUrl;
     audioPlayer.volume = 0.3;
 
-    // Delay start (managed by KITT usually, but we set a safe timeout just in case)
-    // The speak() function will duck it anyway if it starts speaking.
-    // We rely on speak() to Unduck at the end, which triggers playback if isRadioActive is true.
-    // But if speak() fails or isn't called, we need a fallback start?
-    // Let's assume playRadio is always called with speak().
-    // We don't auto-play here to avoid conflict. We rely on the "Resume" from the voice end.
-    // BUT: If user changes ambiance, `speak` is called. It ducks. Then onend resumes.
-    // So we just need to ensure `isRadioActive` is true.
+    // Debug Listeners
+    audioPlayer.onplaying = () => console.log(`[AUDIO] Playing: ${ambianceKey}`);
+    audioPlayer.onerror = (e) => {
+        const error = audioPlayer.error;
+        console.error(`[AUDIO] Error Code: ${error ? error.code : 'Unknown'}`, error);
+        console.error(`[AUDIO] Stream URL: ${streamUrl}`);
+    };
+    audioPlayer.onwaiting = () => console.log(`[AUDIO] Buffering: ${ambianceKey}...`);
+
+    // Attempt Play
+    const playPromise = audioPlayer.play();
+    if (playPromise !== undefined) {
+        playPromise
+            .then(() => console.log(`[AUDIO] Playback started successfully.`))
+            .catch(e => {
+                console.warn(`[AUDIO] Autoplay Blocked or Stream Error:`, e);
+                // Optional: Show UI hint to user "Click to Play"
+            });
+    }
+
+    // 3. UI Updates
+    if (typeof updateRadioUI === 'function') updateRadioUI(ambianceKey);
+
+    // Update active state in selector if needed
+    const sel = document.getElementById('nav-ambiance');
+    if (sel && sel.value !== ambianceKey) sel.value = ambianceKey;
 }
 
 function pauseRadio() {
@@ -277,56 +304,97 @@ function loadVoices() {
     }
 }
 
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
+/* =========================================
+   VOICE ENGINE (Thomas - French Priority)
+   ========================================= */
+let selectedVoice = null;
+
+function initVoice() {
+    // 1. Load Voices
+    const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        if (voices.length > 0) voicesLoaded = true;
+
+        // Priority: "Thomas" (Mac/iOS High Quality) -> "Google Français" -> Any "fr-FR"
+        selectedVoice = voices.find(v => v.name.includes("Thomas")) ||
+            voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr")) ||
+            voices.find(v => v.lang.startsWith("fr"));
+
+        if (!selectedVoice && voices.length > 0) {
+            // Fallback to English if no French (shouldn't happen on modern OS)
+            selectedVoice = voices[0];
+        }
+    };
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        loadVoices();
+    }
 }
 
-function speak(text) {
-    if (!('speechSynthesis' in window)) return;
-    if (!voicesLoaded) loadVoices();
+// Speak Function (Global) - RETURNS PROMISE
+window.speak = function (text) {
+    return new Promise((resolve) => {
+        if (!('speechSynthesis' in window)) {
+            console.warn("Speech Synthesis not supported");
+            resolve();
+            return;
+        }
 
-    window.speechSynthesis.cancel();
+        // Cancel previous
+        window.speechSynthesis.cancel();
 
-    // Personalization
-    const sPrenom = document.getElementById('res-prenom');
-    let userName = "Monsieur"; // Default KITT default
-    if (sPrenom && sPrenom.value.trim() !== "") {
-        userName = sPrenom.value.trim();
-    }
-    const personalizedText = text.replace(/Michael/gi, userName);
+        // DUCK AUDIO (Radio & Video)
+        if (typeof pauseRadio === 'function') pauseRadio();
 
-    const utterance = new SpeechSynthesisUtterance(personalizedText);
-    const voices = window.speechSynthesis.getVoices();
+        // Mute Pilot Video specifically if playing
+        const pilotVideo = document.getElementById('pilot-video');
+        let pilotWasPlaying = false;
+        if (pilotVideo && !pilotVideo.paused) {
+            pilotVideo.muted = true;
+            pilotWasPlaying = true;
+        }
 
-    // Voice Strategy: Target "Thomas" for French KITT feel (Deep, Calm)
-    // If Thomas not found, try Google Français
-    const frVoice = voices.find(v => v.name.includes('Thomas')) // macOS default cool guy
-        || voices.find(v => v.name.includes('Google') && v.lang.startsWith('fr'))
-        || voices.find(v => v.lang === 'fr-FR');
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (selectedVoice) utterance.voice = selectedVoice;
 
-    if (frVoice) {
-        utterance.voice = frVoice;
-        utterance.pitch = 0.7; // Deeper
-        utterance.rate = 0.95; // Slightly slower
-    }
+        // Settings (Pitch/Rate for KITT Effect)
+        utterance.pitch = 0.9; // Slightly deeper
+        utterance.rate = 1.1;  // Slightly faster
+        utterance.volume = 1.0;
 
-    // DUCKING LOGIC
-    utterance.onstart = () => {
-        pauseRadio();
-    };
+        // Events
+        utterance.onend = () => {
+            // RESUME AUDIO
+            if (typeof resumeRadio === 'function') resumeRadio();
 
-    utterance.onend = () => {
-        resumeRadio();
-    };
+            // Unmute Pilot Video if it was playing (or let logic handle it)
+            // But wait! User wants video sound ONLY after speech.
+            // So we muted it above. Now we can unmute it?
+            // Or better: The specific section logic dictates playback.
+            // For general 'speak' calls (like feedback), unmuting is safe if it was already playing background.
+            if (pilotVideo && pilotWasPlaying) {
+                // But for the Tour, we might want to handle this explicitly in the tour step?
+                // Let's safe unmute here, as 'Tour Active' flag prevents new autoplays anyway.
+                pilotVideo.muted = false;
+            }
+            resolve();
+        };
 
-    try {
+        utterance.onerror = (e) => {
+            console.error("Speech Error:", e);
+            if (typeof resumeRadio === 'function') resumeRadio();
+            if (pilotVideo && pilotWasPlaying) pilotVideo.muted = false;
+            resolve();
+        };
+
         window.speechSynthesis.speak(utterance);
-    } catch (e) {
-        console.warn("Speech Error:", e);
-        // Fallback resume if speech fails immediately
-        resumeRadio();
-    }
-}
+    });
+};
+
+/* =========================================
+   SIMULATOR CALCULATOR (OSRM + Nominatim)
+   ========================================= */
 
 function speakSummary(data) {
     const { destination, price, distance } = data;
@@ -637,11 +705,64 @@ function renderGallery() {
     if (!grid) return;
 
     // 1. FESTIVALS (Real Data from 'assets/gallery/festivals/')
-    // 1. FESTIVALS (54 items)
-    // Auto-generated standard filenames: festival_001.jpg to festival_054.jpg
-    const festivalFilenames = Array.from({ length: 54 }, (_, i) =>
-        `festival_${String(i + 1).padStart(3, '0')}.jpg`
-    );
+    // 1. FESTIVALS (Data from 'assets/gallery/festivals/')
+    // Updated with User Renamed Files (Artist Integration)
+    const festivalFilenames = [
+        "Avicii festival_001.jpg",
+        "festival_002 JOACHIM GARRAUD.jpg",
+        "festival_003 JOACHIM GARRAUD.jpg",
+        "festival_004 DAVID GUETTA.jpg",
+        "festival_005 Afrojack.jpg",
+        "festival_006 DAVID GUETTA.jpg",
+        "festival_007 DAVID GUETTA.jpg",
+        "festival_008 Charles Aznavour.jpg",
+        "festival_009 Charles Aznavour.jpg",
+        "festival_010 johnny hallyday.jpg",
+        "festival_011 LMFAO.jpg",
+        "festival_012 Gad Elmaleh.jpg",
+        "festival_013 Gotan Project.jpg",
+        "festival_014 Renan Luce.jpg",
+        "festival_015 Alice Cooper.jpg",
+        "festival_016 Yannick Noah.jpg",
+        "festival_017 Jacques Dutronc.jpg",
+        "festival_018.jpg",
+        "festival_019.jpg",
+        "festival_020.jpg",
+        "festival_021.jpg",
+        "festival_022.jpg",
+        "festival_023.jpg",
+        "festival_024 Scorpions.jpg",
+        "festival_025 Tryo.jpg",
+        "festival_026 Superbus.jpg",
+        "festival_027 Superbus.jpg",
+        "festival_028 amy macdonald.jpg",
+        "festival_029 amy macdonald.jpg",
+        "festival_030 DAVID GUETTA.jpg",
+        "festival_031 DAVID GUETTA.jpg",
+        "festival_032 DAVID GUETTA.jpg",
+        "festival_033 DAVID GUETTA.jpg",
+        "festival_034 DAVID GUETTA.jpg",
+        "festival_035 DAVID GUETTA.jpg",
+        "festival_036 Nina Agen.jpg",
+        "festival_037.jpg",
+        "festival_038.jpg",
+        "festival_039 Pete Doherty.jpg",
+        "festival_040 Pete Doherty.jpg",
+        "festival_041 DAVID GUETTA.jpg",
+        "festival_042 Lost Frequencies.jpg",
+        "festival_043 DAVID GUETTA.jpg",
+        "festival_044.jpg",
+        "festival_045.jpg",
+        "festival_046.jpg",
+        "festival_047.jpg",
+        "festival_048.jpg",
+        "festival_049.jpg",
+        "festival_050 Steve Aoki.jpg",
+        "festival_051 Morgan Nagoya.jpg",
+        "festival_052.jpg",
+        "festival_053 Lost Frequencies.jpg",
+        "festival_054.jpg"
+    ];
 
     // 2. GASTRONOMIE (25 items)
     // Auto-generated standard filenames: gastronomie_001.jpg to gastronomie_025.jpg
@@ -1318,85 +1439,741 @@ function initProtocol() {
     }
 }
 
+/* =========================================
+   RHYTHM ENGINE (Audio-Reactive Visuals)
+   ========================================= */
+class RhythmEngine {
+    constructor() {
+        this.bpm = 0;
+        this.intervalId = null;
+        this.isActive = false;
+        this.elements = {
+            stars: document.querySelectorAll('.rhythm-star'),
+            path: document.querySelector('.rhythm-path'),
+            gallery: document.querySelectorAll('.gallery-img, .lightbox-content'),
+            badges: document.querySelectorAll('.neon-badge')
+        };
+        this.currentType = 'relax';
+        this.currentCategory = null;
+    }
+
+    setGalleryCategory(cat) {
+        this.currentCategory = cat;
+        this.updateVisuals();
+    }
+
+    updateVisuals() {
+        const type = this.currentType;
+        // AMBILIGHT FLUID ANIMATION & SNAKE SPEED
+        const glowLayer = document.getElementById('lightbox-glow-layer');
+        const frame = document.getElementById('lightbox-frame');
+
+        // Calculate Speeds
+        const snakeSpeed = type === 'strobe' ? '40s' : (type === 'pulse' ? '120s' : '240s');
+
+        // Lava Lamp Duration
+        const lavaSpeed = type === 'strobe' ? '1.5s' : '4s';
+
+        if (glowLayer) {
+            // "Partie Festival" Logic: Animation ON only for Strobe (Techno/Puls) AND Category == 'festival'
+            if (type === 'strobe' && this.currentCategory === 'festival') {
+                glowLayer.classList.add('animate-lava');
+                glowLayer.style.animationDuration = lavaSpeed;
+            } else {
+                // Relax/Retro/Silence OR Non-Festival = Static Glow (No Animation)
+                glowLayer.classList.remove('animate-lava');
+                glowLayer.style.animationDuration = '';
+                glowLayer.style.transform = 'scale(1.05)'; // Default slight scale
+                glowLayer.style.opacity = '0.6';
+            }
+        }
+
+        if (frame) {
+            frame.style.setProperty('--snake-speed', snakeSpeed);
+        }
+    }
+
+    setMode(ambiance) {
+        this.stop();
+        // Refresh elements
+        this.elements.stars = document.querySelectorAll('.rhythm-star animate');
+        this.elements.path = document.querySelector('.rhythm-path');
+
+        switch (ambiance) {
+            case 'relax':
+            case 'silence':
+                this.start(60, 'breath'); // Slow breath
+                break;
+            case 'futuriste':
+            case 'dkl':
+            case 'dab':
+            case 'retro':
+                this.start(110, 'pulse'); // Medium
+                break;
+            case 'puls-trance':
+            case 'puls-dance':
+            case 'puls-2000':
+                this.start(140, 'strobe'); // Fast
+                break;
+            default:
+                this.start(90, 'pulse');
+        }
+    }
+
+    start(bpm, type) {
+        if (this.isActive) return;
+        this.isActive = true;
+        const interval = (60 / bpm) * 1000;
+
+        console.log(`RhythmEngine Started: ${bpm} BPM (${type})`);
+
+        // Apply Global Class for CSS
+        document.body.setAttribute('data-rhythm', type);
+
+        // Update SVG Animation Durations
+        if (this.elements.stars) {
+            this.elements.stars.forEach(anim => {
+                const duration = (120 / bpm) * 2;
+                anim.setAttribute('dur', `${duration}s`);
+            });
+        }
+
+        this.currentType = type;
+        this.updateVisuals();
+
+        // JS Pulse (Trigger Loop for other sharp elements if any)
+        this.intervalId = setInterval(() => {
+            this.triggerBeat(type);
+        }, interval);
+    }
+
+    stop() {
+        this.isActive = false;
+        if (this.intervalId) clearInterval(this.intervalId);
+        document.body.removeAttribute('data-rhythm');
+
+        const glowLayer = document.getElementById('lightbox-glow-layer');
+        if (glowLayer) {
+            glowLayer.classList.remove('animate-lava');
+            glowLayer.style.animationDuration = '';
+            glowLayer.style.transform = '';
+            glowLayer.style.opacity = '';
+        }
+    }
+
+    triggerBeat(type) {
+        // Main 'Beat' Logic (Kept for other potential effects, or subtle variations)
+        // Ambilight is now handled by CSS 'animate-lava' for fluidity.
+        // We can add very subtle extra kicks here if needed, but user requested "moins brutal".
+        // So we leave this empty for the glow layer.
+    }
+}
+
+const rhythmEngine = new RhythmEngine();
+
+
 function generateMissionRecap() {
-    // Collect Data
-    const sPrenom = document.getElementById('res-prenom').value || "Inconnu";
-    const sNom = document.getElementById('res-nom').value || "";
-    const sDate = document.getElementById('res-date').value || "Date non définie";
-    const sPickup = document.getElementById('res-pickup').value || "Non spécifié";
-    const sDrop = document.getElementById('res-drop').value || "Non spécifié";
-    const sAmbianceVal = document.getElementById('res-ambiance').value;
 
-    // Get Simulator Data (if available) - Assuming global variables or DOM reading
-    // Ideally we should store the last calculated price. 
-    // For now, let's read the display or default to "Sur Devis"
-    const priceEl = document.getElementById('price-display');
-    const priceText = priceEl ? priceEl.innerText : "0";
-
-    // Determine Ambiance Label
-    const ambianceLabel = AMBIANCE_PROTOCOLS[sAmbianceVal] ? AMBIANCE_PROTOCOLS[sAmbianceVal].label : "Standard";
-
-    // Distance Calculation (Heuristic or from Sim)
-    // We try to grab it from Sim Detail HTML or calculate vaguely
-    // Let's assume the user ran a sim. If not, we say "Calcul en cours"
-    let distanceText = "Calcul en cours";
+    let distanceText = "--";
     const detailsEl = document.getElementById('sim-details');
     if (detailsEl && detailsEl.innerText.includes('DIST. RÉELLE')) {
-        // Extract basic number
         const match = detailsEl.innerText.match(/DIST\. RÉELLE : (\d+)/);
         if (match) distanceText = match[1];
     }
 
-    // Sound FX (Simulated by Text)
-    // (Son : Wou-wou du scanner) -> We can't easily play sound files without assets, so we speak it or skip.
-    // The prompt says "Format de sortie obligatoire", suggesting TEXT output in the console.
+    const ambianceLabel = AMBIANCE_PROTOCOLS[sAmbianceVal] ? AMBIANCE_PROTOCOLS[sAmbianceVal].label : "Standard";
 
+    // 1. CONCISE SUMMARY (Console)
     const recapText = `
-(Son : Wou-wou du scanner)
+_ORDRE DE MISSION GÉNÉRÉ.
 
-Bonjour ${sPrenom}.
+[CONTACT]
+ID: ${sNom} ${sPrenom}
+TEL: ${sPhone}
+PAX: ${sPax}
 
-Ici l'interface iAkvenir. J'ai bien reçu vos instructions finales. Voici le récapitulatif de votre mission de transport :
+[MISSION]
+DATE: ${sDateTime}
+TRAJET: ${sPickup} >> ${sDrop}
+DIST: ${distanceText} km
 
-Protocole activé pour le : ${sDate}
-Au nom de : ${sNom}, ${sPrenom}
+[CONFIG]
+AMBIANCE: ${ambianceLabel}
+OPTION: ${sOption}
+NOTES: ${sNotes}
 
-Point d'extraction : ${sPickup}
-Destination cible : ${sDrop}
-Distance : ${distanceText} kilomètres.
+[FINANCE]
+ESTIMATION: ${priceText} €
 
-Configuration du véhicule : L'ambiance sonore a été verrouillée sur le mode : ${ambianceLabel}.
-
-Validation financière : Le montant final estimé pour ce service est de ${priceText} euros.
-
-Mes systèmes sont parés. Laissez-vous transporter. Terminé.
-
-(Son : Bruit de fermeture électronique)
+_DOCUMENT CERTIFIÉ PRÊT.
     `.trim();
 
-    // 1. Display in Console
     const consoleOut = document.getElementById('res-summary');
     if (consoleOut) {
         consoleOut.innerText = recapText;
         consoleOut.scrollTop = consoleOut.scrollHeight;
     }
 
-    // 2. Vocalize (Read only the speech parts, skip sound fx descriptions for cleaner audio?)
-    // Or read everything as requested "Speak the recap".
-    // Let's clean up sound FX text for speech
-    const speechText = recapText.replace(/\(Son : .*?\)/g, "").trim();
-    speak(speechText);
+    // 2. CONCISE VOCAL
+    const voiceMsg = `Dossier complet pour ${sPrenom}. Le Bon de Réservation a été édité avec photo et détails légaux. Envoyez ce document au QG immédiatement. Terminé.`;
+    speak(voiceMsg);
+
+    // 3. GENERATE GRAPHIC PDF (FULL VTC LEGAL)
+    if (window.generateRecapPDF) {
+        window.generateRecapPDF();
+    } else {
+        console.error("PDF Generator function not found");
+    }
 }
 
-// Initialize on Load
-document.addEventListener('DOMContentLoaded', () => {
-    initPricing();
-    initProtocol();
+window.generateRecapPDF = async function () {
+    if (!window.jspdf) {
+        console.error("jsPDF not loaded");
+        return;
+    }
 
-    // ... any other inits
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
 
-    // Initial Greeting if desired? No, per user instructions wait for user input.
-});
+    // --- DATA COLLECTION ---
+    const prenom = document.getElementById('hero-prenom')?.value || "CLIENT";
+    const nom = document.getElementById('hero-nom')?.value || "INCONNU";
+    const phone = document.getElementById('hero-phone')?.value || "Non renseigné";
+    const date = document.getElementById('res-pickup-datetime')?.value || "Immédiat";
+    const price = document.getElementById('sim-price-display')?.innerText || "SUR DEVIS";
+    const dist = document.getElementById('sim-dist-display')?.innerText || "--";
+    const dep = document.getElementById('sim-departure')?.value || "Non défini";
+    const dest = document.getElementById('sim-destination')?.value || "Non défini";
+    const vehicle = "TESLA MODEL 3 (Blanc Nacré)";
+    const pilot = "Laurent (Certifié iA_k)";
+
+    // --- STYLING CONSTANTS ---
+    const COL_BG = "#FFFFFF";
+    const COL_TEXT = "#1A1A1A"; // Anthracite
+    const COL_ACCENT = "#E50914"; // Scanner Red
+    const COL_SUB = "#666666";
+
+    // --- BACKGROUND ---
+    doc.setFillColor(COL_BG);
+    doc.rect(0, 0, 210, 297, 'F');
+
+    // --- HEADER ---
+    doc.setFillColor(COL_TEXT);
+    doc.rect(0, 0, 210, 25, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.text("iA_k_venir", 15, 17);
+
+    doc.setTextColor(COL_ACCENT);
+    doc.setFontSize(14);
+    doc.text("BON DE RÉSERVATION", 195, 17, { align: "right" });
+
+    // --- CONTENT LAYOUT (Split) ---
+    const leftX = 15;
+    const rightX = 130;
+    let y = 45;
+
+    // --- LEFT COLUMN: DATA ---
+    // 1. CLIENT
+    doc.setDrawColor(COL_ACCENT);
+    doc.setLineWidth(0.5);
+    doc.line(leftX, y, 110, y);
+    y += 8;
+    doc.setFontSize(10);
+    doc.setTextColor(COL_ACCENT);
+    doc.text("CLIENT / PASSAGER", leftX, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setTextColor(COL_TEXT);
+    doc.text(`${prenom} ${nom}`, leftX, y);
+    y += 6;
+    doc.setFontSize(10);
+    doc.setTextColor(COL_SUB);
+    doc.text(`Tél: ${phone}`, leftX, y);
+    y += 15;
+
+    // 2. MISSION
+    doc.setDrawColor(COL_ACCENT);
+    doc.line(leftX, y, 110, y);
+    y += 8;
+    doc.setTextColor(COL_ACCENT);
+    doc.text("DÉTAILS MISSION", leftX, y);
+    y += 7;
+    doc.setTextColor(COL_TEXT);
+    doc.text(`Date: ${date}`, leftX, y);
+    y += 10;
+    doc.setFontSize(9);
+    doc.setTextColor(COL_SUB);
+    doc.text("DÉPART", leftX, y);
+    y += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(COL_TEXT);
+    doc.text(dep, leftX, y, { maxWidth: 90 });
+    const splitDep = doc.splitTextToSize(dep, 90);
+    y += (splitDep.length * 5) + 5;
+    doc.setFontSize(9);
+    doc.setTextColor(COL_SUB);
+    doc.text("ARRIVÉE", leftX, y);
+    y += 5;
+    doc.setFontSize(11);
+    doc.setTextColor(COL_TEXT);
+    doc.text(dest, leftX, y, { maxWidth: 90 });
+    const splitDest = doc.splitTextToSize(dest, 90);
+    y += (splitDest.length * 5) + 15;
+
+    // 3. LOGISTICS
+    doc.setDrawColor(COL_ACCENT);
+    doc.line(leftX, y, 110, y);
+    y += 8;
+    doc.setTextColor(COL_ACCENT);
+    doc.setFontSize(10);
+    doc.text("LOGISTIQUE", leftX, y);
+    y += 7;
+    doc.setTextColor(COL_TEXT);
+    doc.text(`Distance estimée: ${dist}`, leftX, y);
+    y += 10;
+    doc.setFillColor(COL_TEXT);
+    doc.rect(leftX, y, 60, 20, 'F');
+    doc.setTextColor(COL_ACCENT);
+    doc.setFontSize(9);
+    doc.text("PRIX ESTIMÉ TTC", leftX + 5, y + 6);
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.text(price, leftX + 5, y + 16);
+    y += 35;
+
+    // 4. FLEET - FIXED
+    doc.setDrawColor(COL_ACCENT);
+    doc.line(leftX, y, 110, y);
+    y += 8;
+    doc.setTextColor(COL_ACCENT);
+    doc.setFontSize(10);
+    doc.text("UNITÉ DE TRANSPORT", leftX, y);
+    y += 7;
+    doc.setTextColor(COL_TEXT);
+    doc.text(vehicle, leftX, y);
+    y += 6;
+    doc.setTextColor(COL_SUB);
+    doc.setFontSize(10);
+    doc.text(`Pilote: ${pilot}`, leftX, y);
+    y += 6;
+    doc.text("Motorisation: 100% Électrique", leftX, y);
+
+    // --- RIGHT COLUMN: VISUAL ID ---
+    const idImg = document.getElementById('webcam-result');
+    if (idImg && !idImg.classList.contains('hidden') && idImg.src) {
+        try {
+            // FIX: Portrait Mode Aspect Ratio
+            // We want to fit the image within a box of 65mm width and reasonable height (e.g. 80mm)
+            // while preserving the aspect ratio.
+            const rawW = idImg.naturalWidth || 640;
+            const rawH = idImg.naturalHeight || 480;
+            const imgRatio = rawH / rawW;
+
+            const columnW = 65; // Full available width
+            const maxImageW = 60; // Restrict width for margin
+            const maxImageH = 80; // Max allowed height
+
+            let finalW = maxImageW;
+            let finalH = finalW * imgRatio;
+
+            // If height exceeds max, scale down
+            if (finalH > maxImageH) {
+                finalH = maxImageH;
+                finalW = finalH / imgRatio;
+            }
+
+            // Center horizontally in the 65mm column
+            const xOffset = rightX + (columnW - finalW) / 2;
+
+            doc.addImage(idImg.src, 'PNG', xOffset, 45, finalW, finalH);
+            doc.setFontSize(8);
+            doc.setTextColor(COL_ACCENT);
+            // Place label below the image with a small margin
+            doc.text("IDENTITÉ NUMÉRIQUE", rightX, 45 + finalH + 6);
+        } catch (e) {
+            console.warn("Could not add image to PDF", e);
+        }
+    } else {
+        doc.setDrawColor(COL_SUB);
+        doc.setLineWidth(0.2);
+        doc.rect(rightX, 45, 65, 40);
+        doc.setTextColor(COL_SUB);
+        doc.setFontSize(8);
+        doc.text("AUCUNE PHOTO VALIDÉE", rightX + 32.5, 65, { align: "center" });
+    }
+
+    // --- FOOTER ---
+    const footerY = 280;
+    doc.setFillColor(COL_TEXT);
+    doc.rect(0, footerY, 210, 17, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
+    doc.setTextColor(COL_SUB);
+    doc.text("Document généré automatiquement. Merci de votre confiance.", 105, footerY + 11, { align: "center" });
+
+    // --- OUTPUT ---
+    // Store BLOB directly to avoid fetch errors later
+    currentPdfBlob = doc.output('blob');
+    currentPdfBlobUrl = URL.createObjectURL(currentPdfBlob);
+
+    // Update UI
+    const previewFrame = document.getElementById('pdf-preview-frame');
+    const placeholder = document.getElementById('pdf-placeholder');
+    const overlay = document.getElementById('pdf-actions-overlay');
+    const btnWa = document.getElementById('btn-share-wa');
+    const btnMail = document.getElementById('btn-share-mail');
+
+    if (previewFrame) {
+        previewFrame.src = currentPdfBlobUrl;
+        previewFrame.classList.remove('opacity-0');
+    }
+    if (placeholder) placeholder.style.display = 'none';
+    if (overlay) overlay.style.display = 'flex';
+
+    // Enable Buttons
+    if (btnWa) { btnWa.disabled = false; btnWa.classList.remove('opacity-50', 'cursor-not-allowed'); }
+    if (btnMail) { btnMail.disabled = false; btnMail.classList.remove('opacity-50', 'cursor-not-allowed'); }
+
+    speak("Bon de réservation généré.");
+};
+
+// EXPORT TO NEW WINDOW (Fullscreen) -> NOW IN-SITE OVERLAY
+function viewPdfFullscreen() {
+    if (currentPdfBlobUrl) {
+        const overlay = document.getElementById('pdf-fullscreen-overlay');
+        const frame = document.getElementById('pdf-fullscreen-frame');
+
+        if (overlay && frame) {
+            frame.src = currentPdfBlobUrl;
+            overlay.classList.remove('hidden');
+            speak("Affichage du document en plein écran.");
+        } else {
+            console.error("PDF Overlay elements not found");
+        }
+    } else {
+        speak("Veuillez d'abord générer le document.");
+        alert("Erreur : Aucun document PDF n'a été généré. Veuillez cliquer sur 'GÉNÉRER ORDRE DE MISSION' d'abord.");
+    }
+}
+
+function closePdfFullscreen() {
+    const overlay = document.getElementById('pdf-fullscreen-overlay');
+    const frame = document.getElementById('pdf-fullscreen-frame');
+
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+    if (frame) {
+        frame.src = 'about:blank'; // Clear memory/state
+    }
+}
+
+// Global expose
+window.viewPdfFullscreen = viewPdfFullscreen;
+window.closePdfFullscreen = closePdfFullscreen;
+
+/* =========================================
+   SHARING LOGIC (WhatsApp & Email)
+   ========================================= */
+
+async function getReservationDataForShare() {
+    // UPDATED: Use 'res-' IDs from the main reservation form (the "left" form)
+    const prenom = document.getElementById('res-prenom')?.value || "CLIENT";
+    const nom = document.getElementById('res-nom')?.value || "INCONNU";
+    const email = document.getElementById('res-email')?.value || "Non renseigné";
+    const phone = document.getElementById('res-phone')?.value || "Non renseigné";
+
+    // Mission Details
+    const depart = document.getElementById('res-pickup')?.value || "Non défini";
+    const destination = document.getElementById('res-drop')?.value || "Non défini";
+    const dateDepart = document.getElementById('res-pickup-datetime')?.value || "DATE_NON_DEFINIE";
+    const dateArrivee = document.getElementById('res-arrival-datetime')?.value || "";
+
+    // Logistics
+    const duree = document.getElementById('res-duration')?.value || "--";
+    const tarif = document.getElementById('res-price-est')?.value || "--";
+    const pax = document.getElementById('res-pax')?.value || "1";
+    const option = document.getElementById('res-opt')?.options[document.getElementById('res-opt')?.selectedIndex]?.text || "Aucune";
+    const ambiance = document.getElementById('res-ambiance')?.options[document.getElementById('res-ambiance')?.selectedIndex]?.text || "Silence";
+    const notes = document.getElementById('res-notes')?.value || "Aucune note";
+
+    const subject = `RÉSERVATION VTC - ${nom.toUpperCase()} ${prenom} - ${dateDepart}`;
+
+    // Validating "Document Texte" Request: Full Summary
+    const body = `*ORDRE DE MISSION VTC - iA_k_venir*
+
+*👤 CLIENT*
+Nom : ${nom.toUpperCase()} ${prenom}
+Tél : ${phone}
+Email : ${email}
+
+*🚘 MISSION*
+Date Début : ${dateDepart}
+${dateArrivee ? 'Date Fin (Souhaitée) : ' + dateArrivee + '\n' : ''}Départ : ${depart}
+Arrivée : ${destination}
+Durée Est. : ${duree}
+
+*⚙️ LOGISTIQUE*
+Passagers : ${pax}
+Véhicule : TESLA MODEL 3
+Tarif Est. : ${tarif}
+Option : ${option}
+Ambiance : ${ambiance}
+
+*📝 NOTES / CONSIGNES*
+${notes}
+
+--------------------------------
+*MENTIONS LÉGALES & CONFIRMATION*
+Ce document tient lieu de bon de réservation préalable obligatoire (Art. R.3120-2 du Code des Transports).
+
+*ENTREPRISE :*
+Raison Sociale : iA_k_venir (EI) - Laurent HABERSETZER
+Siège Social : 13 Rue du Rhin, 68320 BALTZENHEIM
+SIRET : EN COURS D'IMMATRICULATION
+Registre EVTC : EN COURS
+TVA : Franchise de base (TVA non applicable, art. 293 B du CGI)
+
+*CONDITIONS :*
+Le tarif estimé est donné à titre indicatif et peut être ajusté en cas de modification de l'itinéraire ou d'attente prolongée.
+En cas d'annulation moins de 24h avant, des frais peuvent s'appliquer.
+
+*CONTACT & URGENCE :*
+Tél : 07 50 98 92 97
+Email : contact@iakvenir.fr
+--------------------------------
+Document généré via iA_k_venir Interface.
+(PDF disponible sur demande ou ci-joint si supporté)
+`;
+
+    // Get Blob
+    let file = null;
+
+    // PRIORITY: Use valid in-memory blob if available
+    if (currentPdfBlob) {
+        console.log("Using cached PDF Blob directly.");
+        file = new File([currentPdfBlob], `RESERVATION_${nom}_${dateDepart.replace(/[\s/:]/g, '-')}.pdf`, { type: 'application/pdf' });
+    }
+    // FALLBACK: Try URL fetch if blob missing but URL exists (Legacy support)
+    else if (typeof currentPdfBlobUrl !== 'undefined' && currentPdfBlobUrl) {
+        try {
+            console.log("Attempting to fetch PDF from URL:", currentPdfBlobUrl);
+            const blob = await fetch(currentPdfBlobUrl).then(r => r.blob());
+            file = new File([blob], `RESERVATION_${nom}_${dateDepart.replace(/[\s/:]/g, '-')}.pdf`, { type: 'application/pdf' });
+        } catch (e) {
+            console.error("Blob conversion failed", e);
+            alert("Erreur interne : Impossible de récupérer le fichier PDF. Veuillez régénérer le document.");
+        }
+    } else {
+        console.warn("No PDF generated yet.");
+    }
+
+    return { title: subject, text: body, file: file };
+}
+
+window.shareWhatsApp = async function () {
+    speak("Préparation de l'envoi WhatsApp...");
+    const data = await getReservationDataForShare();
+
+    // 1. Try Native Share (Mobile/Supported Browsers)
+    if (navigator.share && data.file && navigator.canShare && navigator.canShare({ files: [data.file] })) {
+        try {
+            await navigator.share({
+                files: [data.file],
+                title: data.title,
+                text: data.text
+            });
+            speak("Partage effectué.");
+            return;
+        } catch (err) {
+            console.warn("Native share failed or cancelled", err);
+        }
+    }
+
+    // 2. Fallback: WA Link (Text Only, no file attachment possible via URL)
+    const encodedText = encodeURIComponent(`${data.title}\n\n${data.text}`);
+    window.open(`https://wa.me/?text=${encodedText}`, '_blank');
+    speak("Ouverture de WhatsApp. Le PDF ne peut pas être joint automatiquement via le web, veuillez l'enregistrer d'abord.");
+};
+
+// Helper to create .eml content
+async function createEML(data) {
+    const boundary = "----=_NextPart_000_0010_01D9";
+    const to = "contact@iakvenir.fr"; // Default recipient? Or let user fill it. Usually blank or client's email if sending TO client. Let's leave TO blank for now or put company email.
+    // For a reservation sent BY client TO company:
+    const from = data.email || "";
+
+    // We need Base64 of the PDF
+    let pdfBase64 = "";
+    if (data.file) {
+        try {
+            const reader = new FileReader();
+            pdfBase64 = await new Promise((resolve, reject) => {
+                // Safety Timeout (3s)
+                const timeout = setTimeout(() => reject(new Error("File reading timed out")), 3000);
+
+                reader.onloadend = () => {
+                    clearTimeout(timeout);
+                    if (reader.result) {
+                        resolve(reader.result.split(',')[1]);
+                    } else {
+                        reject(new Error("Empty file result"));
+                    }
+                };
+                reader.onerror = () => {
+                    clearTimeout(timeout);
+                    reject(new Error("File reading failed"));
+                };
+                reader.readAsDataURL(data.file);
+            });
+        } catch (readErr) {
+            console.error("Base64 Failed:", readErr);
+            alert("Erreur technique : La lecture du fichier PDF a échoué. Veuillez régénérer le document."); // Specific alert
+            throw readErr;
+        }
+    }
+
+    const now = new Date().toUTCString();
+    const emlContent = `Date: ${now}
+To: contact@iakvenir.fr
+From: contact@iakvenir.fr
+Subject: ${data.title}
+MIME-Version: 1.0
+X-Unsent: 1
+Content-Type: multipart/mixed; boundary="${boundary}"
+
+--${boundary}
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+${data.text}
+
+--${boundary}
+Content-Type: application/pdf; name="${data.file.name}"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="${data.file.name}"
+
+${pdfBase64}
+
+--${boundary}--`;
+
+    return new Blob([emlContent], { type: 'message/rfc822' });
+}
+
+window.shareEmail = async function () {
+    try {
+        speak("Préparation de l'email...");
+        const data = await getReservationDataForShare();
+
+        // CHECK: Ensure File Exists
+        if (!data.file) {
+            console.warn("No PDF file generated.");
+            fallbackMailto(data);
+            return;
+        }
+
+        // 1. STRATÉGIE PRIORITAIRE : PARTAGE NATIF
+        let canShareFiles = false;
+        try {
+            if (navigator.share && navigator.canShare) {
+                canShareFiles = navigator.canShare({ files: [data.file] });
+            }
+        } catch (e) {
+            console.warn("canShare check failed", e);
+        }
+
+        if (canShareFiles) {
+            try {
+                await navigator.share({
+                    files: [data.file],
+                    title: data.title,
+                    text: data.text
+                });
+                speak("Votre logiciel de messagerie devrait être ouvert. Veuillez sélectionner le destinataire contact@iakvenir.fr si le champ est vide.");
+                return;
+            } catch (err) {
+                console.warn("Share API error or cancelled", err);
+                if (err.name === 'AbortError') return;
+            }
+        }
+
+        // 2. DESKTOP STRATEGY: Generate .eml file (The "Magic File")
+        // This allows opening Outlook/Mail with Attachment pre-loaded.
+
+        if (data.file) {
+            speak("Génération du brouillon avec pièce jointe...");
+            try {
+                const emlBlob = await createEML(data);
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(emlBlob);
+                link.download = `RESERVATION_${data.file.name.replace('.pdf', '')}.eml`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // FEEDBACK
+                const msg = "Le dossier email est prêt. Veuillez cliquer sur le fichier qui vient de se télécharger.";
+                speak(msg);
+                alert("⚠️ DOSSIER EMAIL GÉNÉRÉ (EML)\n\nUn fichier '.eml' a été téléchargé car votre navigateur bloque l'envoi direct.\n\n👉 CLIQUEZ SUR CE FICHIER POUR OUVRIR LE MAIL AVEC LA PIÈCE JOINTE.");
+
+            } catch (e) {
+                console.error("EML Generation Error", e);
+                fallbackMailto(data);
+            }
+        } else {
+            fallbackMailto(data);
+        }
+
+    } catch (globalErr) {
+        console.error("Critical Share Error", globalErr);
+        alert("Erreur technique lors du partage : " + globalErr.message);
+        try { fallbackMailto(await getReservationDataForShare()); } catch (e) { }
+    }
+};
+
+function fallbackMailto(data) {
+    const subject = encodeURIComponent(data.title);
+    const body = encodeURIComponent(data.text);
+    window.location.href = `mailto:contact@iakvenir.fr?subject=${subject}&body=${body}`;
+    speak("Ouverture de la messagerie (Mode Texte uniquement).");
+}
+
+
+// Explicit Download for Email Button (Direct EML Generation)
+window.downloadEmlForMail = async function () {
+    speak("Génération du dossier email...");
+    const data = await getReservationDataForShare();
+
+    if (!data.file) {
+        speak("Veuillez d'abord générer le document.");
+        return;
+    }
+
+    try {
+        const emlBlob = await createEML(data);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(emlBlob);
+        link.download = `RESERVATION_${data.file.name.replace('.pdf', '')}.eml`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        speak("Fichier téléchargé. Cliquez dessus pour ouvrir votre messagerie.");
+        alert("✅ DOSSIER EMAIL TÉLÉCHARGÉ\n\nCliquez sur le fichier téléchargé (.eml) pour ouvrir votre logiciel de messagerie avec le PDF inclus.");
+    } catch (e) {
+        console.error("EML Download Error", e);
+        speak("Erreur lors de la génération.");
+    }
+};
+
 const COMPANY_INFO = {
     name: "iA_k_venir (EI)",
     address: "68320 Baltzenheim",
@@ -1416,7 +2193,51 @@ function initReservation() {
     if (btnSpeak) btnSpeak.addEventListener('click', speakReservation);
     if (btnWhatsapp) btnWhatsapp.addEventListener('click', exportToWhatsApp);
     if (btnEmail) btnEmail.addEventListener('click', exportToEmail);
+
+    // VALIDATION LISTENER
+    const requiredIds = ['res-prenom', 'res-nom', 'res-phone', 'res-pickup', 'res-drop'];
+    const validateInputs = () => {
+        if (window.checkMissionReady) window.checkMissionReady();
+    };
+
+    requiredIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', validateInputs);
+            el.addEventListener('change', validateInputs);
+        }
+    });
 }
+
+// Global Validation Function
+window.checkMissionReady = () => {
+    const btn = document.getElementById('btn-res-build');
+    if (!btn) return;
+
+    const ids = ['res-prenom', 'res-nom', 'res-phone', 'res-pickup', 'res-drop'];
+    const isFormComplete = ids.every(id => {
+        const el = document.getElementById(id);
+        return el && el.value.trim().length > 0;
+    });
+
+    // Check Photo (Optional but good for status)
+    const resultImg = document.getElementById('webcam-result');
+    const isPhotoTaken = resultImg && !resultImg.classList.contains('hidden');
+
+    // Condition: Form must be complete. Photo is a plus.
+    // User asked: "une fois tout le formulaire rempli et ou ainsi que la photo"
+    // We'll require Form.
+    if (isFormComplete) {
+        // ACTIVATE VISUALS
+        btn.classList.remove('bg-neon-blue', 'text-black');
+        btn.classList.add('bg-yellow-400', 'text-black', 'animate-pulse', 'shadow-[0_0_30px_rgba(255,230,0,0.8)]', 'border-yellow-400');
+        // Update Text if needed? No, keeps "GENERER..."
+    } else {
+        // RESET
+        btn.classList.remove('bg-yellow-400', 'text-black', 'animate-pulse', 'shadow-[0_0_30px_rgba(255,230,0,0.8)]', 'border-yellow-400');
+        btn.classList.add('bg-neon-blue', 'text-black');
+    }
+};
 
 function buildData() {
     const sPrenom = document.getElementById('res-prenom');
@@ -1867,8 +2688,8 @@ function initPilotVideo() {
 
     // Helper: Trigger Play with Fallback
     const triggerPlay = () => {
-        // Stop if limit reached or already playing
-        if (playCount >= MAX_PLAYS || !video.paused) return;
+        // Stop if limit reached or already playing OR TOUR IS ACTIVE
+        if (playCount >= MAX_PLAYS || !video.paused || window.isTourActive) return;
 
         // Try playing with sound first
         video.play()
@@ -2013,13 +2834,41 @@ function initWebcam() {
         // Define Capture Logic (Scoped)
         const performCapture = () => {
             try {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
+                // PORTRAIT CROP LOGIC (3:4 Ratio)
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                const targetRatio = 3 / 4;
 
-                // Convert to Image
-                const dataUrl = canvas.toDataURL('image/png');
+                let cropW, cropH, cropX, cropY;
+
+                // Calculate Crop Dimensions (Center Weighted)
+                if (vw / vh > targetRatio) {
+                    // Too wide: Crop sides
+                    cropH = vh;
+                    cropW = vh * targetRatio;
+                    cropX = (vw - cropW) / 2;
+                    cropY = 0;
+                } else {
+                    // Too tall (unlikely for webcam, but robust): Crop top/bottom
+                    cropW = vw;
+                    cropH = vw / targetRatio;
+                    cropX = 0;
+                    cropY = (vh - cropH) / 2;
+                }
+
+                // Set Canvas to Portrait
+                canvas.width = cropW;
+                canvas.height = cropH;
+
+                // Draw Cropped Frame
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+                // Convert to Image (JPEG for Portrait/Doc)
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
                 resultImg.src = dataUrl;
+
+                // Update UI state
                 resultImg.classList.remove('hidden');
                 video.classList.add('hidden');
                 overlay.classList.add('hidden');
@@ -2036,6 +2885,9 @@ function initWebcam() {
                 // Reset Button Text (for next time if needed)
                 btnCapture.classList.remove('opacity-50', 'pointer-events-none');
                 btnCapture.innerText = "CAPTURER";
+
+                // VALIDATE MISSION READY
+                if (window.checkMissionReady) window.checkMissionReady();
 
             } catch (err) {
                 console.error("Capture Failed:", err);
@@ -2088,6 +2940,9 @@ function initWebcam() {
         btnRetake.classList.add('hidden');
         btnStart.classList.remove('hidden');
         btnStart.click(); // Auto-restart
+
+        // VALIDATE
+        if (window.checkMissionReady) window.checkMissionReady();
     });
 }
 
@@ -2128,6 +2983,9 @@ function initLightbox() {
         // Fade in
         setTimeout(() => lightbox.classList.remove('opacity-0'), 10);
         document.body.style.overflow = 'hidden'; // Lock scroll
+
+        // Start Stars
+        startShootingStars();
     };
 
     // Update Image
@@ -2144,16 +3002,60 @@ function initLightbox() {
             seal.style.opacity = '0';
         }
 
+        // Reset Glow
+        img.style.boxShadow = '';
+
         const item = currentItems[currentIndex];
+
+        // Pass Category to Rhythm Engine
+        if (typeof rhythmEngine !== 'undefined') {
+            rhythmEngine.setGalleryCategory(item.cat);
+        }
 
         // Preload
         const tempImg = new Image();
+        tempImg.crossOrigin = "Anonymous";
         tempImg.src = item.img;
+
         tempImg.onload = () => {
             img.src = item.img;
             caption.innerText = `${item.title} (${currentIndex + 1}/${currentItems.length})`;
             loader.classList.add('hidden');
             img.classList.remove('opacity-50');
+
+            // AMBILIGHT VISUAL (CSS Back Layer)
+            const glowLayer = document.getElementById('lightbox-glow-layer');
+            if (glowLayer) {
+                glowLayer.src = item.img;
+            }
+            // Reset Shadow
+            img.style.boxShadow = `0 0 30px rgba(0,0,0,0.5)`;
+
+            // EXTRACT COLOR FOR SNAKE BORDER
+            // We use the tempImg which is already loaded
+            try {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                canvas.width = 1; canvas.height = 1;
+                ctx.drawImage(tempImg, 0, 0, 1, 1);
+                let [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+                let borderColor = `rgb(${r},${g},${b})`; // Full opacity for border
+
+                // Set CSS Variable on Frame
+                const frame = document.getElementById('lightbox-frame');
+                if (frame) {
+                    frame.style.setProperty('--border-color', borderColor);
+
+                    // Random Start Point
+                    frame.style.setProperty('--start-offset', Math.random());
+                }
+
+            } catch (e) {
+                // Fallback to Neon Blue
+                const frame = document.getElementById('lightbox-frame');
+                if (frame) frame.style.setProperty('--border-color', '#00d4ff');
+            }
+
 
             // DELAYED SEAL & VOICE LOGIC (Universal for All Galleries)
             if (seal) {
@@ -2174,11 +3076,69 @@ function initLightbox() {
                     }, 200);
                 }
             }
+
+            // ARTIST MUSIC AUTO-PLAY (Festival Gallery Only)
+            if (item.cat === 'festival' && typeof window.playArtistMusic === 'function') {
+                // Délai pour laisser l'image se charger complètement
+                setTimeout(() => {
+                    window.playArtistMusic(item.img);
+                }, 1000);
+            }
         };
+    };
+
+    // SHOOTING STARS ENGINE
+    let starInterval = null;
+    const startShootingStars = () => {
+        if (starInterval) clearInterval(starInterval);
+
+        // Create Container if missing
+        let starContainer = document.getElementById('lightbox-stars');
+        if (!starContainer) {
+            starContainer = document.createElement('div');
+            starContainer.id = 'lightbox-stars';
+            starContainer.className = 'absolute inset-0 pointer-events-none overflow-hidden z-0';
+            lightbox.insertBefore(starContainer, lightbox.firstChild);
+        }
+
+        // Spawn Loop
+        starInterval = setInterval(() => {
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+
+            // Random Position
+            const startX = Math.random() * window.innerWidth + 200;
+            const startY = Math.random() * window.innerHeight / 2;
+
+            star.style.left = `${startX}px`;
+            star.style.top = `${startY}px`;
+
+            // Random Animation Speed (Faster for realism)
+            const dur = 0.5 + Math.random() * 1; // 0.5s - 1.5s
+            star.style.animation = `shooting ${dur}s linear forwards`;
+
+            starContainer.appendChild(star);
+
+            // Cleanup
+            setTimeout(() => { star.remove(); }, dur * 1000);
+        }, 2000 + Math.random() * 2000); // Every 2-4 seconds
+    };
+
+    const stopShootingStars = () => {
+        if (starInterval) clearInterval(starInterval);
+        const container = document.getElementById('lightbox-stars');
+        if (container) container.innerHTML = '';
     };
 
     // Close Lightbox
     const closeLightbox = () => {
+        stopShootingStars(); // Stop Background
+
+        // Stop YouTube Music if playing
+        if (typeof window.stopYouTubeMusic === 'function') {
+            window.stopYouTubeMusic();
+        }
+
         lightbox.classList.add('opacity-0');
         setTimeout(() => {
             lightbox.classList.add('hidden');
@@ -2226,23 +3186,42 @@ function initLightbox() {
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log("iA_k_venir System Initializing...");
-    try {
-        initPricing();
-        initReservation();
-        initFlatpickr(); // Calendar
-        initMobileMenu();
-        initScrollEffect(); // KITT Scanner scrollbar
-        initIdentitySync(); // Hero form to Reservation sync
-        initHybridAutocomplete(); // Hybrid Address Logic
-        initPilotVideo(); // Pilot Video Logic
-        initWebcamNew(); // Face ID Scanner (V2)
-        initLightbox(); // Full Screen Gallery
-        renderGallery();
-        renderDeals();
-        console.log("System Ready.");
-    } catch (e) {
-        console.error("Critical System Failure:", e);
-    }
+
+    // Helper for robust initialization
+    const safeInit = (fn, name) => {
+        try {
+            if (typeof fn === 'function') {
+                fn();
+                // console.log(`[OK] ${name}`); // Uncomment for debug
+            } else {
+                console.warn(`[SKIP] ${name} - Function not found`);
+            }
+        } catch (e) {
+            console.error(`[FAIL] ${name}:`, e);
+            // Continue execution despite error
+        }
+    };
+
+    // Core Systems
+    safeInit(initPricing, "Pricing System");
+    safeInit(initReservation, "Reservation Logic");
+    safeInit(initProtocol, "Audio Protocol"); // Added missing init
+    safeInit(initFlatpickr, "Calendar (Flatpickr)");
+    safeInit(initMobileMenu, "Mobile Menu");
+    safeInit(initScrollEffect, "Scroll FX");
+    safeInit(initIdentitySync, "Identity Sync");
+    safeInit(initHybridAutocomplete, "Autocomplete");
+
+    // Multimedia & Hardware
+    safeInit(initPilotVideo, "Pilot Video");
+    safeInit(initWebcamNew, "Webcam V2");
+
+    // Content Rendering
+    safeInit(initLightbox, "Lightbox");
+    safeInit(renderGallery, "Gallery");
+    safeInit(renderDeals, "Deals");
+
+    console.log("System Ready.");
 });
 
 /* =========================================
@@ -2312,12 +3291,38 @@ function initWebcamNew() {
         // Define Capture Logic (Scoped)
         const performCapture = () => {
             try {
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
+                // PORTRAIT CROP LOGIC (3:4 Ratio)
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                const targetRatio = 3 / 4;
 
-                // Convert to Image
-                const dataUrl = canvas.toDataURL('image/png');
+                let cropW, cropH, cropX, cropY;
+
+                // Calculate Crop Dimensions (Center Weighted)
+                if (vw / vh > targetRatio) {
+                    // Too wide: Crop sides
+                    cropH = vh;
+                    cropW = vh * targetRatio;
+                    cropX = (vw - cropW) / 2;
+                    cropY = 0;
+                } else {
+                    // Too tall: Crop top/bottom
+                    cropW = vw;
+                    cropH = vw / targetRatio;
+                    cropX = 0;
+                    cropY = (vh - cropH) / 2;
+                }
+
+                // Set Canvas to Portrait
+                canvas.width = cropW;
+                canvas.height = cropH;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+                // Convert to Image (JPEG)
+                // Clean image, no text overlays as per user request
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
                 resultImg.src = dataUrl;
                 resultImg.classList.remove('hidden');
                 video.classList.add('hidden');
@@ -2409,52 +3414,68 @@ window.startGuidedTour = async function () {
     }
 
     console.log("Starting Interactive Guided Tour...");
+
+    // VISUAL FLASH REMOVED AS PER USER REQUEST
+    // const dBtn = document.getElementById('btn-tour-desktop');
+    // const mBtn = document.getElementById('btn-tour-mobile');
+    // ... logic removed
+
+
     tourController = new AbortController();
     const signal = tourController.signal;
     updateTourButtons("ARRÊT");
 
+    // Flag for global components to know tour is running (stops autoplay)
+    window.isTourActive = true;
+
     // Steps Definition
     const STEPS = [
         {
-            id: 'nav-ambiance',
-            text: "ÉTAPE 1 : ACTIVATION SONORE. Choisissez votre ambiance et ajustez le volume, puis validez.",
+            id: 'navbar-audio-group', // Target the whole container
+            text: "PHASE 1 : ACTIVATION SONORE. Choisissez votre ambiance et ajustez le volume, puis validez.",
             mobileFallback: 'mobile-menu-btn'
         },
         {
-            id: 'tour-identity',
-            text: "ÉTAPE 2 : IDENTIFICATION. Veuillez renseigner votre Prénom, Nom et Téléphone."
+            // PHASE 2: Identity Chain
+            id: 'tour-identity', // Highlighting the Card Container
+            focusChain: ['hero-prenom', 'hero-nom', 'hero-phone', 'hero-email'],
+            text: "PHASE 2 : IDENTIFICATION. Veuillez renseigner votre Prénom, Nom et Téléphone."
         },
         {
-            id: 'simulator',
-            text: "ÉTAPE 3 : NAVIGATION. Saisissez votre départ et arrivée pour calculer la trajectoire."
+            // PHASE 3: Simulator Chain
+            id: 'tour-simulator-card', // Highlighting the Card Container
+            focusChain: ['sim-departure', 'sim-destination'],
+            text: "PHASE 3 : NAVIGATION. Saisissez votre départ et arrivée pour calculer la trajectoire."
         },
         {
-            id: 'about',
-            text: "ÉTAPE 4 : LE PILOTE. Découvrez qui est aux commandes."
+            id: 'pilot-container', // Precise video container target
+            text: "PHASE 4 : LE PILOTE. Découvrez qui est aux commandes."
         },
         {
-            id: 'archives',
-            text: "ÉTAPE 5 : ARCHIVES. Parcourez les missions visuelles précédentes."
+            id: 'gallery-grid', // Precise grid target
+            text: "PHASE 5 : ARCHIVES. Parcourez les missions visuelles précédentes.",
+            // filterDemo: ['all', 'festival', 'gastronomie', 'memoire', 'tourisme', 'immobilier', 'festival'] // DISABLED for Professionalism
         },
         {
-            id: 'deals',
-            text: "ÉTAPE 6 : OFFRES. Sélectionnez une opportunité temporelle."
+            id: 'deals-grid', // Precise deals grid target
+            text: "PHASE 6 : OFFRES. Sélectionnez une opportunité temporelle.",
+            // dealsDemo: true // DISABLED for Professionalism
         },
         {
-            id: 'reservation',
-            text: "ÉTAPE 7 : VÉRIFICATION. Contrôlez les données importées dans le module final."
+            id: 'res-pickup-datetime', // Highlight Date/Time as requested
+            text: "PHASE 7 : VÉRIFICATION. Contrôlez l'ensemble de vos informations. Une fois prêt, sélectionnez votre DATE DE DÉPART pour valider."
         },
         {
-            id: 'camera-container', // Scan step
-            text: "ÉTAPE 8 : SÉCURITÉ. Effectuez le scan biométrique facial. Souriez !"
+            id: 'btn-start-camera', // Targeted highlight: 'Initialiser Scan' button
+            text: "PHASE 8 : SÉCURITÉ. Effectuez le scan biométrique facial. Souriez !"
         },
         {
             id: 'res-notes',
-            text: "ÉTAPE 9 : SPÉCIFICATIONS. Ajoutez une note spéciale si nécessaire."
+            text: "PHASE 9 : SPÉCIFICATIONS. Ajoutez une note spéciale si nécessaire."
         },
         {
             id: 'btn-res-build',
-            text: "ÉTAPE 10 : GÉNÉRATION. Créez votre ordre de mission."
+            text: "PHASE 10 : GÉNÉRATION. Créez votre ordre de mission."
         },
         {
             id: 'contact',
@@ -2463,15 +3484,68 @@ window.startGuidedTour = async function () {
     ];
 
     // Helper: Highlight
-    const highlight = (el) => {
+    const highlight = (el, stepId) => {
         if (!el) return;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('ring-4', 'ring-neon-blue', 'relative', 'z-20', 'shadow-[0_0_50px_rgba(0,212,255,0.5)]');
+
+        // NAVBAR SPECIAL CASE
+        if (stepId === 'nav-ambiance' || el.closest('nav')) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        // STANDARD LOGIC: Show Section Overview on Desktop, Element on Mobile
+        else {
+            const section = el.closest('section');
+            const isDesktop = window.innerWidth >= 768;
+
+            // REVISED SCROLL LOGIC based on latest request:
+            // "bouger la fenetre de navigation pour bien voir les elelments suivant"
+            // This implies dynamic scrolling.
+
+            // Wait, previous request was "Section Top".
+            // Let's do Section Top ONLY if it's a huge container (like Grid).
+            // If it's an INPUT, Center it.
+
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (section && isDesktop) {
+                const offset = 80;
+                const sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo({ top: sectionTop - offset, behavior: 'smooth' });
+            } else {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+            el.classList.add('scale-105', 'z-50'); // Pop Effect for Inputs
+        }
+
+        el.classList.add(
+            'ring-4',
+            'ring-neon-green',
+            'relative',
+            'z-40',
+            'animate-subtle-green-pulse',
+            'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
+            'bg-black/80' // Darken background to make input pop
+        );
     };
 
     const removeHighlight = (el) => {
         if (!el) return;
-        el.classList.remove('ring-4', 'ring-neon-blue', 'relative', 'z-20', 'shadow-[0_0_50px_rgba(0,212,255,0.5)]');
+        el.classList.remove(
+            'ring-4', // Increased border
+            'ring-neon-green',
+            'relative',
+            'z-40',
+            'z-50',
+            'animate-subtle-green-pulse',
+            'ring-neon-blue',
+            'shadow-[0_0_50px_rgba(0,212,255,0.5)]',
+            'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
+            'animate-neon-pulse',
+            'scale-105',
+            'bg-black/80'
+        );
     };
 
     // Helper: Update Button Text
@@ -2482,11 +3556,23 @@ window.startGuidedTour = async function () {
         if (mBtn) mBtn.innerText = text;
 
         if (text === "ARRÊT") {
-            if (dBtn) dBtn.classList.replace('bg-neon-blue', 'bg-limit-red');
-            if (mBtn) mBtn.classList.replace('bg-neon-blue', 'bg-limit-red');
+            if (dBtn) {
+                dBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+                dBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
+            }
+            if (mBtn) {
+                mBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+                mBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
+            }
         } else {
-            if (dBtn) dBtn.classList.replace('bg-limit-red', 'bg-neon-blue');
-            if (mBtn) mBtn.classList.replace('bg-limit-red', 'bg-neon-blue');
+            if (dBtn) {
+                dBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
+                dBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+            }
+            if (mBtn) {
+                mBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
+                mBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+            }
         }
     }
 
@@ -2497,7 +3583,7 @@ window.startGuidedTour = async function () {
 
             const btn = document.createElement('button');
             btn.innerHTML = `<span class="animate-pulse">▶</span> VALIDER & CONTINUER`;
-            btn.className = "fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[100] bg-neon-blue text-black font-future font-bold py-4 px-8 rounded shadow-[0_0_20px_#00d4ff] hover:scale-105 transition-all text-sm tracking-widest border border-white/50";
+            btn.className = "fixed bottom-8 right-8 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-xs tracking-widest border border-black/20 flex items-center gap-2";
             btn.id = "tour-validation-btn";
 
             const cleanup = () => {
@@ -2526,44 +3612,186 @@ window.startGuidedTour = async function () {
     };
 
     try {
+        const nav = document.querySelector('nav');
+
         // Execution Loop
         for (const step of STEPS) {
             if (signal.aborted) break;
 
-            // 1. Find Element
+            // 1. Navigation Visibility: KEPT VISIBLE (User Request)
+            if (nav) nav.classList.remove('-translate-y-full');
+
+            // 2. Find Element (Initial)
             let el = document.getElementById(step.id);
             if (window.innerWidth < 768 && step.mobileFallback) {
                 const mobileEl = document.getElementById(step.mobileFallback);
                 if (mobileEl) el = mobileEl;
             }
 
-            // 2. Highlight
-            if (el) highlight(el);
+            // 3. Highlight & Scroll
+            if (el) highlight(el, step.id);
 
-            // 3. Speak
-            speak(step.text);
+            // --- FOCUS CHAIN LOGIC (Auto-Advance Highlights) ---
+            if (step.focusChain && Array.isArray(step.focusChain)) {
 
-            // 4. Wait
+                // We don't block execution, we just set up listeners
+                // The Validation step (Wait) handles the pause.
+                // While waiting, we guide the user internally.
+
+                let currentChainIndex = 0;
+                const chainIds = step.focusChain;
+
+                // Function to advance
+                const advanceChain = () => {
+                    // Remove current
+                    const currentId = chainIds[currentChainIndex];
+                    const currentEl = document.getElementById(currentId);
+                    if (currentEl) removeHighlight(currentEl);
+
+                    // Move to next
+                    currentChainIndex++;
+                    if (currentChainIndex < chainIds.length) {
+                        const nextId = chainIds[currentChainIndex];
+                        const nextEl = document.getElementById(nextId);
+                        if (nextEl) {
+                            highlight(nextEl, nextId); // This triggers scroll
+                            setupChainListener(nextEl);
+                        }
+                    } else {
+                        // End of chain - maybe highlight Validation Button?
+                        const vBtn = document.getElementById('tour-validation-btn');
+                        if (vBtn) vBtn.classList.add('animate-subtle-green-pulse', 'ring-2', 'ring-neon-green');
+                    }
+                };
+
+                // Listener Setup
+                const setupChainListener = (element) => {
+                    if (!element) return;
+
+                    const onInput = () => {
+                        // Check if valid/filled
+                        if (element.value && element.value.length > 0) {
+                            // Small delay for UI smoothness
+                            setTimeout(advanceChain, 500);
+                            element.removeEventListener('input', onInput);
+                            element.removeEventListener('change', onInput);
+                        }
+                    };
+
+                    // Support both Input and Change (for selects/dates)
+                    element.addEventListener('input', onInput);
+                    element.addEventListener('change', onInput);
+                };
+
+                // INITIALIZE FIRST ELEMENT OF CHAIN (Always)
+                // Even if the Step Highlight is on the Container, we must hook the first input
+                if (chainIds.length > 0) {
+                    const firstId = chainIds[0];
+                    const firstEl = document.getElementById(firstId);
+                    if (firstEl) {
+                        highlight(firstEl, firstId); // Explicitly highight the first input too
+                        currentChainIndex = 0;
+                        setupChainListener(firstEl);
+                    }
+                }
+            }
+            // ---------------------------------------------------
+
+            // 4. Speak & Wait for Speech to Finish (Audio Prioritization)
+            await speak(step.text);
+
+            // 5. Special Case: Pilot Video Autoplay (AFTER Speech)
+            if (step.id === 'pilot-container') {
+                const pilotVideo = document.getElementById('pilot-video');
+                if (pilotVideo) {
+                    pilotVideo.muted = false;
+                    pilotVideo.play().catch(e => console.log("Video play error", e));
+                }
+            }
+
+            // 6. ANIMATION LOGIC (Filter Demo & Deals Demo)
+            // ----------------------------------------------------------------
+            // DISABLED FOR FLUIDITY & PROFESSIONALISM (Ref Step Id: 1359)
+            /*
+            if (step.filterDemo) {
+                // Wait a bit before starting demo
+                await new Promise(r => setTimeout(r, 1000));
+    
+                for (const cat of step.filterDemo) {
+                    if (signal.aborted) break;
+    
+                    const btn = document.querySelector(`button[data-category="${cat}"]`);
+                    if (btn) {
+                        highlight(btn, 'filter-demo'); // Use arbitrary ID to trigger scroll/highlight
+                        btn.click(); // Trigger Filter
+    
+                        // Wait 2 seconds for user to see
+                        await new Promise(r => setTimeout(r, 2000));
+                        removeHighlight(btn);
+                    }
+                }
+            }
+    
+            if (step.dealsDemo) {
+                // Wait a bit
+                await new Promise(r => setTimeout(r, 1000));
+    
+                const dealCards = document.querySelectorAll('#deals-grid > div');
+                if (dealCards.length > 0) {
+                    for (const card of dealCards) {
+                        if (signal.aborted) break;
+    
+                        // Randomly choose between the Card Body OR the Selection Button
+                        const coinFlip = Math.random() > 0.5;
+                        let target = null;
+    
+                        if (coinFlip) {
+                            // Target the Card (bg-retro-paper)
+                            target = card.querySelector('.bg-retro-paper');
+                        } else {
+                            // Target the Selection Button (last button)
+                            const buttons = card.querySelectorAll('button');
+                            if (buttons.length > 0) target = buttons[buttons.length - 1];
+                        }
+    
+                        if (!target) target = card; // Fallback
+    
+                        highlight(target, 'deal-demo');
+                        await new Promise(r => setTimeout(r, 2000));
+                        removeHighlight(target);
+                    }
+                }
+            }
+            */
+            // ----------------------------------------------------------------
+
+            // 7. Wait for User Validation
             await waitForValidation(signal);
 
-            // 5. Cleanup Highlight
-            if (el) removeHighlight(el);
+            // 7. Cleanup Highlight (Cleanup ALL potential chain highlights)
+            if (step.focusChain) {
+                step.focusChain.forEach(id => {
+                    const cEl = document.getElementById(id);
+                    if (cEl) removeHighlight(cEl);
+                });
+            } else {
+                if (el) removeHighlight(el);
+            }
         }
     } catch (err) {
         console.log("Tour stopped:", err.message);
-        document.querySelectorAll('.ring-neon-blue').forEach(el => removeHighlight(el));
+        document.querySelectorAll('.animate-subtle-green-pulse').forEach(el => removeHighlight(el));
         const vBtn = document.getElementById('tour-validation-btn');
         if (vBtn) vBtn.remove();
     } finally {
         tourController = null;
         updateTourButtons("AIDE");
+        window.isTourActive = false; // Reset Flag
+        // Restore Nav
+        const nav = document.querySelector('nav');
+        if (nav) nav.classList.remove('-translate-y-full');
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Re-init mainly for safety if missing
-    if (typeof initScrollEffect === 'function') initScrollEffect();
-    if (typeof initTypewriter === 'function') initTypewriter();
-    if (typeof initLightbox === 'function') initLightbox();
-    // initWebcamNew is called inside initLightbox block usually, but fine here
-});
+
+
