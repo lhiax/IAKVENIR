@@ -862,4 +862,145 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
         opacity: 1;
         transform: translateY(0);
     }
+}/* =========================================
+   WEATHER ENHANCEMENTS 2026
+   ========================================= */
+
+/* UTILITY COLORS */
+.text-gold {
+    color: #D4AF37 !important;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+.text-limit-red {
+    color: #ff3333 !important;
+    text-shadow: 0 0 10px rgba(255, 51, 51, 0.5);
+}
+
+.text-neon-blue {
+    color: #00d4ff !important;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.text-neon-green {
+    color: #b8ff00 !important;
+    text-shadow: 0 0 10px rgba(184, 255, 0, 0.5);
+}
+
+.text-white {
+    color: #ffffff !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* ANIMATIONS */
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-reverse {
+    from {
+        transform: rotate(360deg);
+    }
+
+    to {
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes rain-drop {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+}
+
+@keyframes float-cloud {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(4px);
+    }
+}
+
+@keyframes pulse-sun {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* ANIMATION CLASSES */
+.animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+}
+
+.animate-spin-reverse {
+    animation: spin-reverse 20s linear infinite;
+    transform-origin: center;
+}
+
+.animate-rain line {
+    animation: rain-drop 1.5s infinite linear;
+}
+
+.animate-rain line:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.animate-rain line:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.animate-rain line:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.animate-float {
+    animation: float-cloud 4s ease-in-out infinite;
+}
+
+.animate-pulse-sun {
+    animation: pulse-sun 3s ease-in-out infinite;
+    transform-origin: center;
+}
+
+/* TIMELINE STYLES */
+.timeline-hour-block {
+    fill-opacity: 0.8;
+    transition: fill-opacity 0.2s;
+}
+
+.timeline-hour-block:hover {
+    fill-opacity: 1;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
