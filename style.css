@@ -576,4 +576,290 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
     border-color: var(--ticket-color);
     color: var(--ticket-color);
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+}/* =========================================
+   WEATHER DASHBOARD 2026 (Redesign)
+   ========================================= */
+
+/* GRID LAYOUT (Desktop: 3 Cols, Mobile: 1 Col) */
+.weather-grid-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 1fr;
+    /* Hero | Metrics | Photo */
+    gap: 16px;
+    height: 100%;
+    min-height: 0;
+    /* Prevent overflow issues */
+}
+
+@media (max-width: 1024px) {
+    .weather-grid-layout {
+        grid-template-columns: 1fr;
+        /* Stack on mobile/tablet */
+        overflow-y: auto;
+    }
+}
+
+/* CARDS COMMON STYLE */
+.weather-hero-card,
+.weather-metric-compact,
+.photo-conditions-panel {
+    background: rgba(11, 16, 32, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.weather-hero-card:hover,
+.photo-conditions-panel:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* HERO CARD SPECIFIC */
+.weather-hero-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hourly-mini-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.hourly-mini-strip::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar for cleaner look */
+}
+
+.hourly-mini-card {
+    min-width: 50px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid transparent;
+}
+
+.hourly-mini-card.current {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+/* METRICS COMPACT */
+.weather-metric-compact {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px 16px;
+}
+
+.metric-label {
+    font-family: 'Courier Prime', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+}
+
+.metric-value-large {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.metric-unit {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.metric-progress {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.metric-progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease-out;
+}
+
+/* PHOTO PANEL */
+.photo-conditions-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* HORIZONTAL FORECAST (10 DAYS) */
+.forecast-horizontal {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 4px 0 12px 0;
+}
+
+.forecast-day-card {
+    min-width: 100px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.forecast-day-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+.forecast-day-card.selected {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: #00d4ff;
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+/* COLOR UTILITIES */
+/* Temp */
+.temp-hot {
+    color: #ff3333;
+    text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+}
+
+.temp-warm {
+    color: #ff9d00;
+}
+
+.temp-mild {
+    color: #b8ff00;
+}
+
+.temp-cool {
+    color: #00d4ff;
+}
+
+.temp-cold {
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+/* Wind */
+.wind-danger {
+    color: #ff3333;
+}
+
+.wind-strong {
+    color: #ff9d00;
+}
+
+.wind-moderate {
+    color: #b8ff00;
+}
+
+.wind-calm {
+    color: #00d4ff;
+}
+
+/* Precip */
+.precip-heavy {
+    color: #0066ff;
+}
+
+.precip-moderate {
+    color: #00d4ff;
+}
+
+.precip-light {
+    color: #a3d9ff;
+}
+
+.precip-none {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* Humidity */
+.humidity-high {
+    color: #00d4ff;
+}
+
+.humidity-normal {
+    color: #b8ff00;
+}
+
+.humidity-low {
+    color: #ff9d00;
+}
+
+/* UV */
+.uv-extreme {
+    color: #9900ff;
+}
+
+.uv-very-high {
+    color: #ff0000;
+}
+
+.uv-high {
+    color: #ff9d00;
+}
+
+.uv-moderate {
+    color: #ffff00;
+}
+
+.uv-low {
+    color: #00ff00;
+}
+
+/* Gold Accent */
+.text-gold {
+    color: #D4AF37;
+}
+
+.border-gold {
+    border-color: #D4AF37;
+}
+
+/* Animations */
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.delay-100 {
+    animation-delay: 0.1s;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
