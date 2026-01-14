@@ -79,23 +79,27 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-    width: 4px;
+    width: 6px;
+    /* Slightly thinner for elegance */
 }
 
 ::-webkit-scrollbar-track {
-    background: #0a0a1a;
+    background: #050510;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #ff3333 0%, #ff0000 50%, #ff3333 100%);
+    background: #ffffff;
     border-radius: 4px;
-    box-shadow: 0 0 5px #ff3333, 0 0 10px #ff0000;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    /* Simple Pulse Animation via transition */
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #ff0000;
-    box-shadow: 0 0 10px #ff3333, 0 0 20px #ff0000, 0 0 30px #ff3333;
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.8), 0 0 45px rgba(255, 255, 255, 0.6);
 }
 
 /* CA-LH Holographic Seal */
@@ -315,47 +319,261 @@
 }
 
 /* KITT Scroll Animation */
-@keyframes scroll-scanner {
+@keyframes scroll-flow {
     0% {
         background-position: 0% 0%;
     }
 
     100% {
-        background-position: 0% 100%;
-    }
-}
-
-@keyframes scanner-flash {
-
-    0%,
-    100% {
-        box-shadow: inset 0 0 5px #000, 0 0 10px #ff0000, 0 0 20px #ff0000;
-        filter: brightness(1);
-    }
-
-    50% {
-        box-shadow: inset 0 0 5px #000, 0 0 20px #ff0000, 0 0 40px #fff;
-        filter: brightness(1.5);
+        background-position: 0% 200%;
     }
 }
 
 body.kitt-scrolling::-webkit-scrollbar-thumb {
-    background-color: #300;
-    /* Darker base for contrast */
-    background-image: linear-gradient(to bottom,
-            rgba(255, 0, 0, 0) 0%,
-            rgba(255, 0, 0, 1) 25%,
-            rgba(255, 255, 255, 1) 50%,
-            rgba(255, 0, 0, 1) 75%,
-            rgba(255, 0, 0, 0) 100%);
-    background-repeat: no-repeat;
-    background-size: 100% 25px;
-    /* Fixed height 25px (2x smaller) */
+    background-color: rgba(255, 255, 255, 0.9);
 
-    /* Combined Animations: Movement + Flash */
-    animation:
-        scroll-scanner 0.8s ease-in-out infinite alternate,
-        scanner-flash 0.1s linear infinite;
+    /* White Energy Flow Gradient */
+    background-image: linear-gradient(180deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 1) 25%,
+            rgba(255, 255, 255, 1) 75%,
+            rgba(255, 255, 255, 0) 100%);
+    background-size: 100% 100px;
+    background-repeat: repeat-y;
 
-    border: 1px solid rgba(255, 51, 51, 0.3);
+    /* Intense White Glow */
+    box-shadow:
+        0 0 15px rgba(255, 255, 255, 0.9),
+        0 0 30px rgba(255, 255, 255, 0.6),
+        inset 0 0 5px rgba(255, 255, 255, 1);
+
+    border: 1px solid #fff;
+
+    /* Faster flow animation when scrolling */
+    animation: scroll-flow 1s linear infinite;
+}
+
+/* =========================================
+   GLASS TICKET STYLES (Redesign 2026)
+   ========================================= */
+
+.glass-ticket {
+    position: relative;
+    border-radius: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    /* Darker background for better contrast */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    transition: all 0.4s ease;
+    padding: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Glowing Border Animation */
+.glass-ticket::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(45deg, transparent 40%, var(--ticket-color), transparent 60%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    background-size: 200% 200%;
+    animation: border-flow 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes border-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+/* Hover Effect */
+.glass-ticket:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 40px -10px var(--ticket-color);
+    border-color: var(--ticket-color);
+    background: rgba(0, 0, 0, 0.85);
+    /* Even darker on hover */
+}
+
+/* Header Section (Restored Format) */
+.ticket-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* 2026 Date Display */
+.ticket-date-display {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--ticket-color);
+    font-size: 1.25rem;
+    /* Large and clear */
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--ticket-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.ticket-top-meta {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    /* Increased from 10px */
+    color: rgba(255, 255, 255, 0.8);
+    /* Whiter text */
+    letter-spacing: 1px;
+}
+
+/* Main Content */
+.ticket-body {
+    flex-grow: 1;
+    position: relative;
+    z-index: 10;
+}
+
+.ticket-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    /* White title for max contrast */
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.ticket-desc {
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    /* Larger font */
+    color: rgba(255, 255, 255, 0.9);
+    /* Brighter description */
+    font-style: italic;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* Footer Section */
+.ticket-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.ticket-meta {
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: #ccc;
+    line-height: 1.5;
+    text-transform: uppercase;
+}
+
+.ticket-meta strong {
+    color: var(--ticket-color);
+}
+
+/* Barcode Simulation */
+.ticket-barcode {
+    display: flex;
+    gap: 3px;
+    /* Wider gap */
+    height: 30px;
+    /* Taller */
+    opacity: 1;
+    /* Full opacity */
+}
+
+.bar {
+    background: var(--ticket-color);
+    width: 2px;
+    border-radius: 1px;
+    box-shadow: 0 0 4px var(--ticket-color);
+    /* Neon Glow */
+}
+
+/* Action Buttons */
+.ticket-actions {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 50;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.3s ease;
+}
+
+.glass-ticket:hover .ticket-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Primary Button (VOIR) */
+.btn-voir {
+    background: var(--ticket-color);
+    color: #000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 4px;
+    /* Techy sharp corners */
+    text-transform: uppercase;
+    box-shadow: 0 0 15px var(--ticket-color);
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-voir:hover {
+    background: #fff;
+    color: var(--ticket-color);
+    box-shadow: 0 0 25px #fff;
+    transform: scale(1.05);
+}
+
+/* Secondary Button (SELECT) */
+.btn-select {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+}
+
+.btn-select:hover {
+    border-color: var(--ticket-color);
+    color: var(--ticket-color);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
 }

@@ -33,11 +33,13 @@ const LOCATIONS = {
     "Loisirs & Frissons": [
         { id: "europapark", name: "Europa-Park (Rust, DE)", dist: 32 }, // ~32km via Rhin tips
         { id: "rulantica", name: "Rulantica (Rust, DE)", dist: 33 }, // ~33km
-        { id: "casino_baden", name: "Casino Baden-Baden (DE)", dist: 95 } // ~95km
+        { id: "spa_ribeauville", name: "Spa de Ribeauvillé", dist: 26 },
+        { id: "casino_ribeauville", name: "Casino de Ribeauvillé", dist: 26 }
     ],
     "Gares & Aéroports": [
         { id: "gare_colmar", name: "Gare de Colmar", dist: 18 },
         { id: "gare_selestat", name: "Gare de Sélestat", dist: 22 },
+        { id: "aerodrome_colmar", name: "Aérodrome de Colmar", dist: 19 },
         { id: "gare_strasbourg", name: "Gare de Strasbourg", dist: 65 },
         { id: "aeroport_entzheim", name: "Aéroport Strasbourg-Entzheim", dist: 62 }, // ~62km
         { id: "euroairport", name: "EuroAirport (Bâle-Mulhouse)", dist: 72 } // ~72km
@@ -167,6 +169,46 @@ const DEALS = [
         blocked: true
     },
     {
+        id: "VISIT-ALSACE",
+        title: "VISIT ALSACE",
+        description: "Portail officiel du tourisme en Alsace - Expériences et découvertes.",
+        discount: "OFFICIEL",
+        validity: "PERMANENT",
+        color: "#b8ff00", // Vert Alsace
+        url: "https://www.visit.alsace/",
+        kitt_script: "Connexion au réseau touristique officiel d'Alsace. Base de données complète accessible."
+    },
+    {
+        id: "ALSACE-ESSENTIELLE",
+        title: "ALSACE ESSENTIELLE",
+        description: "L'essence de l'Alsace - Culture, patrimoine et art de vivre.",
+        discount: "CULTURE",
+        validity: "PERMANENT",
+        color: "#00d4ff", // Bleu
+        url: "https://www.alsace-essentielle.fr/",
+        kitt_script: "Accès au portail culturel régional. Données patrimoniales en cours de chargement."
+    },
+    {
+        id: "KAYSERSBERG-VISIT",
+        title: "KAYSERSBERG TOURISME",
+        description: "Découvrez Kaysersberg, élu Village Préféré des Français 2017.",
+        discount: "VILLAGE",
+        validity: "PERMANENT",
+        color: "#ff9d00", // Gold
+        url: "https://www.kaysersberg.com/visiter/",
+        kitt_script: "Kaysersberg détecté. Village classé. Architecture médiévale remarquable."
+    },
+    {
+        id: "RIBEAUVILLE-ESSENTIELLE",
+        title: "RIBEAUVILLÉ-RIQUEWIHR",
+        description: "L'Alsace Essentielle - Vignoble, châteaux et traditions.",
+        discount: "TERROIR",
+        validity: "PERMANENT",
+        color: "#ff3333", // Rouge
+        url: "https://www.ribeauville-riquewihr.com/l-alsace-essentielle.htm",
+        kitt_script: "Route des Vins confirmée. Secteur Ribeauvillé-Riquewihr. Trois châteaux en vue."
+    },
+    {
         id: "LOCAL-ROOT",
         title: "INTERFACE LOCALE",
         description: "Accès direct au fichier source local (Self-Test).",
@@ -287,10 +329,11 @@ function resumeRadio() {
    ========================================= */
 
 const KITT_QUOTES = [
-    "Trajet calculé. J'espère que vous n'avez pas prévu de course-poursuite aujourd'hui, Michael.",
+    "Mes capteurs indiquent que vous risquez de vous amuser, si toutefois vous ne vous égarez pas en chemin...",
+    "Trajet calculé. J'espère que vous n'avez pas prévu de course-poursuite aujourd'hui.",
     "Bande passante audio activée. Le tarif est affiché. Dois-je préparer le mode Turbo Boost ?",
     "Analyse terminée. C'est une destination très pittoresque. Je garderai mes scanners en alerte.",
-    "Voici l'estimation, Michael. N'oubliez pas que je ne peux pas sauter par-dessus les bouchons... enfin, pas légalement.",
+    "Voici l'estimation. N'oubliez pas que je ne peux pas sauter par-dessus les bouchons... enfin, pas légalement.",
     "Les capteurs indiquent une route dégagée. Estimation du coût affichée. Prêt à partir quand vous l'êtes.",
     "J'ai calculé l'itinéraire optimal. Je me suis permis d'éviter les chemins de terre, pour mes suspensions.",
     "Destination verrouillée. Le tarif semble raisonnable pour une technologie de ma classe.",
@@ -310,25 +353,42 @@ function loadVoices() {
 let selectedVoice = null;
 
 function initVoice() {
+    console.log("[SPEECH] Initializing Voice Engine...");
+
     // 1. Load Voices
     const loadVoices = () => {
         const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) voicesLoaded = true;
+        console.log(`[SPEECH] Available voices: ${voices.length}`);
 
-        // Priority: "Thomas" (Mac/iOS High Quality) -> "Google Français" -> Any "fr-FR"
-        selectedVoice = voices.find(v => v.name.includes("Thomas")) ||
-            voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr")) ||
-            voices.find(v => v.lang.startsWith("fr"));
+        if (voices.length > 0) {
+            voicesLoaded = true;
 
-        if (!selectedVoice && voices.length > 0) {
-            // Fallback to English if no French (shouldn't happen on modern OS)
-            selectedVoice = voices[0];
+            // Priority: "Thomas" (Mac/iOS High Quality) -> "Google Français" -> Any "fr-FR"
+            selectedVoice = voices.find(v => v.name.includes("Thomas")) ||
+                voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr")) ||
+                voices.find(v => v.lang.startsWith("fr"));
+
+            if (selectedVoice) {
+                console.log(`[SPEECH] Selected Voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+            } else {
+                // Fallback to English if no French (shouldn't happen on modern OS)
+                selectedVoice = voices[0];
+                console.warn(`[SPEECH] No French voice found. Falling back to: ${selectedVoice.name}`);
+            }
+        } else {
+            console.warn("[SPEECH] No voices available yet.");
         }
     };
 
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = loadVoices;
+        // Some browsers need this to fire multiple times
+        window.speechSynthesis.onvoiceschanged = () => {
+            console.log("[SPEECH] voiceschanged event fired");
+            loadVoices();
+        };
         loadVoices();
+    } else {
+        console.error("[SPEECH] speechSynthesis NOT supported in this browser.");
     }
 }
 
@@ -336,59 +396,81 @@ function initVoice() {
 window.speak = function (text) {
     return new Promise((resolve) => {
         if (!('speechSynthesis' in window)) {
-            console.warn("Speech Synthesis not supported");
+            console.warn("[SPEECH] Synthesis not supported");
             resolve();
             return;
         }
 
-        // Cancel previous
-        window.speechSynthesis.cancel();
+        console.log(`[SPEECH] Request to speak: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
 
-        // DUCK AUDIO (Radio & Video)
-        if (typeof pauseRadio === 'function') pauseRadio();
-
-        // Mute Pilot Video specifically if playing
-        const pilotVideo = document.getElementById('pilot-video');
-        let pilotWasPlaying = false;
-        if (pilotVideo && !pilotVideo.paused) {
-            pilotVideo.muted = true;
-            pilotWasPlaying = true;
+        // Force voice reload if not loaded
+        if (!voicesLoaded || !selectedVoice) {
+            console.log("[SPEECH] Voices not loaded or selected. Attempting immediate re-init.");
+            initVoice();
         }
 
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (selectedVoice) utterance.voice = selectedVoice;
-
-        // Settings (Pitch/Rate for KITT Effect)
-        utterance.pitch = 0.9; // Slightly deeper
-        utterance.rate = 1.1;  // Slightly faster
-        utterance.volume = 1.0;
-
-        // Events
-        utterance.onend = () => {
-            // RESUME AUDIO
-            if (typeof resumeRadio === 'function') resumeRadio();
-
-            // Unmute Pilot Video if it was playing (or let logic handle it)
-            // But wait! User wants video sound ONLY after speech.
-            // So we muted it above. Now we can unmute it?
-            // Or better: The specific section logic dictates playback.
-            // For general 'speak' calls (like feedback), unmuting is safe if it was already playing background.
-            if (pilotVideo && pilotWasPlaying) {
-                // But for the Tour, we might want to handle this explicitly in the tour step?
-                // Let's safe unmute here, as 'Tour Active' flag prevents new autoplays anyway.
-                pilotVideo.muted = false;
+        // Wait a tiny bit for init if it was just called (for browsers where getVoices is async)
+        const attemptSpeak = (retryCount = 0) => {
+            if (!selectedVoice && retryCount < 3) {
+                console.log(`[SPEECH] Voice still not ready, retry ${retryCount + 1}/3...`);
+                setTimeout(() => attemptSpeak(retryCount + 1), 100);
+                return;
             }
-            resolve();
+
+            // Cancel previous
+            window.speechSynthesis.cancel();
+
+            // DUCK AUDIO (Radio & Video)
+            if (typeof pauseRadio === 'function') pauseRadio();
+
+            // Mute Pilot Video specifically if playing
+            const pilotVideo = document.getElementById('pilot-video');
+            let pilotWasPlaying = false;
+            if (pilotVideo && !pilotVideo.paused) {
+                pilotVideo.muted = true;
+                pilotWasPlaying = true;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                console.log(`[SPEECH] Speaking with: ${selectedVoice.name}`);
+            } else {
+                console.warn("[SPEECH] Still no selected voice. Using browser default.");
+            }
+
+            // Settings (Pitch/Rate for KITT Effect)
+            utterance.pitch = 0.9; // Slightly deeper
+            utterance.rate = 1.1;  // Slightly faster
+            utterance.volume = 1.0;
+
+            // Events
+            utterance.onstart = () => {
+                console.log("[SPEECH] Playback started");
+            };
+
+            utterance.onend = () => {
+                console.log("[SPEECH] Playback ended");
+                // RESUME AUDIO
+                if (typeof resumeRadio === 'function') resumeRadio();
+
+                if (pilotVideo && pilotWasPlaying) {
+                    pilotVideo.muted = false;
+                }
+                resolve();
+            };
+
+            utterance.onerror = (e) => {
+                console.error("[SPEECH] Error during playback:", e);
+                if (typeof resumeRadio === 'function') resumeRadio();
+                if (pilotVideo && pilotWasPlaying) pilotVideo.muted = false;
+                resolve();
+            };
+
+            window.speechSynthesis.speak(utterance);
         };
 
-        utterance.onerror = (e) => {
-            console.error("Speech Error:", e);
-            if (typeof resumeRadio === 'function') resumeRadio();
-            if (pilotVideo && pilotWasPlaying) pilotVideo.muted = false;
-            resolve();
-        };
-
-        window.speechSynthesis.speak(utterance);
+        attemptSpeak();
     });
 };
 
@@ -520,7 +602,7 @@ function updateOverlayContent() {
     const deal = overlayDeals[currentOverlayIndex];
     if (!deal) return;
 
-    if (titleEl) titleEl.textContent = `// ${deal.title}`;
+    if (titleEl) titleEl.textContent = `// ${(deal.title || deal.name).toUpperCase()}`;
     if (counterEl) counterEl.textContent = `${currentOverlayIndex + 1} / ${overlayDeals.length}`;
 
     // Handle Blocked Sites (PORTAL MODE)
@@ -531,20 +613,20 @@ function updateOverlayContent() {
         if (portal) {
             portal.classList.remove('hidden');
             // Populate Portal
-            if (portalTitle) portalTitle.innerText = deal.title;
-            if (portalText) portalText.innerText = deal.description;
-            if (portalMeta) portalMeta.innerHTML = `
+            if (portalTitle) portalTitle.innerText = deal.title || deal.name;
+            if (portalText) portalText.innerText = deal.description || "Contenu externe sécurisé. Ouvrez le lien pour voir le site.";
+            if (portalMeta) portalMeta.innerHTML = deal.discount ? `
                 <span class="font-bold text-neon-blue">${deal.discount}</span>
                 <span>//</span>
                 <span>${deal.validity}</span>
-            `;
+            ` : `<span class="text-neon-blue">LIEN EXTERNE</span>`;
 
             const btnPortalBack = document.getElementById('btn-portal-back');
 
             if (btnPortal) {
                 btnPortal.onclick = () => {
                     window.open(deal.url, '_blank');
-                    closeDealOverlay(); // Auto-close to return to dashboard
+                    // closeDealOverlay(); // Optional: keep open if navigation is desired
                 };
             }
 
@@ -583,7 +665,7 @@ window.openDealOverlay = openDealOverlay;
 window.closeDealOverlay = closeDealOverlay;
 window.navigateDeal = navigateDeal;
 
-function openExternalOverlay(url, title) {
+function openExternalOverlay(url, title, queue = null, index = 0, isBlocked = false) {
     const overlay = document.getElementById('deal-overlay');
     const iframe = document.getElementById('deal-iframe');
     const scanner = document.getElementById('deal-scanner');
@@ -595,8 +677,17 @@ function openExternalOverlay(url, title) {
         document.body.style.overflow = 'hidden';
     }
 
-    // Hide Nav Controls for external links
-    if (navControls) navControls.classList.add('hidden');
+    // QUEUE LOGIC FOR NAVIGATION
+    if (queue && queue.length > 0) {
+        overlayDeals = queue;
+        currentOverlayIndex = index;
+        if (navControls) navControls.classList.remove('hidden');
+    } else {
+        // Single Link Mode
+        overlayDeals = [{ url: url, title: title, name: title, blocked: isBlocked }];
+        currentOverlayIndex = 0;
+        if (navControls) navControls.classList.add('hidden');
+    }
 
     // DUCK RADIO ON OPEN
     pauseRadio();
@@ -987,43 +1078,77 @@ function renderDeals() {
     const isAdmin = true; // TEMPORARY FORCE SHOW
     const visibleDeals = DEALS.filter(d => !d.admin || isAdmin);
 
+    // Dynamic Date Calculation (Current Day/Month + Year 26)
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const displayDate = `${day}-${month}-26`; // "DD-MM-26"
+
     grid.innerHTML = visibleDeals.map(deal => `
-        <div class="relative group transform hover:-translate-y-1 transition-transform duration-300">
-            <div class="bg-retro-paper text-black p-8 shadow-[10px_10px_0px_#00d4ff] relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-2 ticket-edge opacity-50"></div>
-                <div class="flex justify-between items-start mb-6 border-b-2 border-dashed border-black/20 pb-4">
+        <div class="relative group h-[450px] transform transition-transform duration-500 hover:z-50">
+            
+            <!-- Glass Ticket Container with Dynamic Color Variable -->
+            <div class="glass-ticket" style="--ticket-color: ${deal.color}">
+                
+                <!-- HEADER (Restored Layout): Title Top-Left, Discount Top-Right -->
+                <div class="ticket-header">
                     <div>
-                        <p class="font-mono text-[10px] text-black/50">ID_TRANSACTION: ${deal.id}</p>
-                        <h3 class="font-future text-xl mt-1 font-bold">${deal.title}</h3>
+                        <div class="ticket-top-meta mb-1">ID_TRANSACTION: ${deal.id}</div>
+                        <h3 class="ticket-title">${deal.title}</h3>
                     </div>
-                    <div class="text-white px-3 py-1 font-future text-sm font-bold shadow-sm transform -rotate-2" style="background-color: ${deal.color}">
-                        ${deal.discount}
-                    </div>
-                </div>
-                <p class="font-body italic text-lg mb-8 text-black/80 leading-relaxed">"${deal.description}"</p>
-                <div class="flex justify-between items-end">
-                    <div class="font-mono text-[10px] space-y-1">
-                        <p class="text-red-600 font-bold tracking-widest">${deal.validity}</p>
-                        <p>PRIORITÉ : HAUTE</p>
-                    </div>
-                    <div class="flex gap-1 h-8 items-end opacity-70">
-                        <div class="bg-black w-1 h-full"></div>
-                        <div class="bg-black w-2 h-2/3"></div>
-                        <div class="bg-black w-1 h-full"></div>
-                        <div class="bg-black w-3 h-1/2"></div>
-                        <div class="bg-black w-1 h-full"></div>
+                    
+                    <!-- Discount Badge (Rotated/Styled) -->
+                    <div class="relative group/badge">
+                        <div class="absolute inset-0 bg-[var(--ticket-color)] blur-md opacity-50 animate-pulse"></div>
+                        <div class="relative bg-[var(--ticket-color)] text-black px-3 py-1 font-bold font-future text-xs transform -rotate-2 shadow-lg border border-white/50">
+                            ${deal.discount}
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="absolute -bottom-5 left-1/2 -translate-x-1/2 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-1">
-                <button onclick="${deal.url ? `openDealOverlay('${deal.url}')` : `activateDeal('${deal.id}')`}"
-                    class="bg-neon-green text-black font-future px-4 py-3 text-xs border-2 border-black shadow-[4px_4px_0_black] hover:translate-y-1 hover:shadow-none whitespace-nowrap cursor-pointer">
-                    ${deal.url ? "VOIR L'OFFRE" : "ACTIVER LE PASS"}
-                </button>
-                <button onclick="selectDeal('${deal.id}')"
-                    class="bg-white text-black font-future px-4 py-3 text-xs border-2 border-black shadow-[4px_4px_0_black] hover:translate-y-1 hover:shadow-none whitespace-nowrap cursor-pointer hover:bg-neon-blue hover:text-white transition-colors">
-                    SÉLECTIONNER
-                </button>
+
+                <!-- 2026 DATE INSERTION (Integrated aesthetically) -->
+                <div class="ticket-date-display">
+                    <svg class="w-5 h-5 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>${displayDate}</span>
+                </div>
+
+                <!-- BODY: Description -->
+                <div class="ticket-body flex flex-col justify-center">
+                    <p class="ticket-desc">"${deal.description}"</p>
+                </div>
+
+                <!-- FOOTER: Meta, Validity, Barcode -->
+                <div class="ticket-footer">
+                    <div class="ticket-meta">
+                        <p class="mb-1 text-white/50">VALIDITÉ</p>
+                        <p class="text-[var(--ticket-color)] font-bold text-sm tracking-widest">${deal.validity}</p>
+                    </div>
+
+                    <!-- Barcode Simulation -->
+                    <div class="ticket-barcode">
+                        <div class="bar h-full"></div>
+                        <div class="bar h-2/3 self-end"></div>
+                        <div class="bar h-full"></div>
+                        <div class="bar h-1/2 self-end"></div>
+                        <div class="bar h-3/4 self-end"></div>
+                        <div class="bar h-full"></div>
+                        <div class="bar h-1/3 self-end"></div>
+                        <div class="bar h-full"></div>
+                    </div>
+                </div>
+
+                <!-- ACTIONS (Integrated inside the glass card for visibility) -->
+                <div class="ticket-actions">
+                    <button onclick="${deal.url ? `openDealOverlay('${deal.url}')` : `activateDeal('${deal.id}')`}" class="btn-voir">
+                        ${deal.url ? "VOIR L'OFFRE" : "ACTIVER"}
+                    </button>
+                    <button onclick="selectDeal('${deal.id}')" class="btn-select">
+                        SÉLECTIONNER
+                    </button>
+                </div>
+
             </div>
         </div>
     `).join('');
@@ -1037,6 +1162,661 @@ const PRICE_PER_KM = 2.0;
 const FREE_KM_LIMIT = 333; // Updated to 333km as requested (Zone Europe)
 let LOCATION_DATA = {}; // Map name -> {id, dist, name}
 let LAST_SIMULATION = null; // Store last result for export
+
+// POI DATA STRUCTURE (Suggestions after calculation)
+const POI_DATA = {
+    "colmar": {
+        "pratique": [
+            { name: "Office de Tourisme", url: "https://tourisme-colmar.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda de Colmar", url: "https://www.visit.alsace/?s=Agenda+Colmar", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Maison des Têtes", url: "https://www.maisondestetes.com/", icon: "🗿" },
+            { name: "Quai de la Poissonnerie", url: "https://tourisme-colmar.com/", icon: "🐟" },
+            { name: "Maison aux Raisins", url: "https://tourisme-colmar.com/", icon: "🍇" }
+        ],
+        "gastronomy": [
+            { name: "JY'S (2* Michelin)", url: "https://www.jean-yves-schillinger.com/", icon: "⭐" },
+            { name: "L'Atelier du Peintre (1*)", url: "https://www.atelier-peintre.fr/", icon: "🎨" },
+            { name: "Wistub Brenner", url: "https://www.wistub-brenner.fr/", icon: "🥘" }
+        ],
+        "culture": [
+            { name: "Musée Unterlinden", url: "https://www.musee-unterlinden.com/", icon: "🖼️" },
+            { name: "Musée Bartholdi", url: "https://www.musee-bartholdi.fr/", icon: "🗽" },
+            { name: "Petite Venise", url: "https://tourisme-colmar.com/", icon: "🛶" }
+        ],
+        "leisure": [
+            { name: "Balade en Barque", url: "https://www.barques-colmar.fr/", icon: "🛶" },
+            { name: "Marché Couvert", url: "https://www.marche-couvert-colmar.fr/", icon: "🥨" },
+            { name: "Musée du Jouet", url: "https://www.museejouet.com/", icon: "🧸" }
+        ],
+        "wine": [
+            { name: "Domaine Martin Jund", url: "https://www.visit.alsace/?s=Domaine+Martin+Jund", icon: "🍇" },
+            { name: "Domaine Karcher", url: "https://www.visit.alsace/?s=Domaine+Karcher", icon: "🍷" },
+            { name: "Wolfberger Colmar", url: "https://www.visit.alsace/?s=Wolfberger", icon: "🍾" }
+        ]
+    },
+    "strasbourg": {
+        "pratique": [
+            { name: "Visit Strasbourg (OT)", url: "https://www.visitstrasbourg.fr/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Strasbourg", url: "https://www.visit.alsace/?s=Agenda+Strasbourg", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Secrets de Strasbourg", url: "https://www.visitstrasbourg.fr/", icon: "🤫" },
+            { name: "Barrage Vauban", url: "https://www.strasbourg.eu/", icon: "🏰" },
+            { name: "Cave des Hospices", url: "https://www.vins-des-hospices-de-strasbourg.fr/", icon: "🍷" }
+        ],
+        "gastronomy": [
+            { name: "Maison Kammerzell", url: "https://www.maison-kammerzell.com/", icon: "🍽️" },
+            { name: "Au Crocodile (1*)", url: "https://www.au-crocodile.com/", icon: "🐊" },
+            { name: "Buerehiesel (1*)", url: "https://www.buerehiesel.fr/", icon: "🏡" }
+        ],
+        "culture": [
+            { name: "Cathédrale Notre-Dame", url: "https://www.cathedrale-strasbourg.fr/", icon: "⛪" },
+            { name: "Palais Rohan", url: "https://www.musees.strasbourg.eu/", icon: "👑" }, ,
+            { name: "Musée Alsacien", url: "https://www.musees.strasbourg.eu/musee-alsacien", icon: "🥨" }
+        ],
+        "leisure": [
+            { name: "Batorama (Bateau)", url: "https://www.batorama.com/", icon: "🚤" },
+            { name: "Sorties (Pokaa)", url: "https://pokaa.fr/", icon: "🎉" },
+            { name: "Marché de Noël", url: "https://noel.strasbourg.eu/", icon: "🎄" }
+        ],
+        "wine": [
+            { name: "Cave Historique", url: "https://www.visit.alsace/?s=Cave+Historique+Strasbourg", icon: "🏚️" },
+            { name: "Oenosphère", url: "https://www.visit.alsace/?s=Oenosphere", icon: "🍾" },
+            { name: "Terres à Vin", url: "https://www.visit.alsace/?s=Terres+a+Vin", icon: "🍷" }
+        ]
+    },
+    "ribeauville": {
+        "pratique": [
+            { name: "OT Ribeauvillé-Riquewihr", url: "https://www.ribeauville-riquewihr.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Ribeauvillé", url: "https://www.visit.alsace/?s=Agenda+Ribeauville", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Fête des Ménétriers", url: "https://www.ribeauville-riquewihr.com/animations/fete-des-menetriers.htm", icon: "🎺" },
+            { name: "Les 3 Châteaux", url: "https://www.ribeauville-riquewihr.com/decouvrir/les-chateaux.htm", icon: "🏰" },
+            { name: "Monastère Dusenbach", url: "https://dusenbach.fr/", icon: "⛪" }
+        ],
+        "gastronomy": [
+            { name: "Au Cheval Blanc", url: "https://www.cheval-blanc-ribeauville.com/", icon: "🍴" }, ,
+            { name: "Wistub Zum Pfifferhus", url: "https://www.tripadvisor.fr/Restaurant_Review-g187078-d1329583-Reviews-Wistub_Zum_Pfifferhus-Ribeauville_Haut_Rhin_Grand_Est.html", icon: "🥓" },
+            { name: "La Flammerie", url: "https://www.laflammerie.fr/", icon: "🔥" }
+        ],
+        "culture": [
+            { name: "Tour des Bouchers", url: "https://www.ribeauville.fr/fr/patrimoine.html", icon: "🗼" },
+            { name: "Hôtel de Ville", url: "https://www.ribeauville.fr/", icon: "🏛️" },
+            { name: "Église St-Grégoire", url: "https://www.ribeauville.fr/fr/patrimoine.html", icon: "⛪" }
+        ],
+        "leisure": [
+            { name: "Casino Barrière", url: "https://www.casinosbarriere.com/fr/ribeauville.html", icon: "🎰" },
+            { name: "Spa & Balnéo", url: "https://www.hotelsbarriere.com/fr/ribeauville/resort-barriere-ribeauville.html", icon: "💆" }, ,
+            { name: "Rando Vignoble", url: "https://www.ribeauville-riquewihr.com/bouger/balades-et-randonnees.htm", icon: "🥾" }
+        ],
+        "wine": [
+            { name: "Maison Trimbach", url: "https://www.trimbach.fr/", icon: "🥂" },
+            { name: "Louis Sipp", url: "https://www.sipp.com/", icon: "🍇" },
+            { name: "Cave de Ribeauvillé", url: "https://vins-ribeauville.com/", icon: "🍾" }
+        ]
+    },
+    "riquewihr": {
+        "pratique": [
+            { name: "OT Ribeauvillé-Riquewihr", url: "https://www.ribeauville-riquewihr.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Riquewihr", url: "https://www.visit.alsace/?s=Agenda+Riquewihr", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Musée du Dolder", url: "https://www.musee-riquewihr.fr/", icon: "🏰" }, ,
+            { name: "Tour des Voleurs", url: "https://www.ribeauville-riquewihr.com/decouvrir/musees/musee-du-dolder.htm", icon: "🔦" },
+            { name: "Maison de Hansi", url: "https://www.hansi.fr/", icon: "🏠" }
+        ],
+        "gastronomy": [
+            { name: "Table du Gourmet (1*)", url: "https://www.jlbrendel.com/", icon: "⭐" },
+            { name: "D'Brendelstub", url: "https://www.jlbrendel.com/fr/winstub-brendelstub.html", icon: "🍲" },
+            { name: "Le Manala", url: "https://www.hotel-st-nicolas.com/", icon: "🥨" }
+        ],
+        "culture": [
+            { name: "Le Dolder", url: "https://www.ribeauville-riquewihr.com/", icon: "tower" },
+            { name: "Porte Haute (Dolder)", url: "https://www.ribeauville-riquewihr.com/", icon: "📮" }, ,
+            { name: "Remparts", url: "https://www.ribeauville-riquewihr.com/", icon: "🧱" }
+        ],
+        "leisure": [
+            { name: "Sentier Viticole", url: "https://www.ribeauville-riquewihr.com/", icon: "🚶" },
+            { name: "Noël Féérique", url: "https://www.ribeauville-riquewihr.com/", icon: "🎄" },
+            { name: "Calèche", url: "https://www.ribeauville-riquewihr.com/", icon: "🐎" }
+        ],
+        "wine": [
+            { name: "Dopff au Moulin", url: "https://www.dopff-au-moulin.fr/", icon: "🥂" },
+            { name: "Hugel & Fils", url: "https://www.hugel.com/", icon: "🍷" },
+            { name: "Zimmer", url: "https://www.riquewihr-zimmer.com/", icon: "🍾" }
+        ]
+    },
+    "neuf-brisach": {
+        "pratique": [
+            { name: "OT Rhin-Brisach", url: "https://www.visitalsacerhinbrisach.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Neuf-Brisach", url: "https://www.visit.alsace/?s=Agenda+Neuf-Brisach", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "MAUSA Vauban (Street Art)", url: "https://mausa.fr/", icon: "🎨" },
+            { name: "Remparts (UNESCO)", url: "https://www.visitalsacerhinbrisach.com/", icon: "🧱" },
+            { name: "Place d'Armes", url: "https://www.neuf-brisach.fr/", icon: "⚔️" }
+        ],
+        "gastronomy": [
+            { name: "Aux Deux Roses", url: "https://www.alsace2roses.com/", icon: "🥘" },
+            { name: "Pâtisserie Birke", url: "https://www.visitalsacerhinbrisach.com/", icon: "🍰" },
+            { name: "Restaurant La Fusion", url: "https://www.visitalsacerhinbrisach.com/", icon: "🥢" }
+        ],
+        "culture": [
+            { name: "Musée Vauban", url: "https://www.neuf-brisach.fr/", icon: "📜" }, ,
+            { name: "Visite Guidée Costumée", url: "https://www.visitalsacerhinbrisach.com/", icon: "🎭" },
+            { name: "Église Saint-Louis", url: "https://www.visit.alsace/235006093-eglise-saint-louis/", icon: "⛪" }
+        ],
+        "leisure": [
+            { name: "Vélo Piste Rhine", url: "https://www.alsaceavelo.fr/", icon: "🚲" },
+            { name: "Marché du Terroir", url: "https://www.neuf-brisach.fr/", icon: "🥕" },
+            { name: "Balade Remparts", url: "https://www.visitalsacerhinbrisach.com/", icon: "🚶" }
+        ],
+        "wine": [
+            { name: "Le Lieu Dit-Vin", url: "https://www.visitalsacerhinbrisach.com/", icon: "🍷" },
+            { name: "Aux Deux Roses", url: "https://www.alsace2roses.com/", icon: "🥘" },
+            { name: "Le Café Vauban", url: "https://www.neuf-brisach.fr/", icon: "☕" }
+        ]
+    },
+    "kaysersberg": {
+        "pratique": [
+            { name: "OT Vallée Kaysersberg", url: "https://www.kaysersberg.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Kaysersberg", url: "https://www.visit.alsace/?s=Agenda+Kaysersberg", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Vignoble Schlossberg", url: "https://www.vinsalsace.com/fr/grands-crus/schlossberg/", icon: "🍇" },
+            { name: "Château Schlossberg", url: "https://www.kaysersberg.com/", icon: "🏰" },
+            { name: "Pont Fortifié", url: "https://www.kaysersberg.com/", icon: "🌉" }
+        ],
+        "gastronomy": [
+            { name: "Le Chambard (2* Nasti)", url: "https://www.lechambard.fr/", icon: "⭐" },
+            { name: "L'Alchémille (1*)", url: "https://www.lalchemille.fr/", icon: "🌿" },
+            { name: "Vieille Forge", url: "https://www.vieilleforge-kb.com/", icon: "⚒️" }
+        ],
+        "culture": [
+            { name: "Musée A. Schweitzer", url: "https://www.centreschweitzer.org/", icon: "🕊️" },
+            { name: "Verrerie d'Art", url: "https://verrerie-kaysersberg.fr/", icon: "🏺" },
+            { name: "Église Ste-Croix", url: "https://www.kaysersberg.com/", icon: "⛪" }
+        ],
+        "leisure": [
+            { name: "Espace Nautique", url: "https://www.arc-en-ciel-kaysersberg.com/", icon: "🏊" },
+            { name: "Rando Vignoble", url: "https://www.kaysersberg.com/bouger/balades-et-randonnees/", icon: "🍇" },
+            { name: "Noël Authentique", url: "https://www.noel-a-kaysersberg.com/", icon: "🎄" }
+        ],
+        "wine": [
+            { name: "Domaine Weinbach", url: "https://www.domaineweinbach.com/", icon: "🥂" },
+            { name: "Paul Blanck", url: "https://www.blanck.com/", icon: "🍷" },
+            { name: "Cave de Kientzheim", url: "https://www.cave-kientzheim-kaysersberg.com/", icon: "🍾" }
+        ]
+    },
+    "eguisheim": {
+        "pratique": [
+            { name: "OT Eguisheim-Rouffach", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Eguisheim", url: "https://www.visit.alsace/?s=Agenda+Eguisheim", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Le Pigeonnier", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "📸" },
+            { name: "Remparts (Ronde)", url: "https://www.tourisme-eguisheim-rouffach.com/fr/decouvrir/eguisheim-et-ses-incontournables.html", icon: "🏰" },
+            { name: "Place St-Léon", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "⛲" }
+        ],
+        "gastronomy": [
+            { name: "Au Vieux Porche (Bib)", url: "https://www.auvieuxporche.fr/", icon: "🍴" },
+            { name: "Caveau d'Eguisheim", url: "https://www.caveau-d-eguisheim.com/", icon: "🍷" },
+            { name: "Auberge des Trois Châteaux", url: "https://www.auberge-3-chateaux.com/", icon: "🏰" }
+        ],
+        "culture": [
+            { name: "Village Préféré", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "🥇" },
+            { name: "Château St-Léon", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "👑" },
+            { name: "Chapelle St-Léon", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "⛪" }
+        ],
+        "leisure": [
+            { name: "Petit Train", url: "https://www.train-eguisheim.fr/", icon: "🚂" },
+            { name: "Parc à Cigognes", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "🦩" },
+            { name: "Fête Vignerons (Août)", url: "https://www.tourisme-eguisheim-rouffach.com/", icon: "🎉" }
+        ],
+        "wine": [
+            { name: "Wolfberger", url: "https://www.wolfberger.com/", icon: "🍾" },
+            { name: "Emile Beyer", url: "https://www.emile-beyer.fr/", icon: "🍇" },
+            { name: "Grand Cru Eichberg", url: "https://www.vinsalsace.com/", icon: "⛰️" }
+        ]
+    },
+    "mulhouse": {
+        "pratique": [
+            { name: "Office de Tourisme", url: "https://www.tourisme-mulhouse.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Sortir à Mulhouse", url: "https://www.jds.fr/mulhouse", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Le M.U.R (Street Art)", url: "https://www.tourisme-mulhouse.com/", icon: "🎨" },
+            { name: "Belvédère Panoramique", url: "https://www.tourisme-mulhouse.com/", icon: "🔭" },
+            { name: "Cité Ouvrière (UNESCO)", url: "https://www.tourisme-mulhouse.com/", icon: "🏘️" }
+        ],
+        "gastronomy": [
+            { name: "Le 4 (Michelin)", url: "https://www.restaurant-le4.fr/", icon: "⭐" },
+            { name: "Il Cortile (Michelin)", url: "https://www.ilcortile-mulhouse.fr/", icon: "🍝" },
+            { name: "Zum Sauwadala", url: "https://www.zumsauwadala.com/", icon: "🥩" }
+        ],
+        "culture": [
+            { name: "Cité de l'Automobile", url: "https://www.citedelautomobile.com/", icon: "🏎️" },
+            { name: "Cité du Train", url: "https://www.citedutrain.com/", icon: "🚂" },
+            { name: "Musée Etoffes", url: "https://www.musee-impression.com/", icon: "🧵" }
+        ],
+        "leisure": [
+            { name: "Parc Zoologique", url: "https://www.zoo-mulhouse.com/", icon: "🦁" },
+            { name: "Sorties (JDS)", url: "https://www.jds.fr/mulhouse", icon: "🎉" },
+            { name: "Marché du Canal", url: "https://www.tourisme-mulhouse.com/", icon: "🛍️" }
+        ],
+        "wine": [
+            { name: "Domaines qui Montent", url: "https://www.lesdomainesquimontent.com/mulhouse", icon: "🍷" },
+            { name: "La Quille (Bar)", url: "https://www.laquille.fr/", icon: "🍾" },
+            { name: "L'Etiquette", url: "https://www.letiquette-mulhouse.com/", icon: "🏷️" }
+        ]
+    },
+    "selestat": {
+        "pratique": [
+            { name: "OT Sélestat HK", url: "https://www.selestat-haut-koenigsbourg.com/", icon: "ℹ️" },
+            { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+            { name: "Agenda Sélestat", url: "https://www.visit.alsace/?s=Agenda+Selestat", icon: "📅" }
+        ],
+        "insolite": [
+            { name: "Bibliothèque Humaniste", url: "https://www.bibliotheque-humaniste.fr/", icon: "📚" },
+            { name: "Château d'Eau", url: "https://www.selestat.fr/", icon: "⛲" },
+            { name: "Sentier Pieds Nus", url: "https://www.senso-ried.com/", icon: "👣" }
+        ],
+        "gastronomy": [
+            { name: "Les Humanistes (1*)", url: "https://www.les-humanistes.com/", icon: "⭐" },
+            { name: "La Vieille Tour", url: "https://www.vieille-tour.fr/", icon: "🏰" },
+            { name: "Wistub du Cerf", url: "https://www.visit.alsace/232001402-wistub-a-la-couronne/", icon: "🦌" }
+        ],
+        "culture": [
+            { name: "Église St-Georges", url: "https://www.selestat.fr/", icon: "⛪" },
+            { name: "Église Ste-Foy", url: "https://www.selestat.fr/", icon: "🕍" },
+            { name: "Maison du Pain", url: "https://maisondupain.alsace/", icon: "🥖" }
+        ],
+        "leisure": [
+            { name: "Illwald (Réserve)", url: "https://www.selestat.fr/se-divertir/nature-et-environnement/lillwald.html", icon: "🌿" },
+            { name: "Canoë du Ried", url: "https://canoes-du-ried.com/", icon: "🛶" },
+            { name: "Corso Fleuri (Août)", url: "https://www.selestat.fr/", icon: "🌸" }
+        ],
+        "wine": [
+            { name: "VINUM (Caviste)", url: "https://vinum.pro/", icon: "🍷" },
+            { name: "Ill Vino (Caviste)", url: "https://illvino.com/", icon: "🍾" },
+            { name: "Larmes de Vin (Bar)", url: "https://www.selestat.fr/", icon: "🥂" }
+        ]
+    },
+    "rust": {
+        "leisure": [
+            { name: "Europa-Park (Best Park)", url: "https://www.europapark.de/fr", icon: "🎢" },
+            { name: "Rulantica (Water World)", url: "https://www.rulantica.de/fr", icon: "🌊" },
+            { name: "Réserve Taubergiessen", url: "https://www.rust.de/", icon: "🌿" }
+        ]
+    },
+    "bale": {
+        "culture": [
+            { name: "Basler Münster", url: "https://www.baslermuenster.ch/", icon: "⛪" },
+            { name: "Kunstmuseum Basel", url: "https://kunstmuseumbasel.ch/fr", icon: "🎨" },
+            { name: "Vieille Ville (Altstadt)", url: "https://www.basel.com/fr", icon: "🏙️" }
+        ]
+    },
+    "freiburg": {
+        "culture": [
+            { name: "Freiburger Münster", url: "https://www.freiburgermuenster.info/", icon: "⛪" },
+            { name: "Schlossberg (Vue)", url: "https://www.schlossberg-bahn.de/", icon: "🚠" },
+            { name: "Les Bächle (Insolite)", url: "https://visit.freiburg.de/fr", icon: "💧" }
+        ]
+    },
+    "baden-baden": {
+        "leisure": [
+            { name: "Thermes de Caracalla", url: "https://www.carasana.de/fr/", icon: "🧖" },
+            { name: "Merkurbergbahn", url: "https://www.stadtwerke-baden-baden.de/", icon: "🚠" },
+            { name: "Lichtentaler Allee", url: "https://www.baden-baden.com/fr", icon: "🌳" }
+        ]
+    },
+    "gerardmer": {
+        "nature": [
+            { name: "Lac de Gérardmer", url: "https://gerardmer.net/", icon: "🛶" },
+            { name: "Saut des Cuves", url: "https://gerardmer.net/", icon: "🌊" },
+            { name: "Acro-Sphère (Aventure)", url: "https://www.acrosphere-vosges.fr/", icon: "🌲" }
+        ]
+    },
+    "hunawihr": {
+        "insolite": [
+            { name: "NaturOparC (Cigognes)", url: "https://www.naturoparc.fr/", icon: "🦢" },
+            { name: "Jardin des Papillons", url: "https://www.jardindespapillons.fr/", icon: "🦋" },
+            { name: "Église Fortifiée", url: "https://www.visit.alsace/", icon: "⛪" }
+        ],
+        "wine": [
+            { name: "Cave Vinicole", url: "https://www.cave-hunawihr.com/", icon: "🍷" },
+            { name: "Domaines Viticoles", url: "https://www.visit.alsace/", icon: "🍇" },
+            { name: "Route des Vins", url: "https://www.alsace-wine.com/", icon: "🥂" }
+        ],
+        "culture": [
+            { name: "Village Médiéval", url: "https://www.visit.alsace/", icon: "🏘️" },
+            { name: "Maisons à Colombages", url: "https://www.visit.alsace/", icon: "🏠" },
+            { name: "Fontaine Renaissance", url: "https://www.visit.alsace/", icon: "⛲" }
+        ]
+    },
+    "turckheim": {
+        "insolite": [
+            { name: "Veilleur de Nuit", url: "https://www.turckheim.com/", icon: "🕯️" },
+            { name: "Portes Médiévales", url: "https://www.turckheim.com/", icon: "🚪" },
+            { name: "Remparts (XIVe)", url: "https://www.turckheim.com/", icon: "🏰" }
+        ],
+        "gastronomy": [
+            { name: "L'Autrefois", url: "https://www.visit.alsace/", icon: "🍴" },
+            { name: "Stammtisch", url: "https://www.visit.alsace/", icon: "🥘" },
+            { name: "Auberge du Veilleur", url: "https://www.visit.alsace/", icon: "🍷" }
+        ],
+        "wine": [
+            { name: "Brand (Grand Cru)", url: "https://www.vinsalsace.com/", icon: "🍇" },
+            { name: "Caves Viticoles", url: "https://www.turckheim.com/", icon: "🍾" },
+            { name: "Dégustation Locale", url: "https://www.visit.alsace/", icon: "🥂" }
+        ]
+    },
+    "bergheim": {
+        "culture": [
+            { name: "Remparts (XIVe)", url: "https://www.bergheim68.fr/", icon: "🏰" },
+            { name: "Maison des Sorcières", url: "https://www.bergheim68.fr/", icon: "🧙" },
+            { name: "Porte Haute", url: "https://www.bergheim68.fr/", icon: "🚪" }
+        ],
+        "wine": [
+            { name: "Altenberg (Grand Cru)", url: "https://www.vinsalsace.com/", icon: "🍷" },
+            { name: "Kanzlerberg (Grand Cru)", url: "https://www.vinsalsace.com/", icon: "🍇" },
+            { name: "Marcel Deiss", url: "https://www.marceldeiss.com/", icon: "🍾" }
+        ],
+        "insolite": [
+            { name: "Tilleul de 1300", url: "https://www.bergheim68.fr/", icon: "🌳" },
+            { name: "Jardins Médiévaux", url: "https://www.bergheim68.fr/", icon: "🌿" },
+            { name: "Mosaïques Romaines", url: "https://www.bergheim68.fr/", icon: "🗿" }
+        ]
+    }
+};
+
+
+function suggestPOIs(destination, tripDate = null) {
+    const suggestionsDiv = document.getElementById('sim-suggestions');
+    if (!suggestionsDiv) return;
+
+    // Reset
+    suggestionsDiv.innerHTML = '';
+    suggestionsDiv.classList.add('hidden');
+
+    let cleanDest = destination.toLowerCase().trim()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/-/g, " ").replace(/'/g, " ");
+
+    // Format Date for URL (YYYY-MM-DD -> DD/MM/YYYY for search query beauty if needed, or keeping raw)
+    let formattedDate = "";
+    if (tripDate) {
+        // Transform 2026-05-23 to string if needed, currently just passing raw value
+        formattedDate = tripDate;
+    }
+
+    // --- ALIAS MAPPING (Local Intelligence) ---
+    const aliases = {
+        "baltzenheim": "neuf-brisach",
+        "artzenheim": "neuf-brisach",
+        "kunheim": "neuf-brisach",
+        "biesheim": "neuf-brisach",
+        "marckolsheim": "neuf-brisach", // Ou Sélestat, mais proche Rhin
+        "gare de colmar": "colmar",
+        "aerodrome de colmar": "colmar",
+        "gare de selestat": "selestat",
+        "haut konigsbourg": "selestat", // Normalized version (œ → oe)
+        "haut koenigsbourg": "selestat", // Alternative spelling
+        "koenigsbourg": "selestat",
+        "gare de strasbourg": "strasbourg",
+        "aeroport strasbourg": "strasbourg",
+        "obernai": "strasbourg", // Approximation for now or separate
+        "mont sainte odile": "strasbourg",
+        "ungersheim": "mulhouse"
+    };
+
+    // Check Alias
+    for (const [key, target] of Object.entries(aliases)) {
+        if (cleanDest.includes(key)) {
+            cleanDest = target;
+            break;
+        }
+    }
+
+    // Find matching key (fuzzy with reverse matching for typos)
+    let matchedKey = null;
+    let isFallback = false;
+
+    for (const key of Object.keys(POI_DATA)) {
+        const normalizedKey = key.replace(/-/g, " ");
+        // 1. Standard: Destination includes Key ("Ribeauville Centre")
+        if (cleanDest.includes(normalizedKey)) {
+            matchedKey = key;
+            break;
+        }
+        // 2. Reverse: Key includes Destination ("ibeauville" match "ribeauville")
+        // Only if input length > 4 to avoid matching "le" or "ville" too broadly
+        if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) {
+            matchedKey = key;
+            break;
+        }
+    }
+
+    // FALLBACK: If no match, generate DYNAMIC cards for the requested destination
+    let dynamicData = null;
+
+    if (!matchedKey) {
+        // Create a DYNAMIC entry for the unknown city
+        matchedKey = cleanDest; // Use user input as key
+        isFallback = true;
+        console.log(`No specific POI match found. Generating Dynamic Data for: ${cleanDest}`);
+
+        const searchCity = cleanDest.charAt(0).toUpperCase() + cleanDest.slice(1);
+        const safeSearch = encodeURIComponent(searchCity);
+        const wikiCity = searchCity.replace(/ /g, '_'); // Wikipedia format
+
+        // SMART MULTI-SOURCE STRATEGY (Best of Internet Compatible)
+        // With Date Integration
+        // SMART MULTI-SOURCE STRATEGY (STRICT: Visit Alsace / Alsace Essentielle ONLY)
+        const agendaLink = tripDate
+            ? `https://www.visit.alsace/?s=Agenda+${safeSearch}+${tripDate}`
+            : `https://www.visit.alsace/?s=Agenda+${safeSearch}`;
+
+        dynamicData = {
+            "pratique": [
+                { name: `Mairie / OT`, url: `https://www.visit.alsace/?s=Office+Tourisme+${safeSearch}`, icon: "ℹ️" },
+                { name: `Carte Interactive`, url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
+                { name: `Sorties du Jour`, url: agendaLink, icon: "📅" }
+            ],
+            "insolite": [
+                { name: `Curiosités à ${searchCity}`, url: `https://www.visit.alsace/?s=Lieu+Insolite+${safeSearch}`, icon: "📍" },
+                { name: `Pépites Cachées`, url: `https://www.visit.alsace/?s=Patrimoine+${safeSearch}`, icon: "💎" },
+                { name: `Visite ${searchCity}`, url: `https://www.visit.alsace/?s=Visite+${safeSearch}`, icon: "📸" }
+            ],
+            "gastronomy": [
+                { name: `Restaurants Terroir`, url: `https://www.visit.alsace/?s=Restaurant+Terroir+${safeSearch}`, icon: "🍴" },
+                { name: `Spécialités`, url: `https://www.visit.alsace/?s=Specialite+Alsacienne+${safeSearch}`, icon: "🥨" },
+                { name: `Winstub`, url: `https://www.visit.alsace/?s=Winstub+${safeSearch}`, icon: "🥘" }
+            ]
+        };
+        // REGIONAL WHITELIST: Allow dynamic suggestions for destinations within 200km zone
+        // Without API, we use regional pattern matching (Alsace, Bade, Vosges, Nord Suisse)
+        const regionalPatterns = [
+            // Alsace (Haut-Rhin, Bas-Rhin)
+            'alsace', 'haut rhin', 'bas rhin', 'sundgau', 'ried', 'vosges',
+            // Common Alsace suffixes
+            'heim', 'wihr', 'willer', 'bach', 'burg', 'dorf', 'hoffen',
+            // Major Alsace towns (without typical suffixes)
+            'obernai', 'barr', 'molsheim', 'rosheim', 'andlau', 'dambach',
+            'guebwiller', 'thann', 'cernay', 'masevaux', 'saint louis',
+            // Bade-Wurtemberg proche (< 100km)
+            'freiburg', 'breisach', 'emmendingen', 'lahr', 'offenburg', 'schwarzwald',
+            // Vosges
+            'gerardmer', 'la bresse', 'munster', 'thann', 'cernay',
+            // Nord Suisse
+            'basel', 'bale', 'liestal', 'rheinfelden'
+        ];
+
+        const isRegional = regionalPatterns.some(pattern => cleanDest.includes(pattern));
+
+        if (!isRegional) {
+            // Destination is outside regional zone (likely > 200km) - block it
+            console.log(`Destination "${cleanDest}" outside 200km zone - no suggestions`);
+            return;
+        }
+
+        // Generate dynamic suggestions for regional destination
+        console.log(`Generating dynamic suggestions for regional destination: ${cleanDest}`);
+    }
+
+    // Determine Source Data
+    const categories = POI_DATA[matchedKey];
+
+    if (categories) {
+        const catLabels = {
+            "insolite": "🕵️ LIEUX INSOLITES",
+            "gastronomy": "🍴 GASTRONOMIE & TERROIR",
+            "culture": "🏛️ CULTURE & MUSÉES",
+            "leisure": "🎡 LOISIRS & PARCS",
+            "wine": "🍷 DÉGUSTATION & CAVES"
+        };
+
+        // Title: Use matchedKey (which is now either the valid key OR the user input in dynamic mode)
+        const displayCity = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1);
+        const titleText = `TOP 3 : DÉCOUVERTE À ${displayCity.toUpperCase()}`;
+
+        let htmlContent = `<div class="font-future text-center text-neon-blue text-xl mb-6 tracking-[0.2em] border-b border-neon-blue/30 pb-2">${titleText}</div>`;
+
+        // 1. PRATIQUE / OFFICIEL (REMOVED as per user request to focus on discovery links only)
+        /*
+        if (categories.pratique && categories.pratique.length > 0) {
+            htmlContent += `
+            <div class="flex flex-wrap gap-3 justify-center mb-6">
+                 ${categories.pratique.map(item => {
+                let finalUrl = item.url;
+                // DYNAMIC DATE INJECTION & BLOCKING LOGIC
+                const BLOCKED_DOMAINS = ['visitstrasbourg.fr', 'ribeauville-riquewihr.com', 'selestat-haut-koenigsbourg.com', 'cadeauxbarriere.com'];
+                let isBlocked = BLOCKED_DOMAINS.some(d => finalUrl.includes(d));
+ 
+                if (tripDate && (item.name.includes("Agenda") || item.name.includes("Sortir") || item.name.includes("Jour"))) {
+                    if (finalUrl.includes('visit.alsace/?s=')) {
+                        finalUrl = `${finalUrl}+${tripDate}`;
+                    }
+                }
+                return `
+                    <button onclick="openExternalOverlay('${finalUrl}', '${item.name.replace(/'/g, "\\'")}', null, 0, ${isBlocked})" 
+                            class="px-4 py-2 bg-neon-green/10 border border-neon-green/50 hover:bg-neon-green/30 text-neon-green rounded font-bold transition-all flex items-center gap-2 shadow-[0_0_10px_rgba(184,255,0,0.2)]">
+                        <span class="text-xl">${item.icon}</span> ${item.name}
+                    </button>
+                 `}).join('')}
+            </div>`;
+        }
+        */
+
+        htmlContent += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">`;
+
+        let globalQueue = [];
+
+        for (const [catKey, items] of Object.entries(categories)) {
+            if (catKey === 'pratique') continue;
+            if (!items || items.length === 0) continue;
+
+            const displayLabel = catLabels[catKey] || catKey.toUpperCase();
+            const topItems = items.slice(0, 3);
+
+            // Add to Global Queue for flattened navigation if desired, 
+            // OR keep per-category. The user said "navigate among links".
+            // Let's create a per-category queue for logical grouping? 
+            // Or a MEGA queue of all suggestions?
+            // "Top 3b" implies the whole set. Let's do a flattened queue of everything shown?
+            // The display is grouped.
+            // Let's stick to per-category queue for now to keep context? 
+            // No, the user sees a grid of cards. Often user wants to browse ALL.
+            // Let's create `globalQueue` accumulation.
+
+            topItems.forEach(poi => {
+                globalQueue.push({
+                    url: poi.url,
+                    title: poi.name,
+                    name: poi.name,
+                    category: displayLabel
+                });
+            });
+        }
+
+        // Second Pass: Render with correct Global Index
+        let renderIndex = 0;
+        for (const [catKey, items] of Object.entries(categories)) {
+            if (catKey === 'pratique') continue;
+            if (!items || items.length === 0) continue;
+
+            const displayLabel = catLabels[catKey] || catKey.toUpperCase();
+            const topItems = items.slice(0, 3);
+
+
+            htmlContent += `
+                <div class="space-y-3 bg-white/5 p-3 rounded-lg border border-white/5 transition-all">
+                    <h5 class="text-neon-green font-future text-xs border-l-2 border-neon-green pl-2 mb-2">${displayLabel}</h5>
+                    <div class="space-y-2">
+                        ${topItems.map((poi) => {
+                // Store current index for this specific item
+                const currentIndex = renderIndex++;
+
+                // INJECT DESTINATION INTO VISIT.ALSACE URLs
+                let finalUrl = poi.url;
+                let isSafeDomain = finalUrl.includes('visit.alsace') || finalUrl.includes('alsace-essentielle');
+
+                if (isSafeDomain) {
+                    // If URL is generic (no search param), add destination
+                    if (!finalUrl.includes('?s=')) {
+                        // Generic visit.alsace URL -> add search with destination
+                        const cityName = matchedKey.charAt(0).toUpperCase() + matchedKey.slice(1);
+                        finalUrl = `https://www.visit.alsace/?s=${encodeURIComponent(cityName)}`;
+                    }
+                    // If URL already has search, it's from dynamic data and already contains destination
+                }
+
+                if (isSafeDomain) {
+                    return `
+                                    <div onclick="window.currentOverlayQueue = ${JSON.stringify(globalQueue).replace(/"/g, "&quot;")}; openExternalOverlay('${finalUrl}', '${poi.name.replace(/'/g, "\\'")}', window.currentOverlayQueue, ${currentIndex})" 
+                                         class="bg-black/40 p-2 rounded flex flex-col gap-1 group transition-all cursor-pointer hover:bg-white/10 hover:border hover:border-neon-blue/30 relative overflow-hidden border border-transparent">
+                                        <div class="absolute inset-0 bg-neon-blue/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
+                                        <div class="flex items-center gap-2 relative z-10 w-full">
+                                            <span class="text-lg opacity-80">${poi.icon}</span>
+                                            <span class="text-[10px] text-gray-300 font-mono truncate relative z-10 group-hover:text-neon-blue transition-colors font-bold">${poi.name}</span>
+                                            <span class="ml-auto text-[8px] text-white/30 tracking-widest relative z-10 group-hover:text-white/80">OUVRIR ></span>
+                                        </div>
+                                        <div class="text-[8px] text-neon-green/60 font-mono truncate pl-7 relative z-10 select-all group-hover:text-neon-green">${finalUrl.replace('https://', '').replace('www.', '').split('/')[0]}</div>
+                                    </div>`;
+                } else {
+                    return `
+                                    <div class="bg-black/40 p-2 rounded flex flex-col gap-1 group transition-all relative overflow-hidden border border-transparent hover:border-white/5">
+                                        <div class="absolute inset-0 bg-neon-blue/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
+                                        <div class="flex items-center gap-2 relative z-10">
+                                            <span class="text-lg opacity-80">${poi.icon}</span>
+                                            <span class="text-[10px] text-gray-300 font-mono truncate font-bold group-hover:text-neon-blue transition-colors">${poi.name}</span>
+                                        </div>
+                                        <div class="text-[8px] text-neon-green/60 font-mono truncate pl-7 relative z-10 select-all">${poi.url.replace('https://', '').replace('www.', '').split('/')[0]}</div>
+                                    </div>`;
+                }
+            }).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        htmlContent += `</div>`;
+
+        suggestionsDiv.innerHTML = htmlContent;
+        suggestionsDiv.classList.remove('hidden');
+    }
+}
 
 function initPricing() {
     const departureInput = document.getElementById('sim-departure');
@@ -1166,19 +1946,67 @@ async function calculateTrajectory() {
             tripDist = routeData.distKm;
             duration = routeData.durationMin;
             isSuccess = true;
+        } else {
+            // Fallback 1: Haversine Calculation (Crow flies * 1.3)
+            console.warn("Routing Failed - Using Haversine");
+            const R = 6371; // Earth Mean Radius in km
+            const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
+            const dLon = (endCoords.lon - startCoords.lon) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            tripDist = Math.round((R * c) * 1.3); // +30% for road approximation
+            duration = Math.round(tripDist * 1.2); // ~50km/h avg speed
+            isSuccess = true;
+
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ROUTAGE SATELLITE PRÉCIS INDISPONIBLE.<br>CALCUL GÉODÉSIQUE ACTIVÉ.</div>`;
+            }
         }
     }
 
     // Fallback if APIs fail (e.g. rate limit): Use Heuristic
     if (!isSuccess) {
         console.warn("API Fail - Using Fallback");
-        const depData = LOCATION_DATA[startLoc];
-        const destData = LOCATION_DATA[endLoc];
+
+        // Helper: Find known location in string (Fuzzy Match)
+        const findKnownLocation = (inputStr) => {
+            const cleanInput = inputStr.toLowerCase();
+            // 1. Try exact match (cleaned)
+            for (const [name, data] of Object.entries(LOCATION_DATA)) {
+                if (cleanInput === name.toLowerCase()) return data;
+            }
+            // 2. Try partial match (contains city name)
+            // Sort by length desc to match "Colmar" before "Colmar-Berg" (if exists) or specific variations
+            const knownNames = Object.keys(LOCATION_DATA).sort((a, b) => b.length - a.length);
+            for (const name of knownNames) {
+                // Check if input contains the city name (e.g. "10 rue de la gare, Colmar" contains "Colmar")
+                // We use word boundary check or simple includes if appropriate
+                if (cleanInput.includes(name.toLowerCase())) {
+                    return LOCATION_DATA[name];
+                }
+            }
+            return null;
+        };
+
+        const depData = findKnownLocation(startLoc) || findKnownLocation(departureInput.value);
+        const destData = findKnownLocation(endLoc) || findKnownLocation(destinationInput.value);
+
         if (depData && destData) {
             if (depData.id === 'baltzenheim') tripDist = destData.dist;
-            else tripDist = Math.round((depData.dist + destData.dist) * 0.9);
+            else if (destData.id === 'baltzenheim') tripDist = depData.dist;
+            else tripDist = Math.round((depData.dist + destData.dist) * 0.9); // Approximate triangulation
+
             isSuccess = true;
             duration = Math.round(tripDist * 1.0);
+
+            // Inform user it's an estimate based on city
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name}</div>`;
+            }
         }
     }
 
@@ -1281,6 +2109,11 @@ async function calculateTrajectory() {
             }
 
             speakSummary({ destination: endLoc, distance: tripDist, price: finalPrice });
+
+            // TRIGGER SUGGESTIONS
+            // 5. Trigger Suggestions (POIs) - WITH DATE
+            const tripDate = document.getElementById('sim-date') ? document.getElementById('sim-date').value : null;
+            suggestPOIs(endLoc, tripDate);
         }
     } else {
         if (detailDisplay) {
@@ -1818,6 +2651,200 @@ window.generateRecapPDF = async function () {
     doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
     doc.setTextColor(COL_SUB);
     doc.text("Document généré automatiquement. Merci de votre confiance.", 105, footerY + 11, { align: "center" });
+
+    // --- PAGE 2: SUGGESTIONS DE VISITE ---
+    // Find matching key for POI suggestions
+    let cleanDest = dest.toLowerCase();
+
+    // Apply Redirects/Aliases (Same logic as suggestPOIs)
+    const aliases = {
+        "artzenheim": "neuf-brisach",
+        "baltzenheim": "neuf-brisach",
+        "kunheim": "neuf-brisach",
+        "bimbisheim": "neuf-brisach",
+        "widensolen": "neuf-brisach",
+        "wolfgantzen": "neuf-brisach",
+        "volgelsheim": "neuf-brisach",
+        "biesheim": "neuf-brisach",
+        "vogelgrun": "neuf-brisach",
+        "algolsheim": "neuf-brisach",
+        "obersaasheim": "neuf-brisach",
+        "geiswasser": "neuf-brisach",
+        "heiteren": "neuf-brisach",
+        "marckolsheim": "neuf-brisach",
+        "sasbach": "neuf-brisach",
+        "brecht": "neuf-brisach",
+        "ihringen": "neuf-brisach",
+        "jebsheim": "colmar",
+        "muntzenheim": "colmar",
+        "horbourg-wihr": "colmar",
+        "andolsheim": "colmar",
+        "sundhoffen": "colmar",
+        "logelheim": "colmar",
+        "sainte-croix-en-plaine": "colmar",
+        "herrlisheim-pres-colmar": "colmar",
+        "wettolsheim": "colmar",
+        "eguisheim": "eguisheim",
+        "wintzenheim": "colmar",
+        "turckheim": "colmar",
+        "ingersheim": "colmar",
+        "bennwihr": "colmar",
+        "houssen": "colmar",
+        "ostheim": "colmar",
+        "guemar": "ribeauville", // close to ribeauville
+        "bergheim": "ribeauville",
+        "saint-hippolyte": "ribeauville",
+        "orschwiller": "selestat",
+        "kintzheim": "selestat", // Volerie des aigles
+        "chatenois": "selestat",
+        "scherwiller": "selestat",
+        "ebersheim": "selestat",
+        "baldenheim": "selestat",
+        "mussig": "selestat",
+        "heidolsheim": "selestat",
+        "artolsheim": "selestat",
+        "mackenheim": "selestat",
+        "bootzheim": "selestat",
+        "elscheim": "selestat",
+        "illhaeusern": "ribeauville", // Auberge de l'ill
+        "mittelwihr": "riquewihr",
+        "beblenheim": "riquewihr",
+        "hunawihr": "riquewihr",
+        "zellenberg": "riquewihr",
+        "kaysersberg": "kaysersberg",
+        "ammerschwihr": "kaysersberg",
+        "sigolsheim": "kaysersberg",
+        "kienzheim": "kaysersberg",
+        "katzenthal": "kaysersberg",
+        "niedermorschwihr": "colmar",
+        "obermorschwihr": "eguisheim",
+        "voegtlinshoffen": "eguisheim",
+        "husseren-les-chateaux": "eguisheim",
+        "hattstatt": "eguisheim",
+        "gueberschwihr": "eguisheim",
+        "pfaffenheim": "eguisheim",
+        "rouffach": "eguisheim", // Approximation
+        "gundolsheim": "eguisheim",
+        "bergholtz": "eguisheim",
+        "soultzmatt": "eguisheim",
+        "westhalten": "eguisheim",
+        "osenbach": "eguisheim",
+        "selestat": "selestat",
+        "strasbourg": "strasbourg",
+        "entzheim": "strasbourg",
+        "lingolsheim": "strasbourg",
+        "illkirch": "strasbourg",
+        "schiltigheim": "strasbourg",
+        "gare de strasbourg": "strasbourg",
+        "aéroport strasbourg": "strasbourg",
+        "obernai": "strasbourg",
+        "mont sainte-odile": "strasbourg",
+        "ungersheim": "mulhouse",
+        "europa-park": "rust",
+        "rulantica": "rust",
+        "rust": "rust",
+        "basel": "bale",
+        "bale": "bale",
+        "euroairport": "bale",
+        "freiburg": "freiburg",
+        "fribourg": "freiburg",
+        "baden-baden": "baden-baden",
+        "baden": "baden-baden",
+        "gerardmer": "gerardmer",
+        "vosges": "gerardmer"
+    };
+
+    for (const [key, target] of Object.entries(aliases)) {
+        if (cleanDest.includes(key)) {
+            cleanDest = target;
+            break;
+        }
+    }
+
+    let matchedKey = null;
+    for (const key of Object.keys(POI_DATA)) {
+        const normalizedKey = key.replace(/-/g, " ");
+        // 1. Standard: Destination includes Key ("Ribeauville Centre")
+        if (cleanDest.includes(normalizedKey)) {
+            matchedKey = key;
+            break;
+        }
+        // 2. Reverse: Key includes Destination ("ibeauville" match "ribeauville")
+        // Only if input length > 4 to avoid matching "le" or "ville" too broadly
+        if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) {
+            matchedKey = key;
+            break;
+        }
+    }
+
+    if (matchedKey && POI_DATA[matchedKey]) {
+        doc.addPage();
+
+        // Background
+        doc.setFillColor(COL_BG);
+        doc.rect(0, 0, 210, 297, 'F');
+
+        // Header Page 2
+        doc.setFillColor(COL_TEXT);
+        doc.rect(0, 0, 210, 25, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.text(`SUGGESTIONS DE VISITE : ${matchedKey.toUpperCase()}`, 105, 17, { align: "center" });
+
+        const categories = POI_DATA[matchedKey];
+        const catLabels = {
+            "insolite": "LIEUX INSOLITES",
+            "gastronomy": "GASTRONOMIE",
+            "culture": "CULTURE & MUSÉES",
+            "leisure": "LOISIRS & PARCS",
+            "wine": "CAVES VITICOLES"
+        };
+
+        let yPos = 40;
+        const leftMargin = 20;
+
+        for (const [catKey, items] of Object.entries(categories)) {
+            if (!items || items.length === 0) continue;
+
+            const displayLabel = catLabels[catKey] || catKey.toUpperCase();
+
+            // Category Title
+            doc.setFontSize(12);
+            doc.setTextColor(COL_ACCENT);
+            doc.setFont("helvetica", "bold");
+            doc.text(displayLabel, leftMargin, yPos);
+            yPos += 8;
+
+            // Items
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+
+            items.slice(0, 3).forEach(poi => {
+                doc.setTextColor(COL_TEXT);
+                doc.text(`- ${poi.name}`, leftMargin, yPos);
+
+                // Link (Blue, Underlined style implied by looking like a link, 
+                // but jspdf link annotation is invisible hotzone).
+                // We will make it look clickable.
+
+                const textWidth = doc.getTextWidth(`- ${poi.name} `);
+                doc.setTextColor(0, 0, 255); // Blue
+                doc.textWithLink("[SITE OFFICIEL]", leftMargin + textWidth, yPos, { url: poi.url });
+                doc.setTextColor(COL_TEXT);
+
+                yPos += 7;
+            });
+
+            yPos += 5; // Spacing between categories
+        }
+
+        // Footer Page 2
+        doc.setFillColor(COL_TEXT);
+        doc.rect(0, 280, 210, 17, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.text("iA_k_venir - Suggestions touristiques à titre indicatif.", 105, 280 + 9, { align: "center" });
+    }
 
     // --- OUTPUT ---
     // Store BLOB directly to avoid fetch errors later
@@ -3192,20 +4219,20 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (typeof fn === 'function') {
                 fn();
-                // console.log(`[OK] ${name}`); // Uncomment for debug
+                console.log(`[OK] ${name} initialized`);
             } else {
                 console.warn(`[SKIP] ${name} - Function not found`);
             }
         } catch (e) {
             console.error(`[FAIL] ${name}:`, e);
-            // Continue execution despite error
         }
     };
 
     // Core Systems
     safeInit(initPricing, "Pricing System");
     safeInit(initReservation, "Reservation Logic");
-    safeInit(initProtocol, "Audio Protocol"); // Added missing init
+    safeInit(initProtocol, "Audio Protocol");
+    safeInit(initVoice, "Voice Engine");
     safeInit(initFlatpickr, "Calendar (Flatpickr)");
     safeInit(initMobileMenu, "Mobile Menu");
     safeInit(initScrollEffect, "Scroll FX");
@@ -3484,41 +4511,27 @@ window.startGuidedTour = async function () {
     ];
 
     // Helper: Highlight
+    // Helper: Highlight (Original Design Restored)
     const highlight = (el, stepId) => {
         if (!el) return;
 
-        // NAVBAR SPECIAL CASE
-        if (stepId === 'nav-ambiance' || el.closest('nav')) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        // STANDARD LOGIC: Show Section Overview on Desktop, Element on Mobile
-        else {
-            const section = el.closest('section');
-            const isDesktop = window.innerWidth >= 768;
+        const section = el.closest('section');
+        const isDesktop = window.innerWidth >= 768;
 
-            // REVISED SCROLL LOGIC based on latest request:
-            // "bouger la fenetre de navigation pour bien voir les elelments suivant"
-            // This implies dynamic scrolling.
-
-            // Wait, previous request was "Section Top".
-            // Let's do Section Top ONLY if it's a huge container (like Grid).
-            // If it's an INPUT, Center it.
-
-            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else if (section && isDesktop) {
-                const offset = 80;
-                const sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
-                window.scrollTo({ top: sectionTop - offset, behavior: 'smooth' });
-            } else {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        }
-
+        // SCROLL LOGIC (Restored)
+        // Center inputs, otherwise use smart section top alignment for desktop
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
             el.classList.add('scale-105', 'z-50'); // Pop Effect for Inputs
+        } else if (section && isDesktop) {
+            const offset = 80;
+            const sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({ top: sectionTop - offset, behavior: 'smooth' });
+        } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
+        // ILLUMINATION (Restored: Ring + Shadow + Pulse)
         el.classList.add(
             'ring-4',
             'ring-neon-green',
@@ -3526,14 +4539,14 @@ window.startGuidedTour = async function () {
             'z-40',
             'animate-subtle-green-pulse',
             'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
-            'bg-black/80' // Darken background to make input pop
+            'bg-black/80' // Darken background to make highlight pop
         );
     };
 
     const removeHighlight = (el) => {
         if (!el) return;
         el.classList.remove(
-            'ring-4', // Increased border
+            'ring-4',
             'ring-neon-green',
             'relative',
             'z-40',
@@ -3548,43 +4561,17 @@ window.startGuidedTour = async function () {
         );
     };
 
-    // Helper: Update Button Text
-    function updateTourButtons(text) {
-        const dBtn = document.getElementById('btn-tour-desktop');
-        const mBtn = document.getElementById('btn-tour-mobile');
-        if (dBtn) dBtn.innerText = text;
-        if (mBtn) mBtn.innerText = text;
-
-        if (text === "ARRÊT") {
-            if (dBtn) {
-                dBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
-                dBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
-            }
-            if (mBtn) {
-                mBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
-                mBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
-            }
-        } else {
-            if (dBtn) {
-                dBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
-                dBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
-            }
-            if (mBtn) {
-                mBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
-                mBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
-            }
-        }
-    }
-
-    // Helper: Create Validation Button Promise
     const waitForValidation = (signal) => {
         return new Promise((resolve, reject) => {
-            if (signal.aborted) return reject(new Error('Aborted'));
+            if (signal.aborted) return reject(new Error("Tour Aborted"));
 
             const btn = document.createElement('button');
+            // ORIGINAL BUTTON DESIGN
             btn.innerHTML = `<span class="animate-pulse">▶</span> VALIDER & CONTINUER`;
             btn.className = "fixed bottom-8 right-8 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-xs tracking-widest border border-black/20 flex items-center gap-2";
             btn.id = "tour-validation-btn";
+
+            document.body.appendChild(btn);
 
             const cleanup = () => {
                 if (btn) btn.remove();
@@ -3593,114 +4580,57 @@ window.startGuidedTour = async function () {
 
             const onAbort = () => {
                 cleanup();
-                reject(new Error('Aborted'));
+                reject(new Error("Tour Aborted"));
             };
 
-            signal.addEventListener('abort', onAbort);
-
-            btn.onclick = () => {
+            const onClick = () => {
                 // Click Effect
                 btn.innerHTML = "VALIDÉE ✓";
-                btn.style.backgroundColor = "#b8ff00"; // Neon Green
+                btn.style.backgroundColor = "#b8ff00";
                 setTimeout(() => {
                     cleanup();
                     resolve();
                 }, 300);
             };
-            document.body.appendChild(btn);
+
+            signal.addEventListener('abort', onAbort);
+            btn.addEventListener('click', onClick);
         });
     };
 
+    // --- RUN TOUR ---
     try {
-        const nav = document.querySelector('nav');
-
-        // Execution Loop
-        for (const step of STEPS) {
+        for (let i = 0; i < STEPS.length; i++) {
             if (signal.aborted) break;
+            const step = STEPS[i];
 
-            // 1. Navigation Visibility: KEPT VISIBLE (User Request)
-            if (nav) nav.classList.remove('-translate-y-full');
-
-            // 2. Find Element (Initial)
+            // 1. Find Element
             let el = document.getElementById(step.id);
-            if (window.innerWidth < 768 && step.mobileFallback) {
-                const mobileEl = document.getElementById(step.mobileFallback);
-                if (mobileEl) el = mobileEl;
+            if (!el && step.mobileFallback) {
+                el = document.getElementById(step.mobileFallback);
             }
 
-            // 3. Highlight & Scroll
-            if (el) highlight(el, step.id);
+            // 2. Highlight (if found)
+            if (el) {
+                highlight(el, step.id);
+            }
 
-            // --- FOCUS CHAIN LOGIC (Auto-Advance Highlights) ---
-            if (step.focusChain && Array.isArray(step.focusChain)) {
-
-                // We don't block execution, we just set up listeners
-                // The Validation step (Wait) handles the pause.
-                // While waiting, we guide the user internally.
-
-                let currentChainIndex = 0;
-                const chainIds = step.focusChain;
-
-                // Function to advance
-                const advanceChain = () => {
-                    // Remove current
-                    const currentId = chainIds[currentChainIndex];
-                    const currentEl = document.getElementById(currentId);
-                    if (currentEl) removeHighlight(currentEl);
-
-                    // Move to next
-                    currentChainIndex++;
-                    if (currentChainIndex < chainIds.length) {
-                        const nextId = chainIds[currentChainIndex];
-                        const nextEl = document.getElementById(nextId);
-                        if (nextEl) {
-                            highlight(nextEl, nextId); // This triggers scroll
-                            setupChainListener(nextEl);
-                        }
-                    } else {
-                        // End of chain - maybe highlight Validation Button?
-                        const vBtn = document.getElementById('tour-validation-btn');
-                        if (vBtn) vBtn.classList.add('animate-subtle-green-pulse', 'ring-2', 'ring-neon-green');
-                    }
-                };
-
-                // Listener Setup
-                const setupChainListener = (element) => {
-                    if (!element) return;
-
-                    const onInput = () => {
-                        // Check if valid/filled
-                        if (element.value && element.value.length > 0) {
-                            // Small delay for UI smoothness
-                            setTimeout(advanceChain, 500);
-                            element.removeEventListener('input', onInput);
-                            element.removeEventListener('change', onInput);
-                        }
-                    };
-
-                    // Support both Input and Change (for selects/dates)
-                    element.addEventListener('input', onInput);
-                    element.addEventListener('change', onInput);
-                };
-
-                // INITIALIZE FIRST ELEMENT OF CHAIN (Always)
-                // Even if the Step Highlight is on the Container, we must hook the first input
-                if (chainIds.length > 0) {
-                    const firstId = chainIds[0];
-                    const firstEl = document.getElementById(firstId);
-                    if (firstEl) {
-                        highlight(firstEl, firstId); // Explicitly highight the first input too
-                        currentChainIndex = 0;
-                        setupChainListener(firstEl);
+            // 3. Chain Focus (Simulator/Identity special case)
+            if (step.focusChain) {
+                // Focus first input
+                const firstEl = document.getElementById(step.focusChain[0]);
+                if (firstEl) {
+                    firstEl.focus();
+                    if (step.focusChain.length > 1) {
+                        // Setup chain logic if needed (simplified here)
                     }
                 }
             }
-            // ---------------------------------------------------
 
-            // 4. Speak & Wait for Speech to Finish (Audio Prioritization)
+            // 4. Speak & Wait
             await speak(step.text);
 
-            // 5. Special Case: Pilot Video Autoplay (AFTER Speech)
+            // 5. Special Case: Pilot Video Autoplay
             if (step.id === 'pilot-container') {
                 const pilotVideo = document.getElementById('pilot-video');
                 if (pilotVideo) {
@@ -3709,89 +4639,192 @@ window.startGuidedTour = async function () {
                 }
             }
 
-            // 6. ANIMATION LOGIC (Filter Demo & Deals Demo)
-            // ----------------------------------------------------------------
-            // DISABLED FOR FLUIDITY & PROFESSIONALISM (Ref Step Id: 1359)
-            /*
-            if (step.filterDemo) {
-                // Wait a bit before starting demo
-                await new Promise(r => setTimeout(r, 1000));
-    
-                for (const cat of step.filterDemo) {
-                    if (signal.aborted) break;
-    
-                    const btn = document.querySelector(`button[data-category="${cat}"]`);
-                    if (btn) {
-                        highlight(btn, 'filter-demo'); // Use arbitrary ID to trigger scroll/highlight
-                        btn.click(); // Trigger Filter
-    
-                        // Wait 2 seconds for user to see
-                        await new Promise(r => setTimeout(r, 2000));
-                        removeHighlight(btn);
-                    }
-                }
-            }
-    
-            if (step.dealsDemo) {
-                // Wait a bit
-                await new Promise(r => setTimeout(r, 1000));
-    
-                const dealCards = document.querySelectorAll('#deals-grid > div');
-                if (dealCards.length > 0) {
-                    for (const card of dealCards) {
-                        if (signal.aborted) break;
-    
-                        // Randomly choose between the Card Body OR the Selection Button
-                        const coinFlip = Math.random() > 0.5;
-                        let target = null;
-    
-                        if (coinFlip) {
-                            // Target the Card (bg-retro-paper)
-                            target = card.querySelector('.bg-retro-paper');
-                        } else {
-                            // Target the Selection Button (last button)
-                            const buttons = card.querySelectorAll('button');
-                            if (buttons.length > 0) target = buttons[buttons.length - 1];
-                        }
-    
-                        if (!target) target = card; // Fallback
-    
-                        highlight(target, 'deal-demo');
-                        await new Promise(r => setTimeout(r, 2000));
-                        removeHighlight(target);
-                    }
-                }
-            }
-            */
-            // ----------------------------------------------------------------
-
-            // 7. Wait for User Validation
+            // 6. Wait for Validation
             await waitForValidation(signal);
 
-            // 7. Cleanup Highlight (Cleanup ALL potential chain highlights)
+            // 7. Cleanup
+            if (el) removeHighlight(el);
             if (step.focusChain) {
                 step.focusChain.forEach(id => {
                     const cEl = document.getElementById(id);
                     if (cEl) removeHighlight(cEl);
                 });
-            } else {
-                if (el) removeHighlight(el);
             }
         }
     } catch (err) {
-        console.log("Tour stopped:", err.message);
-        document.querySelectorAll('.animate-subtle-green-pulse').forEach(el => removeHighlight(el));
-        const vBtn = document.getElementById('tour-validation-btn');
-        if (vBtn) vBtn.remove();
+        console.log("Tour stopped or error:", err);
     } finally {
         tourController = null;
         updateTourButtons("AIDE");
-        window.isTourActive = false; // Reset Flag
-        // Restore Nav
+        window.isTourActive = false;
+        // Restore Nav if needed
         const nav = document.querySelector('nav');
         if (nav) nav.classList.remove('-translate-y-full');
     }
 };
 
+// Helper: Update Button Text (Restored)
+function updateTourButtons(text) {
+    const dBtn = document.getElementById('btn-tour-desktop');
+    const mBtn = document.getElementById('btn-tour-mobile');
+    if (dBtn) dBtn.innerText = text;
+    if (mBtn) mBtn.innerText = text;
 
+    if (text === "ARRÊT") {
+        if (dBtn) {
+            dBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+            dBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
+        }
+        if (mBtn) {
+            mBtn.classList.remove('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+            mBtn.classList.add('bg-limit-red', 'text-white', 'border-limit-red');
+        }
+    } else {
+        if (dBtn) {
+            dBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
+            dBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+        }
+        if (mBtn) {
+            mBtn.classList.remove('bg-limit-red', 'text-white', 'border-limit-red');
+            mBtn.classList.add('bg-neon-green/10', 'text-neon-green', 'border-neon-green');
+        }
+    }
+}
 
+// --- GLOBAL EVENT LISTENERS (Restored) ---
+// --- GLOBAL EVENT LISTENERS (Robust Init) ---
+const initApp = () => {
+    console.log("iA_k_venir: App Initialization Started.");
+
+    // 1. Attach Tour Buttons (Explicit Check)
+    const btnTourDesktop = document.getElementById('btn-tour-desktop');
+    const btnTourMobile = document.getElementById('btn-tour-mobile');
+
+    const launchTour = (e) => {
+        e.preventDefault();
+        console.log("Tour Button Clicked. Launching...");
+        if (typeof window.startGuidedTour === 'function') {
+            window.startGuidedTour().catch(err => {
+                console.error("Tour Crash:", err);
+                alert("Erreur lors du lancement de la visite : " + err.message);
+            });
+        } else {
+            console.error("startGuidedTour not function");
+            alert("Erreur : La visite guidée n'est pas initialisée.");
+        }
+    };
+
+    if (btnTourDesktop) {
+        // Remove old listeners (clone node trick not needed if we just add new one)
+        btnTourDesktop.onclick = launchTour; // Force override inline
+        console.log("Button Aide (Desktop) Linked");
+    } else {
+        console.warn("Button Aide (Desktop) Not Found");
+    }
+
+    if (btnTourMobile) {
+        btnTourMobile.onclick = launchTour;
+        console.log("Button Aide (Mobile) Linked");
+    }
+
+    // 2. Init Voice (Explicit Call if check failed)
+    if (!window.voiceInitialized) {
+        console.log("Initializing Voice from App Init...");
+        try {
+            initVoice();
+        } catch (e) {
+            console.error("Voice Init Failed:", e);
+        }
+    }
+
+    console.log("iA_k_venir: Logic Ready.");
+};
+
+// Use window.load to ensure all resources (including partial HTML) are ready
+window.addEventListener('load', initApp);
+// Fallback if load already fired
+if (document.readyState === 'complete') {
+    initApp();
+}
+
+/* =========================================
+   WEBCAMS MODAL (Easter Egg)
+   ========================================= */
+
+function openWebcamsModal() {
+    const modal = document.getElementById('webcams-modal');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.style.opacity = '1';
+    }, 10);
+
+    // KITT Voice
+    if (window.speak) {
+        speak("Accès satellite activé. Flux webcams en direct disponibles.");
+    }
+}
+
+function closeWebcamsModal() {
+    const modal = document.getElementById('webcams-modal');
+    if (!modal) return;
+
+    modal.style.opacity = '0';
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 500);
+}
+
+function showWebcamCategory(category) {
+    // Hide all categories
+    document.querySelectorAll('.webcam-category').forEach(cat => {
+        cat.classList.add('hidden');
+    });
+
+    // Show selected category
+    const selectedCat = document.getElementById(`webcam-${category}`);
+    if (selectedCat) {
+        selectedCat.classList.remove('hidden');
+    }
+
+    // Update tab styles
+    document.querySelectorAll('.webcam-tab').forEach(tab => {
+        tab.classList.remove('active', 'bg-neon-blue/20', 'text-neon-blue', 'border-neon-blue/50');
+        tab.classList.add('bg-white/5', 'text-gray-400', 'border-white/10');
+    });
+
+    event.target.classList.remove('bg-white/5', 'text-gray-400', 'border-white/10');
+    event.target.classList.add('active', 'bg-neon-blue/20', 'text-neon-blue', 'border-neon-blue/50');
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeWebcamsModal();
+        closeFullscreenWebcam();
+    }
+});
+
+// Fullscreen Webcam Function (Opens in new window to avoid iframe blocking)
+function openFullscreenWebcam(url, title) {
+    // Open in new window/tab with fullscreen-like dimensions
+    const width = window.screen.width * 0.9;
+    const height = window.screen.height * 0.9;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+
+    const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`;
+
+    window.open(url, `webcam_${title.replace(/\s/g, '_')}`, features);
+
+    // KITT Voice
+    if (window.speak) {
+        speak(`Ouverture du flux ${title} dans une nouvelle fenêtre.`);
+    }
+}
+
+function closeFullscreenWebcam() {
+    // Not needed anymore since we open in new window
+    // Kept for compatibility
+}

@@ -27,6 +27,10 @@
         href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Poppins:wght@300;400;600&display=swap"
         rel="stylesheet">
 
+    <!-- Leaflet CSS (for weather map) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 
@@ -291,6 +295,349 @@
         #lightbox-img {
             transition: box-shadow 1s ease-in-out, transform 0.3s ease;
         }
+
+        /* SATELLITE ORBIT ANIMATION */
+        @keyframes orbit {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg) translateX(35px) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg) translateX(35px) rotate(-360deg);
+            }
+        }
+
+        /* ========================================
+           MODERN WEATHER STATION DASHBOARD
+         ======================================== */
+
+        :root {
+            /* Weather Station Color Palette */
+            --ws-temp-hot: #ff3333;
+            --ws-temp-warm: #ff9500;
+            --ws-temp-mild: #b8ff00;
+            --ws-temp-cool: #00d4ff;
+            --ws-temp-cold: #0084ff;
+
+            --ws-wind-calm: #34C759;
+            --ws-wind-moderate: #FFD60A;
+            --ws-wind-strong: #FF9500;
+            --ws-wind-danger: #ff3333;
+
+            --ws-uv-low: #34C759;
+            --ws-uv-moderate: #FFD60A;
+            --ws-uv-high: #FF9500;
+            --ws-uv-very-high: #ff3333;
+            --ws-uv-extreme: #BF5AF2;
+
+            --ws-precip-none: #8E8E93;
+            --ws-precip-light: #00d4ff;
+            --ws-precip-moderate: #0084ff;
+            --ws-precip-heavy: #0066cc;
+
+            --ws-humidity-low: #FF9500;
+            --ws-humidity-normal: #34C759;
+            --ws-humidity-high: #00d4ff;
+        }
+
+        /* Weather Station Grid Layout */
+        .weather-grid-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .weather-grid-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .weather-grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hero Weather Card */
+        .weather-hero-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 0, 0, 0.9) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Compact Metric Card */
+        .weather-metric-compact {
+            background: rgba(10, 10, 26, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .weather-metric-compact:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 212, 255, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
+        }
+
+        /* Photo Conditions Panel */
+        .photo-conditions-panel {
+            background: linear-gradient(180deg, rgba(212, 175, 55, 0.08) 0%, rgba(0, 0, 0, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-left: 3px solid #D4AF37;
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Metric Value Styling */
+        .metric-value-large {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .metric-label {
+            font-size: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #8E8E93;
+            font-weight: 600;
+        }
+
+        .metric-unit {
+            font-size: 0.875rem;
+            color: #8E8E93;
+            font-weight: 400;
+        }
+
+        /* Color-coded metric values */
+        .temp-hot {
+            color: var(--ws-temp-hot);
+        }
+
+        .temp-warm {
+            color: var(--ws-temp-warm);
+        }
+
+        .temp-mild {
+            color: var(--ws-temp-mild);
+        }
+
+        .temp-cool {
+            color: var(--ws-temp-cool);
+        }
+
+        .temp-cold {
+            color: var(--ws-temp-cold);
+        }
+
+        .wind-calm {
+            color: var(--ws-wind-calm);
+        }
+
+        .wind-moderate {
+            color: var(--ws-wind-moderate);
+        }
+
+        .wind-strong {
+            color: var(--ws-wind-strong);
+        }
+
+        .wind-danger {
+            color: var(--ws-wind-danger);
+        }
+
+        .uv-low {
+            color: var(--ws-uv-low);
+        }
+
+        .uv-moderate {
+            color: var(--ws-uv-moderate);
+        }
+
+        .uv-high {
+            color: var(--ws-uv-high);
+        }
+
+        .uv-very-high {
+            color: var(--ws-uv-very-high);
+        }
+
+        .uv-extreme {
+            color: var(--ws-uv-extreme);
+        }
+
+        .precip-none {
+            color: var(--ws-precip-none);
+        }
+
+        .precip-light {
+            color: var(--ws-precip-light);
+        }
+
+        .precip-moderate {
+            color: var(--ws-precip-moderate);
+        }
+
+        .precip-heavy {
+            color: var(--ws-precip-heavy);
+        }
+
+        .humidity-low {
+            color: var(--ws-humidity-low);
+        }
+
+        .humidity-normal {
+            color: var(--ws-humidity-normal);
+        }
+
+        .humidity-high {
+            color: var(--ws-humidity-high);
+        }
+
+        /* Progress Bar */
+        .metric-progress {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .metric-progress-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 10-Day Forecast Horizontal Scroll */
+        .forecast-horizontal {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 212, 255, 0.3) transparent;
+        }
+
+        .forecast-horizontal::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .forecast-horizontal::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .forecast-horizontal::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .forecast-day-card {
+            min-width: 100px;
+            background: rgba(10, 10, 26, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .forecast-day-card:hover {
+            border-color: rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .forecast-day-card.selected {
+            border: 2px solid #00d4ff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Hourly Forecast Mini Strip */
+        .hourly-mini-strip {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            scrollbar-width: thin;
+        }
+
+        .hourly-mini-strip::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .hourly-mini-card {
+            min-width: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hourly-mini-card.current {
+            border-color: rgba(0, 212, 255, 0.5);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+            opacity: 0;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .delay-400 {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
     </style>
 </head>
 
@@ -314,32 +661,49 @@
                 iA_k<span class="text-limit-red group-hover:text-white transition-colors">_venir</span>
 
                 <!-- CONSTELLATION BADGE (Alsace Grid) -->
-                <div id="alsace-constellation"
-                    class="absolute -top-3 -right-24 w-20 h-20 pointer-events-none opacity-80 hidden md:block">
+                <div id="alsace-constellation" class="absolute -top-3 -right-24 w-20 h-20 opacity-80 hidden md:block">
                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_5px_rgba(0,212,255,0.8)]">
                         <!-- Route des Vins (Line) -->
                         <path d="M30,80 L40,50 L70,20" stroke="rgba(255,255,255,0.3)" stroke-width="1" fill="none"
-                            class="rhythm-path" />
+                            class="rhythm-path pointer-events-none" />
 
                         <!-- Stars/Cities -->
-                        <circle cx="30" cy="80" r="2" fill="#fff" class="rhythm-star" data-city="Colmar">
+                        <circle cx="30" cy="80" r="2" fill="#fff" class="rhythm-star pointer-events-none"
+                            data-city="Colmar">
                             <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite" />
                         </circle>
-                        <text x="15" y="85" fill="rgba(255,255,255,0.5)" font-size="6"
-                            font-family="monospace">COLMAR</text>
+                        <text x="15" y="85" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace"
+                            class="pointer-events-none">COLMAR</text>
 
-                        <circle cx="40" cy="50" r="2" fill="#fff" class="rhythm-star" data-city="Ribeauville">
+                        <circle cx="40" cy="50" r="2" fill="#fff" class="rhythm-star pointer-events-none"
+                            data-city="Ribeauville">
                             <animate attributeName="opacity" values="0.4;1;0.4" dur="2.5s" repeatCount="indefinite" />
                         </circle>
-                        <text x="45" y="52" fill="rgba(255,255,255,0.5)" font-size="6"
-                            font-family="monospace">RIBEAU</text>
+                        <text x="45" y="52" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace"
+                            class="pointer-events-none">RIBEAU</text>
 
-                        <circle cx="70" cy="20" r="2" fill="#fff" class="rhythm-star" data-city="Selestat">
+                        <circle cx="70" cy="20" r="2" fill="#fff" class="rhythm-star pointer-events-none"
+                            data-city="Selestat">
                             <animate attributeName="opacity" values="0.4;1;0.4" dur="4s" repeatCount="indefinite" />
                         </circle>
-                        <text x="75" y="22" fill="rgba(255,255,255,0.5)" font-size="6"
-                            font-family="monospace">SELEST</text>
+                        <text x="75" y="22" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace"
+                            class="pointer-events-none">SELEST</text>
                     </svg>
+
+                    <!-- SATELLITE EASTER EGG (HTML/CSS - More Visible) -->
+                    <div id="satellite-easter-egg" onclick="openWebcamsModal()"
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10 hover:scale-125 transition-transform"
+                        style="animation: orbit 12s linear infinite;" title="🛰️ Webcams Live Alsace">
+                        <div class="relative">
+                            <!-- Satellite Icon -->
+                            <div class="w-3 h-3 bg-neon-blue rounded-full shadow-[0_0_10px_#00d4ff] animate-pulse">
+                            </div>
+                            <!-- Signal Waves -->
+                            <div
+                                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 border border-neon-blue/30 rounded-full animate-ping">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </a>
 
@@ -775,7 +1139,9 @@
                         <!-- DEPARTURE -->
                         <div class="space-y-2">
                             <label class="block text-neon-blue text-xs font-future tracking-widest ml-1">POINT DE
-                                DÉPART</label>
+                                DÉPART <span
+                                    class="text-[10px] text-gray-500 font-mono ml-2 normal-case tracking-normal">(Format
+                                    : Numéro Rue, Ville)</span></label>
                             <input list="locations-list" id="sim-departure" type="text"
                                 placeholder="Ex: Baltzenheim, Strasbourg, Gare..."
                                 class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-600">
@@ -783,8 +1149,10 @@
 
                         <!-- DESTINATION -->
                         <div class="space-y-2">
-                            <label
-                                class="block text-neon-blue text-xs font-future tracking-widest ml-1">DESTINATION</label>
+                            <label class="block text-neon-blue text-xs font-future tracking-widest ml-1">DESTINATION
+                                <span
+                                    class="text-[10px] text-gray-500 font-mono ml-2 normal-case tracking-normal">(Format
+                                    : Numéro Rue, Ville)</span></label>
                             <input list="locations-list" id="sim-destination" type="text"
                                 placeholder="Ex: Paris, Lyon, Zurich (333km max)..."
                                 class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-600">
@@ -858,11 +1226,18 @@
 
 
 
-                <button id="btn-calculate"
-                    class="w-full bg-neon-blue/10 border border-neon-blue text-neon-blue font-future font-bold py-4 hover:bg-neon-blue hover:text-black transition-all uppercase tracking-widest group">
-                    <span class="group-hover:hidden">Lancer le calcul</span>
-                    <span class="hidden group-hover:inline-block">Calculer & Vocaliser</span>
             </div>
+
+            <!-- POI Suggestions (Dynamic) -->
+            <div id="sim-suggestions" class="mt-8 border-t border-white/10 pt-6 hidden">
+                <!-- Injected by JS -->
+            </div>
+
+            <button id="btn-calculate"
+                class="w-full bg-neon-blue/10 border border-neon-blue text-neon-blue font-future font-bold py-4 hover:bg-neon-blue hover:text-black transition-all uppercase tracking-widest group">
+                <span class="group-hover:hidden">Lancer le calcul</span>
+                <span class="hidden group-hover:inline-block">Calculer & Vocaliser</span>
+        </div>
     </section>
 
     <!-- Gallery / Archives -->
@@ -1317,14 +1692,16 @@
     <!-- Deal Overlay (Iframe) -->
     <div id="deal-overlay" class="fixed inset-0 z-[60] hidden bg-black/95 backdrop-blur-sm">
         <!-- Toolbar -->
+        <!-- Header -->
         <div
-            class="absolute top-0 left-0 w-full h-16 bg-space-black border-b border-white/10 flex justify-between items-center px-6 z-10">
+            class="absolute top-0 left-0 w-full p-4 flex justify-between items-center z-50 bg-gradient-to-b from-black to-transparent">
             <div class="flex items-center gap-4">
-                <span class="text-neon-blue font-future text-lg tracking-widest">NAVIGATEUR_OFFRES</span>
-                <span id="deal-overlay-title" class="text-white/50 font-mono text-xs hidden md:inline-block"></span>
+                <div class="text-neon-green font-future text-xl animate-pulse">● LIVE FEED</div>
+                <div id="deal-overlay-title" class="text-gray-400 font-mono text-xs hidden md:block">// TITLE_HOLDER
+                </div>
             </div>
 
-            <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2">
                 <!-- Navigation Controls -->
                 <div class="flex items-center gap-2">
                     <button onclick="navigateDeal(-1)"
@@ -1428,7 +1805,7 @@
 
         <!-- Iframe Container -->
         <div class="w-full h-full pt-16 pb-0 relative z-1">
-            <iframe id="deal-iframe" src=""
+            <iframe id="deal-iframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                 class="w-full h-full border-none bg-white opacity-0 transition-opacity duration-500"></iframe>
         </div>
     </div>
@@ -1558,6 +1935,9 @@
                     }
                     // 2. Speech Synthesis
                     if ('speechSynthesis' in window) {
+                        // Ensure voices are initialized/re-initialized
+                        if (window.initVoice) window.initVoice();
+
                         const utterance = new SpeechSynthesisUtterance('');
                         utterance.volume = 0;
                         window.speechSynthesis.speak(utterance);
@@ -1567,15 +1947,103 @@
                     overlay.style.opacity = '0';
                     setTimeout(() => overlay.remove(), 500);
 
-                    // 4. Welcome Sound (Optional, but good feedback)
-                    // If we have 'speak' function available globally from main.js? 
-                    // No guarantee main.js is full parsed yet, but usually is.
-                    // Safest is to rely on main.js to speak welcome if needed, or just silent unlock.
-                    // Minimal feedback here:
-                    if (window.speak) setTimeout(() => speak("Système opérationnel."), 600);
+                    // 4. Welcome Sound
+                    if (window.speak) {
+                        setTimeout(() => speak("Système opérationnel."), 800);
+                    }
                 });
             });
         </script>
+    </div>
+
+    <!-- WEBCAMS MODAL (Easter Egg) -->
+    <div id="webcams-modal"
+        class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] hidden opacity-0 transition-opacity duration-500">
+        <div class="container mx-auto px-6 py-8 h-full flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8 border-b border-neon-blue/30 pb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
+                    <h2 class="text-3xl font-future text-white">
+                        <span class="text-neon-green">MÉTÉO</span> ALSACE
+                    </h2>
+                    <span class="text-xs font-mono text-gray-500">PRÉVISIONS 10 JOURS</span>
+                </div>
+                <button onclick="closeWebcamsModal()"
+                    class="text-white hover:text-limit-red transition-colors text-4xl leading-none">
+                    ×
+                </button>
+            </div>
+
+            <!-- Search Bar (Geolocation) -->
+            <div class="mb-6 bg-space-black/60 border border-neon-green/30 p-4 rounded-lg">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="flex-1 relative">
+                        <input type="text" id="webcam-search-input"
+                            placeholder="Rechercher une destination (commune, site touristique)..."
+                            class="w-full bg-black/50 border border-white/20 text-white px-4 py-3 rounded font-mono text-sm focus:border-neon-green focus:outline-none placeholder-gray-600">
+                        <div id="search-loading" class="hidden absolute right-3 top-3">
+                            <div
+                                class="w-5 h-5 border-2 border-neon-green border-t-transparent rounded-full animate-spin">
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="searchDestination()" id="btn-search-webcam"
+                        class="bg-neon-green/10 hover:bg-neon-green text-neon-green hover:text-black border border-neon-green px-6 py-3 rounded font-future text-sm transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span>RECHERCHER</span>
+                    </button>
+                    <button onclick="resetSearch()" id="btn-reset-search"
+                        class="hidden bg-limit-red/10 hover:bg-limit-red text-limit-red hover:text-white border border-limit-red px-4 py-3 rounded font-future text-sm transition-all">
+                        RÉINITIALISER
+                    </button>
+                </div>
+
+                <!-- Search Results Info -->
+                <div id="search-results-info"
+                    class="hidden mt-4 p-3 bg-neon-green/10 border border-neon-green/30 rounded">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-neon-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="font-future text-sm text-neon-green mb-1" id="search-location-name"></p>
+                            <p class="text-xs text-gray-400 font-mono" id="search-location-details"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                <div id="search-error" class="hidden mt-4 p-3 bg-limit-red/10 border border-limit-red/30 rounded">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-limit-red mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-sm text-limit-red font-mono" id="search-error-message"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEATHER DASHBOARD CONTAINER -->
+            <div id="weather-dashboard" class="flex-1 overflow-hidden pr-2 flex flex-col h-full min-h-0">
+                <!-- Content will be injected by renderDashboard for full control -->
+                <div
+                    class="h-full flex flex-col items-center justify-center text-gray-500 font-mono text-sm animate-pulse">
+                    Initialisation du système météo...
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Scripts -->
@@ -1591,6 +2059,10 @@
     <!-- Artist Recognition System -->
     <script src="artist-recognition.js"></script>
 
+    <!-- Weather & Geolocation System -->
+    <script src="geolocation-search.js"></script>
+
+    <!-- Main Script -->
     <script src="main.js"></script>
 </body>
 
