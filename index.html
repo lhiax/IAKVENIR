@@ -638,10 +638,304 @@
             animation-delay: 0.4s;
             opacity: 0;
         }
+
+        /* ========================================
+           ASTRONOMICAL & WEATHER ANIMATIONS
+         ======================================== */
+
+        /* Moon Phase - Subtle Rotation */
+        @keyframes moon-rotate {
+
+            0%,
+            100% {
+                transform: rotate(-3deg);
+            }
+
+            50% {
+                transform: rotate(3deg);
+            }
+        }
+
+        .animate-moon-rotate {
+            animation: moon-rotate 8s ease-in-out infinite;
+        }
+
+        /* Shooting Star Trail */
+        @keyframes shooting-star {
+            0% {
+                transform: translateX(0) translateY(0) scale(0);
+                opacity: 0;
+            }
+
+            5% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(-200px) translateY(200px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .animate-shooting-star {
+            animation: shooting-star 3s ease-out infinite;
+        }
+
+        /* Aurora Borealis Glow */
+        @keyframes aurora-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(52, 211, 153, 0.3);
+                opacity: 0.6;
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(52, 211, 153, 0.7);
+                opacity: 0.9;
+            }
+        }
+
+        .animate-aurora {
+            animation: aurora-glow 4s ease-in-out infinite;
+        }
+
+        /* Starlink Signal Pulse */
+        @keyframes signal-pulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scaleY(0.95);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scaleY(1);
+            }
+        }
+
+        .animate-signal-pulse {
+            animation: signal-pulse 2s ease-in-out infinite;
+        }
+
+        /* Enhanced Weather Icon Animations */
+        @keyframes pulse-sun {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+
+        .animate-pulse-sun {
+            animation: pulse-sun 3s ease-in-out infinite;
+        }
+
+        @keyframes spin-reverse {
+            from {
+                transform: rotate(360deg);
+            }
+
+            to {
+                transform: rotate(0deg);
+            }
+        }
+
+        .animate-spin-reverse {
+            animation: spin-reverse 20s linear infinite;
+        }
+
+        /* Rain Animation */
+        @keyframes rain-drop {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(15px);
+                opacity: 0;
+            }
+        }
+
+        .animate-rain {
+            animation: rain-drop 0.8s ease-in infinite;
+        }
+
+        /* Snow Drift */
+        @keyframes snow-drift {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(20px) translateX(5px);
+                opacity: 0;
+            }
+        }
+
+        .animate-snow-drift {
+            animation: snow-drift 3s ease-in-out infinite;
+        }
+
+        /* Lightning Flash */
+        @keyframes lightning {
+
+            0%,
+            10%,
+            20%,
+            100% {
+                opacity: 0;
+            }
+
+            5%,
+            15% {
+                opacity: 1;
+            }
+        }
+
+        .animate-lightning {
+            animation: lightning 4s ease-in-out infinite;
+        }
+
+        /* Fog Wave */
+        @keyframes fog-wave {
+
+            0%,
+            100% {
+                transform: translateX(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateX(-10px);
+                opacity: 0.8;
+            }
+        }
+
+        .animate-fog-wave {
+            animation: fog-wave 5s ease-in-out infinite;
+        }
+
+        /* Cloud Float */
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .animate-float-slow {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        /* Pulse for full moon */
+        @keyframes pulse-slow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 4s ease-in-out infinite;
+        }
+
+        /* Golden Hour Fill Animation */
+        @keyframes golden-fill {
+            from {
+                transform: scaleX(0);
+                transform-origin: left;
+            }
+
+            to {
+                transform: scaleX(1);
+                transform-origin: left;
+            }
+        }
+
+        /* Astro Alert Pulse */
+        @keyframes astro-alert-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        .animate-astro-alert {
+            animation: astro-alert-pulse 2s ease-in-out infinite;
+        }
+
+        /* Improved Weather Grid Spacing */
+        .weather-grid-layout {
+            gap: 1.25rem !important;
+        }
+
+        @media (max-width: 1024px) {
+            .weather-grid-layout {
+                gap: 1rem !important;
+            }
+        }
+
+        /* Better text spacing to prevent overlap */
+        .weather-hero-card,
+        .weather-metric-compact,
+        .photo-conditions-panel {
+            padding: 1.25rem !important;
+            min-height: fit-content;
+        }
+
+        .metric-label {
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .metric-value-large {
+            margin: 0.25rem 0;
+            line-height: 1.1;
+        }
+
+        /* Prevent text overflow */
+        .weather-hero-card h1,
+        .weather-hero-card p,
+        .photo-conditions-panel h3,
+        .photo-conditions-panel p {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
     </style>
 </head>
 
-<body class="bg-space-black text-white font-body overflow-x-hidden selection:bg-neon-green selection:text-black">
+<body class="bg-space-black text-white font-body overflow-x-hidden selection:bg-neon-blue selection:text-white">
 
     <!-- Sound/Voice Trigger (Hidden) -->
     <button id="voice-assistant-trigger" class="hidden" aria-hidden="true"></button>
@@ -672,8 +966,7 @@
                             data-city="Colmar">
                             <animate attributeName="opacity" values="0.4;1;0.4" dur="3s" repeatCount="indefinite" />
                         </circle>
-                        <text x="15" y="85" fill="rgba(255,255,255,0.5)" font-size="6" font-family="monospace"
-                            class="pointer-events-none">COLMAR</text>
+                        <!-- COLMAR label removed per user request -->
 
                         <circle cx="40" cy="50" r="2" fill="#fff" class="rhythm-star pointer-events-none"
                             data-city="Ribeauville">
@@ -690,9 +983,9 @@
                             class="pointer-events-none">SELEST</text>
                     </svg>
 
-                    <!-- SATELLITE EASTER EGG (HTML/CSS - More Visible) -->
+                    <!-- SATELLITE EASTER EGG (HIDDEN - Duplicate) -->
                     <div id="satellite-easter-egg" onclick="openWebcamsModal()"
-                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10 hover:scale-125 transition-transform"
+                        class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer z-10 hover:scale-125 transition-transform"
                         style="animation: orbit 12s linear infinite;" title="🛰️ Webcams Live Alsace">
                         <div class="relative">
                             <!-- Satellite Icon -->
@@ -878,13 +1171,13 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3 text-xs font-mono">
                         <input id="hero-prenom" type="text" placeholder="PRÉNOM"
-                            class="bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none uppercase placeholder-gray-600">
+                            class="bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none uppercase placeholder-gray-400">
                         <input id="hero-nom" type="text" placeholder="NOM"
-                            class="bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none uppercase placeholder-gray-600">
+                            class="bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none uppercase placeholder-gray-400">
                         <input id="hero-email" type="email" placeholder="E-MAIL"
-                            class="col-span-2 bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none placeholder-gray-600">
+                            class="col-span-2 bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none placeholder-gray-400">
                         <input id="hero-phone" type="tel" placeholder="TÉLÉPHONE"
-                            class="col-span-2 bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none placeholder-gray-600">
+                            class="col-span-2 bg-black/50 border border-white/10 p-2 text-white focus:border-neon-blue focus:outline-none placeholder-gray-400">
                     </div>
                     <p class="text-[10px] text-gray-500 mt-2 font-mono">* Données synchronisées avec le système
                         réservation</p>
@@ -969,7 +1262,7 @@
                                 été sélectionné pour illustrer un double vinyle collaboratif.
                             </p>
                             <button onclick="openExternalOverlay('https://youtu.be/1v3mBn47xJE', 'Reportage Drone')"
-                                class="inline-flex items-center gap-2 border border-neon-blue/50 bg-neon-blue/5 px-4 py-2 rounded text-neon-blue font-future text-xs hover:bg-neon-blue hover:text-black transition-all">
+                                class="inline-flex items-center gap-2 border border-neon-blue/50 bg-neon-blue/5 px-4 py-2 rounded text-neon-blue font-future text-xs hover:border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -989,7 +1282,7 @@
                             </p>
                             <button
                                 onclick="openExternalOverlay('https://www.youtube.com/watch?v=iqqvz0ElheA', 'Formation Photo Culinaire')"
-                                class="inline-flex items-center gap-2 border border-neon-blue/50 bg-neon-blue/5 px-4 py-2 rounded text-neon-blue font-future text-xs hover:bg-neon-blue hover:text-black transition-all">
+                                class="inline-flex items-center gap-2 border border-neon-blue/50 bg-neon-blue/5 px-4 py-2 rounded text-neon-blue font-future text-xs hover:border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                     <path
                                         d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
@@ -1143,8 +1436,8 @@
                                     class="text-[10px] text-gray-500 font-mono ml-2 normal-case tracking-normal">(Format
                                     : Numéro Rue, Ville)</span></label>
                             <input list="locations-list" id="sim-departure" type="text"
-                                placeholder="Ex: Baltzenheim, Strasbourg, Gare..."
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-600">
+                                placeholder="Ex: Baltzenheim, Colmar, Mulhouse, Aéroport Basel..."
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-400">
                         </div>
 
                         <!-- DESTINATION -->
@@ -1154,8 +1447,8 @@
                                     class="text-[10px] text-gray-500 font-mono ml-2 normal-case tracking-normal">(Format
                                     : Numéro Rue, Ville)</span></label>
                             <input list="locations-list" id="sim-destination" type="text"
-                                placeholder="Ex: Paris, Lyon, Zurich (333km max)..."
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-600">
+                                placeholder="Ex: Strasbourg, Basel, Freiburg, Zürich, Dijon..."
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none focus:ring-1 focus:ring-neon-blue transition-all font-mono placeholder-gray-400">
                         </div>
                         <datalist id="locations-list">
                             <!-- Populated by JS -->
@@ -1234,9 +1527,9 @@
             </div>
 
             <button id="btn-calculate"
-                class="w-full bg-neon-blue/10 border border-neon-blue text-neon-blue font-future font-bold py-4 hover:bg-neon-blue hover:text-black transition-all uppercase tracking-widest group">
-                <span class="group-hover:hidden">Lancer le calcul</span>
-                <span class="hidden group-hover:inline-block">Calculer & Vocaliser</span>
+                class="w-full bg-neon-blue/10 border border-neon-blue text-neon-blue font-future font-bold py-4 hover:border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all uppercase tracking-widest">
+                Lancer le Calcul
+            </button>
         </div>
     </section>
 
@@ -1325,13 +1618,13 @@
                                 <label for="res-prenom"
                                     class="block text-neon-blue text-xs font-future tracking-widest">PRÉNOM</label>
                                 <input id="res-prenom" type="text" placeholder="Michael"
-                                    class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                                    class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                             </div>
                             <div class="space-y-2">
                                 <label for="res-nom"
                                     class="block text-neon-blue text-xs font-future tracking-widest">NOM</label>
                                 <input id="res-nom" type="text" placeholder="Knight"
-                                    class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                                    class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                             </div>
                         </div>
 
@@ -1340,7 +1633,7 @@
                             <label for="res-email"
                                 class="block text-neon-blue text-xs font-future tracking-widest">E-MAIL</label>
                             <input id="res-email" type="email" placeholder="michael@foundation.org"
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                         </div>
 
                         <!-- Phone Number -->
@@ -1349,23 +1642,25 @@
                                 class="block text-neon-blue text-xs font-future tracking-widest">TÉLÉPHONE
                                 (OBLIGATOIRE)</label>
                             <input id="res-phone" type="tel" placeholder="06 00 00 00 00"
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                         </div>
 
                         <div class="space-y-2">
                             <label for="res-pickup"
                                 class="block text-neon-blue text-xs font-future tracking-widest">ADRESSE DE PRISE EN
                                 CHARGE</label>
-                            <input id="res-pickup" type="text" placeholder="Fondation pour la Loi et le Gouvernement..."
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                            <input id="res-pickup" type="text"
+                                placeholder="Ex: Baltzenheim, Colmar, Gare de Mulhouse..."
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                         </div>
 
                         <div class="space-y-2">
                             <label for="res-drop"
                                 class="block text-neon-blue text-xs font-future tracking-widest">ADRESSE DE
                                 DESTINATION</label>
-                            <input id="res-drop" type="text" placeholder="Phoenix Foundation..."
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600">
+                            <input id="res-drop" type="text"
+                                placeholder="Ex: Aéroport Basel, Strasbourg Centre, Freiburg..."
+                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400">
                         </div>
 
                         <!-- Auto-Filled Duration & Price -->
@@ -1415,55 +1710,81 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="space-y-2">
-                            <label for="res-opt"
-                                class="block text-neon-blue text-xs font-future tracking-widest">OPTION</label>
-                            <select id="res-opt"
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm">
-                                <option value="">Aucune</option>
-                                <option value="reportage">Reportage Photo</option>
-                                <option value="transport+reportage">Transport + Photo</option>
-                                <option value="bons-plans">Expérience / Bons Plans</option>
-                            </select>
+
+                        <!-- WEATHER SUMMARY (Hidden by default, shown when date selected) -->
+                        <div id="res-weather-summary"
+                            class="hidden col-span-full bg-gradient-to-r from-neon-blue/5 to-transparent border-l-4 border-neon-blue rounded-lg p-4 animate-fade-in-up">
+                            <div class="flex flex-col gap-4">
+                                <div class="flex-1">
+                                    <h4 class="text-neon-blue font-future text-sm tracking-widest mb-2">MÉTÉO PRÉVUE
+                                        À DESTINATION</h4>
+                                    <div id="res-weather-details" class="text-white text-sm space-y-1">
+                                        <!-- Weather details injected here -->
+                                    </div>
+                                    <p id="res-weather-suggestion" class="text-xs text-gold mt-3 font-mono">
+                                        <!-- Clothing suggestion injected here -->
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="space-y-2">
-                            <label for="res-ambiance"
-                                class="block text-neon-blue text-xs font-future tracking-widest">AMBIANCE SONORE</label>
-                            <select id="res-ambiance"
-                                class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm">
-                                <option value="silence" selected>Silence (Protocole Furtif)</option>
-                                <option value="relax">Relax (Lounge)</option>
-                                <option value="futuriste">Futuriste (Synthwave)</option>
-                                <option value="retro">Rétro (Archives)</option>
-                                <option value="dab">FIP (National)</option>
-                                <option disabled>--- DAB ALSACE ---</option>
-                                <option value="dkl">DKL (Dreyeckland)</option>
-                                <option value="azur-fm">Azur FM (Centre)</option>
-                                <option value="rdl">RDL 68 (Colmar)</option>
-                                <option disabled>--- RADIO FG ---</option>
-                                <option value="fg-main">Radio FG (Officiel)</option>
-                                <option value="fg-chic">FG Chic (Lounge)</option>
-                                <option value="fg-deep">FG Deep (House)</option>
-                                <option disabled>--- PULS RADIO ---</option>
-                                <option value="puls-dance">Puls Dance (Club)</option>
-                                <option value="puls-trance">Puls Trance (Hyper)</option>
-                                <option value="puls-90">Puls 90 (Retro)</option>
-                                <option value="puls-2000">Puls 2000 (Millennium)</option>
-                            </select>
+                    </div>
+
+                    <!-- TESLA CABIN TEMPERATURE -->
+                    <div id="res-tesla-temp"
+                        class="hidden space-y-2 col-span-full bg-gradient-to-r from-gold/5 to-transparent border-l-4 border-gold rounded-lg p-4">
+                        <label for="res-cabin-temp" class="block text-gold font-future text-xs tracking-widest mb-2">
+                            🌡️ TEMPÉRATURE SOUHAITÉE À BORD
+                        </label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" id="res-cabin-temp" min="16" max="28" step="0.5"
+                                class="w-24 bg-[#0d1b2a] text-white border border-gold/50 rounded-lg px-4 py-2 focus:border-gold focus:outline-none transition-all font-mono text-center text-lg"
+                                placeholder="21">
+                            <span class="text-white text-sm">°C</span>
+                            <span id="res-temp-comfort" class="text-xs text-gray-400 font-mono ml-4">
+                                <!-- Comfort message injected here -->
+                            </span>
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label for="res-notes" class="block text-neon-blue text-xs font-future tracking-widest">NOTES DE
-                            MISSION</label>
-                        <textarea id="res-notes" rows="3"
-                            placeholder="Ex: Besoin de discrétion, 2 valises, Arrêt rapide au QG..."
-                            class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-600"></textarea>
+                        <label for="res-opt"
+                            class="block text-neon-blue text-xs font-future tracking-widest">OPTION</label>
+                        <select id="res-opt"
+                            class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm">
+                            <option value="">Aucune</option>
+                            <option value="reportage">Reportage Photo</option>
+                            <option value="transport+reportage">Transport + Photo</option>
+                            <option value="bons-plans">Expérience / Bons Plans</option>
+                        </select>
                     </div>
-
-
-
+                    <div class="space-y-2">
+                        <label for="res-ambiance"
+                            class="block text-neon-blue text-xs font-future tracking-widest">AMBIANCE SONORE</label>
+                        <select id="res-ambiance"
+                            class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono text-sm">
+                            <option value="silence" selected>Silence (Protocole Furtif)</option>
+                            <option value="relax">Relax (Lounge)</option>
+                            <option value="futuriste">Futuriste (Synthwave)</option>
+                            <option value="retro">Rétro (Archives)</option>
+                            <option value="dab">FIP (National)</option>
+                            <option disabled>--- DAB ALSACE ---</option>
+                            <option value="dkl">DKL (Dreyeckland)</option>
+                            <option value="azur-fm">Azur FM (Centre)</option>
+                            <option value="rdl">RDL 68 (Colmar)</option>
+                            <option disabled>--- RADIO FG ---</option>
+                            <option value="fg-main">Radio FG (Officiel)</option>
+                            <option value="fg-chic">FG Chic (Lounge)</option>
+                            <option value="fg-deep">FG Deep (House)</option>
+                            <option disabled>--- PULS RADIO ---</option>
+                            <option value="puls-dance">Puls Dance (Club)</option>
+                            <option value="puls-trance">Puls Trance (Hyper)</option>
+                            <option value="puls-90">Puls 90 (Retro)</option>
+                            <option value="puls-2000">Puls 2000 (Millennium)</option>
+                        </select>
+                    </div>
                 </div>
+
+
 
 
                 <!-- Summary / Console Output -->
@@ -1544,20 +1865,30 @@
                             <!-- Controls -->
                             <div class="flex gap-4 w-full">
                                 <button id="btn-start-camera"
-                                    class="flex-1 bg-neon-blue/10 text-neon-blue border border-neon-blue py-2 rounded hover:bg-neon-blue hover:text-black transition-all font-future text-xs">
+                                    class="flex-1 bg-neon-blue/10 text-neon-blue border border-neon-blue py-2 rounded hover:border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all font-future text-xs">
                                     INITIALISER SCAN
                                 </button>
                                 <button id="btn-capture-photo"
-                                    class="flex-1 bg-neon-green/10 text-neon-green border border-neon-green py-2 rounded hover:bg-neon-green hover:text-black transition-all font-future text-xs hidden">
+                                    class="flex-1 bg-neon-green/10 text-neon-green border border-neon-green py-2 rounded hover:border-neon-green hover:shadow-[0_0_20px_#b8ff00] transition-all font-future text-xs hidden">
                                     CAPTURER
                                 </button>
                                 <button id="btn-retake-photo"
-                                    class="flex-1 bg-red-500/10 text-red-500 border border-red-500 py-2 rounded hover:bg-red-500 hover:text-black transition-all font-future text-xs hidden">
+                                    class="flex-1 bg-red-500/10 text-red-500 border border-red-500 py-2 rounded hover:border-red-500 hover:shadow-[0_0_20px_#ef4444] transition-all font-future text-xs hidden">
                                     RÉESSAYER
                                 </button>
                             </div>
                         </div>
                     </div>
+                    <!-- NOTES DE MISSION (Moved here) -->
+                    <div class="space-y-2 mb-4 bg-gray-900/50 p-4 rounded-lg border border-white/5 shadow-inner">
+                        <label for="res-notes" class="block text-neon-blue text-xs font-future tracking-widest mb-2">●
+                            NOTES
+                            DE MISSION</label>
+                        <textarea id="res-notes" rows="3"
+                            placeholder="Ex: Besoin de discrétion, 2 valises, Arrêt rapide au QG..."
+                            class="w-full bg-[#0d1b2a] text-white border border-white/10 rounded-lg px-4 py-3 focus:border-neon-blue focus:outline-none transition-all font-mono placeholder-gray-400"></textarea>
+                    </div>
+
                     <div
                         class="bg-black border border-neon-blue/30 p-1 rounded-lg shadow-[0_0_30px_rgba(0,212,255,0.1)] flex-1 min-h-[300px] flex flex-col">
                         <div
@@ -1603,7 +1934,7 @@
                         <!-- Action Bar -->
                         <div class="bg-[#050510] border-t border-neon-blue/20 p-4 flex flex-col gap-3">
                             <button onclick="generateRecapPDF()"
-                                class="w-full bg-neon-blue/10 text-neon-blue border border-neon-blue py-3 rounded font-future font-bold text-xs hover:bg-neon-blue hover:text-black transition-all flex items-center justify-center gap-2">
+                                class="w-full bg-neon-blue/10 text-neon-blue border border-neon-blue py-3 rounded font-future font-bold text-xs hover:border-neon-blue hover:shadow-[0_0_20px_#00d4ff] transition-all flex items-center justify-center gap-2">
                                 <span class="animate-pulse">⚡</span> GÉNÉRER LE DOCUMENT DE MISSION
                             </button>
 
@@ -1622,16 +1953,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-neon-green/5 border border-neon-green/20 p-4 rounded-lg flex gap-4 items-start">
-                        <div class="text-neon-green text-2xl">💡</div>
-                        <div>
-                            <h4 class="text-neon-green font-future text-sm mb-1">ASTUCE COCKPIT</h4>
-                            <p class="text-gray-400 text-xs font-mono">
-                                Pour une vraie voix "Signature", j'utilise l'API standard. Pour le vrai KITT, imaginez
-                                un synthétiseur vocal à 2000$.
-                            </p>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -1980,8 +2302,8 @@
                 <div class="flex flex-col md:flex-row gap-3">
                     <div class="flex-1 relative">
                         <input type="text" id="webcam-search-input"
-                            placeholder="Rechercher une destination (commune, site touristique)..."
-                            class="w-full bg-black/50 border border-white/20 text-white px-4 py-3 rounded font-mono text-sm focus:border-neon-green focus:outline-none placeholder-gray-600">
+                            placeholder="Ex: Colmar, Strasbourg, Haut-Koenigsbourg, Riquewihr..."
+                            class="w-full bg-black/60 border border-white/20 text-white px-4 py-3 rounded font-mono text-sm focus:border-neon-blue focus:ring-1 focus:ring-neon-blue focus:shadow-[0_0_15px_rgba(0,212,255,0.4)] focus:outline-none placeholder-gray-400 transition-all">
                         <div id="search-loading" class="hidden absolute right-3 top-3">
                             <div
                                 class="w-5 h-5 border-2 border-neon-green border-t-transparent rounded-full animate-spin">
@@ -1989,7 +2311,7 @@
                         </div>
                     </div>
                     <button onclick="searchDestination()" id="btn-search-webcam"
-                        class="bg-neon-green/10 hover:bg-neon-green text-neon-green hover:text-black border border-neon-green px-6 py-3 rounded font-future text-sm transition-all flex items-center justify-center gap-2">
+                        class="bg-neon-green/10 text-white border border-neon-green px-6 py-3 rounded font-future text-sm font-bold transition-all flex items-center justify-center gap-2 hover:scale-110 shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -2004,9 +2326,9 @@
 
                 <!-- Search Results Info -->
                 <div id="search-results-info"
-                    class="hidden mt-4 p-3 bg-neon-green/10 border border-neon-green/30 rounded">
+                    class="hidden mt-4 p-3 bg-neon-blue/10 border border-neon-blue/30 rounded animate-fade-in-up">
                     <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-neon-green mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
+                        <svg class="w-5 h-5 text-neon-blue mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
@@ -2015,8 +2337,9 @@
                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
                         <div class="flex-1">
-                            <p class="font-future text-sm text-neon-green mb-1" id="search-location-name"></p>
-                            <p class="text-xs text-gray-400 font-mono" id="search-location-details"></p>
+                            <p class="font-future text-sm text-white mb-1 drop-shadow-[0_0_8px_rgba(0,212,255,0.8)] animate-pulse"
+                                id="search-location-name"></p>
+                            <p class="text-xs text-gray-300 font-mono" id="search-location-details"></p>
                         </div>
                     </div>
                 </div>
@@ -2058,6 +2381,9 @@
 
     <!-- Artist Recognition System -->
     <script src="artist-recognition.js"></script>
+
+    <!-- Weather Helpers (Color Functions) -->
+    <script src="weather-helpers.js"></script>
 
     <!-- Weather & Geolocation System -->
     <script src="geolocation-search.js"></script>

@@ -1,3 +1,4 @@
+
 // WEATHER CODES MAPPING
 const WMO_CODES = {
     0: 'Ciel Dégagé', 1: 'Peu Nuageux', 2: 'Partiel. Nuageux', 3: 'Couvert',
@@ -36,43 +37,6 @@ function getWeatherInfo(code) {
     if ([95, 96, 99].includes(code)) icon = '⛈️';
 
     return { desc, icon: getAnimatedIcon(code) };
-}
-
-// COLOR HELPERS
-function getTempColorClass(temp) {
-    if (temp >= 30) return 'temp-hot';
-    if (temp >= 22) return 'temp-warm';
-    if (temp >= 15) return 'temp-mild';
-    if (temp >= 5) return 'temp-cool';
-    return 'temp-cold';
-}
-
-function getWindColorClass(speed) {
-    if (speed >= 60) return 'wind-danger';
-    if (speed >= 40) return 'wind-strong';
-    if (speed >= 20) return 'wind-moderate';
-    return 'wind-calm';
-}
-
-function getPrecipColorClass(mm) {
-    if (mm >= 10) return 'precip-heavy';
-    if (mm >= 5) return 'precip-moderate';
-    if (mm > 0) return 'precip-light';
-    return 'precip-none';
-}
-
-function getHumidityColorClass(humidity) {
-    if (humidity >= 70) return 'humidity-high';
-    if (humidity <= 30) return 'humidity-low';
-    return 'humidity-normal';
-}
-
-function getUVInfo(uv) {
-    if (uv >= 11) return { label: 'EXTRÊME', class: 'uv-extreme' };
-    if (uv >= 8) return { label: 'TRÈS ÉLEVÉ', class: 'uv-very-high' };
-    if (uv >= 6) return { label: 'ÉLEVÉ', class: 'uv-high' };
-    if (uv >= 3) return { label: 'MODÉRÉ', class: 'uv-moderate' };
-    return { label: 'FAIBLE', class: 'uv-low' };
 }
 
 // ANIMATED ICONS GENERATOR (SVG)
@@ -451,11 +415,6 @@ function getPhotoConditions(sunriseStr, sunsetStr, weatherCode, cloudCover, moon
         else if ([51, 61, 80].includes(weatherCode)) { condition = "DRAMATIQUE (PLUIE)"; ev = "11"; kelvin = "6000K"; }
     }
 
-    // Advanced Photo Metrics
-    let lightDirection = "Zénith";
-    let shadowQuality = "Dure";
-    let ndFilter = "Aucun";
-
     // Starlink Logic (Toy Logic based on cloud cover)
     let starlink = "INVISIBLE";
     let starlinkBars = 0;
@@ -471,34 +430,8 @@ function getPhotoConditions(sunriseStr, sunsetStr, weatherCode, cloudCover, moon
         starlinkColor = "text-yellow-500";
     }
 
-    // Simple Azimuth estimation based on time relative to noon
-    const noon = new Date(sr.getTime() + (ss.getTime() - sr.getTime()) / 2);
-    const hoursFromNoon = (now - noon) / (1000 * 60 * 60);
-
-    if (hoursFromNoon < -4) lightDirection = "Est (Bas)";
-    else if (hoursFromNoon < -1.5) lightDirection = "Sud-Est";
-    else if (hoursFromNoon < 1.5) lightDirection = "Sud (Haut)";
-    else if (hoursFromNoon < 4) lightDirection = "Sud-Ouest";
-    else lightDirection = "Ouest (Bas)";
-
-    if (now < sr || now > ss) lightDirection = "N/A (Nuit)";
-
-    // Shadow Quality
-    if (cloudCover > 80) shadowQuality = "Très Douce (Diffus)";
-    else if (cloudCover > 40) shadowQuality = "Douce";
-    else if (Math.abs(hoursFromNoon) > 3) shadowQuality = "Allongée";
-    else shadowQuality = "Dure (Contraste fort)";
-
-    // ND Filter Suggestion based on EV
-    const evNum = parseInt(ev);
-    if (evNum >= 15) ndFilter = "ND8 - ND16";
-    else if (evNum >= 13) ndFilter = "ND4 - ND8";
-    else if (evNum >= 11) ndFilter = "ND2 - ND4";
-    else ndFilter = "Aucun";
-
     return {
         condition, ev, kelvin, quality,
-        lightDirection, shadowQuality, ndFilter,
         phases: { sunrise: sr, sunset: ss, goldenHourMorning: ghMorningEnd, goldenHourEvening: ghEveningStart },
         astro: {
             starlink, starlinkBars, starlinkColor,
@@ -629,7 +562,7 @@ async function fetchWeatherData(lat, lon) {
     // Including Minutely 15 for rain forecast
     // Using default best_match model (removed meteofrance_seamless as it changes field names)
     // Added forecast_days=14 to ensure enough data for the grid
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,uv_index,visibility&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,visibility,wind_speed_10m,uv_index,is_day,cloud_cover,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum,wind_speed_10m_max&minutely_15=precipitation&timezone=auto&forecast_days=10`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,uv_index,visibility&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,visibility,wind_speed_10m,uv_index,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_sum,wind_speed_10m_max&minutely_15=precipitation&timezone=auto&forecast_days=14`;
     try {
         const res = await fetch(url);
         if (!res.ok) throw new Error('API Météo indisponible');
@@ -643,31 +576,20 @@ async function fetchWeatherData(lat, lon) {
         }
 
         // Check if we have the minimum required data
-        if (!data.daily.time.length ||
-            !data.daily.temperature_2m_max ||
-            !data.daily.temperature_2m_min ||
-            !data.daily.weather_code ||
-            !data.daily.sunrise ||
-            !data.daily.sunset ||
-            !data.daily.precipitation_sum) {
-            console.error('Missing required daily data fields:', Object.keys(data.daily));
-            throw new Error('Données quotidiennes incomplètes');
+        if (!data.daily.time.length || !data.daily.temperature_2m_max || !data.daily.temperature_2m_min) {
+            console.error('Missing required daily data');
+            throw new Error('Données quotidiennes manquantes');
         }
 
-        if (!data.hourly ||
-            !data.hourly.time ||
-            !data.hourly.temperature_2m ||
-            !data.hourly.weather_code ||
-            !data.hourly.relative_humidity_2m ||
-            !data.hourly.wind_speed_10m) {
-            console.error('Missing required hourly data fields:', data.hourly ? Object.keys(data.hourly) : 'hourly object missing');
-            throw new Error('Données horaires incomplètes');
+        if (!data.hourly || !data.hourly.time || !data.hourly.temperature_2m) {
+            console.error('Missing required hourly data');
+            throw new Error('Données horaires manquantes');
         }
 
         return data;
     } catch (e) {
         console.error('Weather API Error:', e);
-        throw e; // Rethrow to let caller handle it
+        return null;
     }
 }
 
@@ -714,23 +636,21 @@ function renderDashboard(data, locationName, dayIndex = 0) {
         const cloudCover = daily.precipitation_sum[dayIndex] > 0 ? 80 : 20;
         const photo = getPhotoConditions(daily.sunrise[dayIndex], daily.sunset[dayIndex], daily.weather_code[dayIndex], cloudCover, moonPhase);
 
-        // --- MAIN RENDER (OPTIMIZED FULLSCREEN LAYOUT) ---
+        // --- MAIN RENDER (WEATHER STATION LAYOUT) ---
         dashboardRoot.innerHTML = `
-            <!-- Optimized Weather Dashboard - No Double Scrollbar -->
-            <div class="h-full flex flex-col overflow-hidden">
+            <!-- Modern Weather Station Dashboard -->
+            <div class="flex flex-col gap-4 p-4 h-full overflow-y-auto">
                 
-                <!-- FIXED HEADER -->
-                <div class="flex-shrink-0 px-3 md:px-4 pt-4 pb-3 border-b border-white/10 animate-fade-in-up">
-                    <h1 class="text-3xl lg:text-4xl font-bold text-white mb-1">${locationName}</h1>
-                    <p class="text-sm lg:text-base text-gray-400 font-mono">
+                <!-- LOCATION HEADER -->
+                <div class="animate-fade-in-up">
+                    <h1 class="text-2xl font-bold text-white mb-1">${locationName}</h1>
+                    <p class="text-sm text-gray-400 font-mono">
                         ${isToday ? 'Aujourd\'hui' : formatDate(dateObj)} · ${formatTime(now)}
                     </p>
                 </div>
 
-                <!-- SCROLLABLE CONTENT (SINGLE SCROLL) -->
-                <div class="flex-1 overflow-y-auto px-3 md:px-4 py-4">
-                    <!-- RESPONSIVE GRID LAYOUT -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-5">
+                <!-- MAIN GRID: 3 COLUMNS -->
+                <div class="weather-grid-layout dashboard-transition animate-fade-in-up delay-100">
                     
                     <!-- COLUMN 1: HERO WEATHER CARD -->
                     <div class="weather-hero-card">
@@ -738,11 +658,11 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-7xl md:text-8xl font-bold ${tempClass}">${currentTemp}°</span>
-                                    <span class="text-3xl text-gray-400">C</span>
+                                    <span class="text-7xl font-bold ${tempClass}">${currentTemp}°</span>
+                                    <span class="text-2xl text-gray-400">C</span>
                                 </div>
-                                <p class="text-xl lg:text-2xl text-white/80 mt-2">${currentDesc}</p>
-                                <div class="flex items-center gap-4 mt-3 text-base lg:text-lg text-gray-400">
+                                <p class="text-lg text-white/80 mt-2">${currentDesc}</p>
+                                <div class="flex items-center gap-4 mt-3 text-sm text-gray-400">
                                     <span class="${getTempColorClass(maxTemp)}">↑ ${maxTemp}°</span>
                                     <span class="${getTempColorClass(minTemp)}">↓ ${minTemp}°</span>
                                     ${apparentTemp !== null ? `<span class="text-xs">Ressenti ${apparentTemp}°</span>` : ''}
@@ -750,14 +670,14 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                             </div>
                             
                             <!-- Weather Icon -->
-                            <div class="w-28 h-28 md:w-32 md:h-32 lg:w-36 lg:h-36">
+                            <div class="w-32 h-32">
                                 ${currentIcon}
                             </div>
                         </div>
 
                         <!-- Hourly Forecast Mini Strip -->
                         <div class="border-t border-white/10 pt-3">
-                            <p class="metric-label mb-2">Prévisions Horaires (24h)</p>
+                            <p class="metric-label mb-2">PRÉVISIONS HORAIRES</p>
                             <div id="hourly-mini-strip" class="hourly-mini-strip">
                                 <!-- Injected by renderHourlyMini -->
                             </div>
@@ -770,12 +690,12 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <!-- WIND -->
                         <div class="weather-metric-compact">
                             <div class="flex items-center justify-between">
-                                <span class="metric-label">💨 Vent</span>
+                                <span class="metric-label">💨 VENT</span>
                                 <span class="text-2xl">💨</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl lg:text-5xl font-bold ${windClass}">${windSpeed}</span>
-                                <span class="text-lg text-gray-400">km/h</span>
+                                <span class="metric-value-large ${windClass}">${windSpeed}</span>
+                                <span class="metric-unit">km/h</span>
                             </div>
                             <div class="metric-progress">
                                 <div class="metric-progress-fill ${windClass}" style="width: ${Math.min(windSpeed / 100 * 100, 100)}%; background: currentColor;"></div>
@@ -785,12 +705,12 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <!-- HUMIDITY -->
                         <div class="weather-metric-compact">
                             <div class="flex items-center justify-between">
-                                <span class="metric-label">💧 Humidité</span>
+                                <span class="metric-label">💧 HUMIDITÉ</span>
                                 <span class="text-2xl">💧</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl lg:text-5xl font-bold ${humidityClass}">${humidity}</span>
-                                <span class="text-lg text-gray-400">%</span>
+                                <span class="metric-value-large ${humidityClass}">${humidity}</span>
+                                <span class="metric-unit">%</span>
                             </div>
                             <div class="metric-progress">
                                 <div class="metric-progress-fill ${humidityClass}" style="width: ${humidity}%; background: currentColor;"></div>
@@ -800,12 +720,12 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <!-- UV INDEX -->
                         <div class="weather-metric-compact">
                             <div class="flex items-center justify-between">
-                                <span class="metric-label">☀️ Indice UV</span>
+                                <span class="metric-label">☀️ INDICE UV</span>
                                 <span class="text-2xl">☀️</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl lg:text-5xl font-bold ${uvInfo.class}">${uvIndex.toFixed(0)}</span>
-                                <span class="text-lg text-gray-400">${uvInfo.label}</span>
+                                <span class="metric-value-large ${uvInfo.class}">${uvIndex.toFixed(0)}</span>
+                                <span class="metric-unit">${uvInfo.label}</span>
                             </div>
                             <div class="metric-progress">
                                 <div class="metric-progress-fill ${uvInfo.class}" style="width: ${Math.min(uvIndex / 11 * 100, 100)}%; background: currentColor;"></div>
@@ -815,12 +735,12 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <!-- PRECIPITATION -->
                         <div class="weather-metric-compact">
                             <div class="flex items-center justify-between">
-                                <span class="metric-label">☔ Précipitations</span>
+                                <span class="metric-label">☔ PRÉCIPITATIONS</span>
                                 <span class="text-2xl">☔</span>
                             </div>
                             <div class="flex items-baseline gap-1">
-                                <span class="text-4xl lg:text-5xl font-bold ${precipClass}">${precipitation.toFixed(1)}</span>
-                                <span class="text-lg text-gray-400">mm</span>
+                                <span class="metric-value-large ${precipClass}">${precipitation.toFixed(1)}</span>
+                                <span class="metric-unit">mm</span>
                             </div>
                             <div class="metric-progress">
                                 <div class="metric-progress-fill ${precipClass}" style="width: ${Math.min(precipitation / 50 * 100, 100)}%; background: currentColor;"></div>
@@ -833,10 +753,10 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <!-- Header -->
                         <div class="border-b border-gold/20 pb-3 mb-4">
                             <div class="flex items-center gap-2 mb-2">
-                                <span class="text-3xl">📸</span>
-                                <h3 class="text-base lg:text-lg font-bold text-white uppercase tracking-wider">Assistant Photo</h3>
+                                <span class="text-2xl">📸</span>
+                                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Assistant Photo</h3>
                             </div>
-                            <p class="text-sm lg:text-base text-gold font-mono font-semibold">${photo.condition}</p>
+                            <p class="text-xs text-gold font-mono">${photo.condition}</p>
                         </div>
 
                         <!-- Photo Metrics Grid -->
@@ -844,13 +764,13 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                             <!-- EV Value -->
                             <div class="text-center bg-black/30 rounded-lg p-3 border border-gold/10">
                                 <p class="metric-label mb-1">EXPOSITION</p>
-                                <p class="text-3xl lg:text-4xl font-bold text-gold">EV${photo.ev}</p>
+                                <p class="text-3xl font-bold text-gold">EV${photo.ev}</p>
                             </div>
 
                             <!-- Color Temperature -->
                             <div class="text-center bg-black/30 rounded-lg p-3 border border-gold/10">
                                 <p class="metric-label mb-1">TEMPÉRATURE</p>
-                                <p class="text-2xl lg:text-3xl font-bold text-gold">${photo.kelvin}</p>
+                                <p class="text-2xl font-bold text-gold">${photo.kelvin}</p>
                             </div>
                         </div>
 
@@ -858,16 +778,75 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <div class="grid grid-cols-2 gap-2 mb-4 text-xs">
                             <div class="bg-black/30 rounded p-2.5 border border-white/5">
                                 <p class="text-gray-400 mb-1">🌅 Lever</p>
-                                <p class="text-base lg:text-lg text-white font-semibold font-mono">${formatTime(photo.phases.sunrise)}</p>
+                                <p class="text-white font-semibold font-mono">${formatTime(photo.phases.sunrise)}</p>
                             </div>
                             <div class="bg-black/30 rounded p-2.5 border border-white/5">
                                 <p class="text-gray-400 mb-1">🌇 Coucher</p>
-                                <p class="text-base lg:text-lg text-white font-semibold font-mono">${formatTime(photo.phases.sunset)}</p>
+                                <p class="text-white font-semibold font-mono">${formatTime(photo.phases.sunset)}</p>
                             </div>
                         </div>
 
-
-                        <!-- VOYAGE DU SOLEIL section removed per user request -->
+                        <!-- VOYAGE DU SOLEIL (Spectacular) -->
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center justify-between">
+                                <p class="metric-label">VOYAGE DU SOLEIL</p>
+                                <span class="text-[9px] text-gray-500 font-mono uppercase">Assistant Photo</span>
+                            </div>
+                            
+                            <!-- Sun Journey Arc -->
+                            <div class="w-full h-24 rounded-xl overflow-hidden border border-gold/40 relative shadow-lg">
+                                ${getSunJourney(photo.phases, isToday ? now : new Date(dateObj.setHours(12, 0, 0, 0)), isToday)}
+                            </div>
+                            
+                            <!-- Golden Hour Progress Bars -->
+                            <div class="space-y-3">
+                                <!-- Morning Golden Hour -->
+                                <div class="bg-gradient-to-r from-gold/10 via-gold/20 to-gold/10 rounded-lg p-3 border-2 border-gold/40 golden-hour-card shadow-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-2xl">🌅</span>
+                                            <span class="text-sm font-bold text-gold uppercase tracking-wide">Golden Hour Matin</span>
+                                        </div>
+                                        <span class="text-xs text-gray-300 font-mono font-semibold">${Math.round((photo.phases.goldenHourMorning - photo.phases.sunrise) / 60000)} min</span>
+                                    </div>
+                                    
+                                    <!-- Progress bar -->
+                                    <div class="relative h-2.5 bg-black/50 rounded-full overflow-hidden mb-2 shadow-inner">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-gold via-yellow-400 to-gold rounded-full golden-bar-fill shadow-[0_0_10px_rgba(212,175,55,0.6)]" 
+                                             style="width: 100%; animation: golden-fill 1.5s ease-out"></div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-white font-mono font-bold drop-shadow-[0_0_4px_rgba(212,175,55,0.8)]">${formatTime(photo.phases.sunrise)}</span>
+                                        <div class="flex-1 mx-3 border-t-2 border-dashed border-gold/50"></div>
+                                        <span class="text-white font-mono font-bold drop-shadow-[0_0_4px_rgba(212,175,55,0.8)]">${formatTime(photo.phases.goldenHourMorning)}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Evening Golden Hour -->
+                                <div class="bg-gradient-to-r from-orange-500/10 via-orange-400/20 to-orange-500/10 rounded-lg p-3 border-2 border-orange-400/40 golden-hour-card shadow-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-2xl">🌇</span>
+                                            <span class="text-sm font-bold text-orange-400 uppercase tracking-wide">Golden Hour Soir</span>
+                                        </div>
+                                        <span class="text-xs text-gray-300 font-mono font-semibold">${Math.round((photo.phases.sunset - photo.phases.goldenHourEvening) / 60000)} min</span>
+                                    </div>
+                                    
+                                    <!-- Progress bar -->
+                                    <div class="relative h-2.5 bg-black/50 rounded-full overflow-hidden mb-2 shadow-inner">
+                                        <div class="absolute inset-0 bg-gradient-to-r from-orange-600 via-orange-400 to-orange-600 rounded-full golden-bar-fill shadow-[0_0_10px_rgba(251,146,60,0.6)]" 
+                                             style="width: 100%; animation: golden-fill 1.5s ease-out 0.2s backwards"></div>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-white font-mono font-bold drop-shadow-[0_0_4px_rgba(251,146,60,0.8)]">${formatTime(photo.phases.goldenHourEvening)}</span>
+                                        <div class="flex-1 mx-3 border-t-2 border-dashed border-orange-400/50"></div>
+                                        <span class="text-white font-mono font-bold drop-shadow-[0_0_4px_rgba(251,146,60,0.8)]">${formatTime(photo.phases.sunset)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- ASTRONOMICAL PHENOMENA -->
                         ${(() => {
@@ -898,30 +877,28 @@ function renderDashboard(data, locationName, dayIndex = 0) {
                         <div class="grid grid-cols-2 gap-2 text-xs">
                             <div class="bg-black/30 rounded-lg p-2.5 text-center border border-white/5">
                                 <p class="text-gray-400 mb-1.5 text-[10px]">Phase Lunaire</p>
-                                <div class="w-12 h-12 lg:w-14 lg:h-14 mx-auto mb-1.5">${moonInfo.icon}</div>
+                                <div class="w-10 h-10 mx-auto mb-1.5">${moonInfo.icon}</div>
                                 <p class="text-white text-[10px] font-semibold">${moonInfo.name}</p>
                             </div>
                             <div class="bg-black/30 rounded-lg p-2.5 text-center border border-white/5">
                                 <p class="text-gray-400 mb-1.5 text-[10px]">Visibilité Starlink</p>
-                                <div class="w-12 h-10 lg:w-14 lg:h-12 mx-auto mb-1.5 flex items-end justify-center gap-0.5">
+                                <div class="w-10 h-8 mx-auto mb-1.5 flex items-end justify-center gap-0.5">
                                     ${getStarlinkIcon(photo.astro.starlinkBars)}
                                 </div>
                                 <p class="${photo.astro.starlinkColor} text-[10px] font-semibold">${photo.astro.starlink}</p>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- 10-DAY FORECAST (HORIZONTAL SCROLL) -->
+                <div class="animate-fade-in-up delay-200">
+                    <p class="metric-label mb-3">PRÉVISIONS 10 JOURS</p>
+                    <div id="forecast-horizontal" class="forecast-horizontal">
+                        <!-- Injected by renderForecastHorizontal -->
                     </div>
                 </div>
             </div>
-
-            <!-- STICKY FOOTER: 10-DAY FORECAST -->
-            <div class="flex-shrink-0 border-t border-white/10 px-3 md:px-4 py-3 bg-black/30 backdrop-blur-sm animate-fade-in-up delay-300">
-                <p class="text-sm lg:text-base font-bold text-white/70 uppercase tracking-wider mb-3">Prévisions 10 Jours</p>
-                <div id="forecast-horizontal" class="forecast-horizontal flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2">
-                    <!-- Injected by renderForecastHorizontal -->
-                </div>
-            </div>
-        </div>
         `;
 
         // Render Sub-components
@@ -986,32 +963,19 @@ function renderHourlyMini(data, dayIndex) {
         const isGoldenMorning = hourTime >= sunrise.getTime() && hourTime <= goldenMorningEnd.getTime();
         const isGoldenEvening = hourTime >= goldenEveningStart.getTime() && hourTime <= sunset.getTime();
 
-        // Check drone compliance for this hour
-        const droneCheck = getDroneCompliance(sunrise, sunset, hourly.weather_code[i], hourly.wind_speed_10m[i], precipProb, hourly.cloud_cover[i], hour);
-
         let badge = '';
         let borderClass = 'border-white/10';
 
-        // Priority: Drone status determines border color
-        if (droneCheck.status === 'AUTORISÉ') {
-            badge = '<div class="absolute -top-1 -left-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center text-[10px] shadow-lg" title="Vol drone autorisé">🚁</div>';
-            borderClass = 'border-green-500/50';
-        } else if (droneCheck.status === 'ATTENTION') {
-            badge = '<div class="absolute -top-1 -left-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-[10px] shadow-lg" title="Vol drone: vigilance requise">⚠️</div>';
-            borderClass = 'border-yellow-500/50';
-        }
-        // RED BADGE REMOVED per user request
-
-
-        // Add sun/golden hour badges on the right
         if (isSunrise) {
-            badge += '<div class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px]">🌅</div>';
+            badge = '<div class="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px]">🌅</div>';
+            borderClass = 'border-orange-500/50';
         } else if (isSunset) {
-            badge += '<div class="absolute -top-1 -right-1 w-4 h-4 bg-orange-600 rounded-full flex items-center justify-center text-[8px]">🌇</div>';
+            badge = '<div class="absolute -top-1 -right-1 w-4 h-4 bg-orange-600 rounded-full flex items-center justify-center text-[8px]">🌇</div>';
+            borderClass = 'border-orange-600/50';
         } else if (isGoldenMorning || isGoldenEvening) {
-            badge += '<div class="absolute -top-1 -right-1 w-4 h-4 bg-gold rounded-full flex items-center justify-center text-[8px]">✨</div>';
+            badge = '<div class="absolute -top-1 -right-1 w-4 h-4 bg-gold rounded-full flex items-center justify-center text-[8px]">✨</div>';
+            borderClass = 'border-gold/50';
         }
-
 
         html += `
             <div onclick="selectHourlySlot(${i}, ${dayIndex})" 
@@ -1028,103 +992,6 @@ function renderHourlyMini(data, dayIndex) {
     }
 
     container.innerHTML = html || '<p class="text-gray-500 text-sm p-4">Aucune donnée horaire disponible</p>';
-}
-
-
-// Drone Flight Compliance Check (European Regulations)
-function getDroneCompliance(sunrise, sunset, weatherCode, windSpeed, precipProb, cloudCover, hour) {
-    const now = new Date();
-    const currentHour = new Date(now.setHours(hour, 0, 0, 0));
-
-    // European regulations (EASA Open Category):
-    // - Day flight: Allowed (Sunrise - 30m to Sunset + 30m)
-    // - Night flight: Allowed IF drone has flashing green light
-
-    // Aeronautical Day Definition
-    const aeroDayStart = new Date(sunrise.getTime() - 30 * 60 * 1000);
-    const aeroDayEnd = new Date(sunset.getTime() + 30 * 60 * 1000);
-
-    const isAeroDay = currentHour >= aeroDayStart && currentHour <= aeroDayEnd;
-
-    // Weather conditions check
-    const windOk = windSpeed < 40;
-    const precipOk = precipProb < 30;
-    const visibilityOk = cloudCover < 80;
-
-    // Weather codes that prevent flight
-    const dangerousWeather = [95, 96, 99]; // Thunderstorms
-    const weatherOk = !dangerousWeather.includes(weatherCode);
-
-    // Initial status
-    let status = 'INTERDIT';
-    let statusColor = 'text-red-500';
-    let icon = '🚫';
-    let reasons = [];
-    let requirements = []; // New field for specific equipment/conditions
-
-    // Logic Tree
-    if (!weatherOk || !windOk) {
-        // Critical weather failure
-        status = 'DANGER MÉTÉO';
-        statusColor = 'text-red-500';
-        icon = '🚫';
-        if (!windOk) reasons.push(`Vent violent (${Math.round(windSpeed)} km/h)`);
-        if (!weatherOk) reasons.push('Orages détectés');
-    } else if (!precipOk || !visibilityOk) {
-        // Non-critical weather warning
-        status = 'DÉCONSEILLÉ';
-        statusColor = 'text-orange-500';
-        icon = '⚠️';
-        if (!precipOk) reasons.push(`Pluie probable (${precipProb}%)`);
-        if (!visibilityOk) reasons.push('Mauvaise visibilité');
-    } else {
-        // Weather is OK
-        if (isAeroDay) {
-            status = 'AUTORISÉ';
-            statusColor = 'text-green-500';
-            icon = '✅';
-            reasons.push('Conditions de vol optimales');
-        } else {
-            // Night flight
-            status = 'VOL DE NUIT';
-            statusColor = 'text-blue-400';
-            icon = '🌙';
-            reasons.push('Nuit Aéronautique');
-            requirements.push('Feu vert clignotant REQUIS');
-            requirements.push('Contact visuel permanent');
-        }
-    }
-
-    // Satellite Estimation (Fake logic based on cloud cover/visibility)
-    // Clearer sky = potentially better signal reception (less interference)
-    let satellites = Math.max(0, Math.floor(12 + (1.0 - (cloudCover / 100)) * 10)); // 12 to 22 sats
-
-    // Kp Index (Planetary K-index) - SIMULATED (Random for demo, usually from API)
-    // In a real app, this would come from the API.
-    // We'll base it slightly on lat to make it deterministic for the same location
-    const kpIndex = Math.floor(Math.random() * 4) + 1; // 1-4 range
-
-    return {
-        isCompliant: status !== 'DANGER MÉTÉO',
-        status,
-        statusColor,
-        icon,
-        reasons,
-        requirements,
-        satellites,
-        kpIndex,
-        flightWindow: {
-            start: aeroDayStart,
-            end: aeroDayEnd,
-            isDay: isAeroDay
-        },
-        conditions: {
-            wind: { value: windSpeed, ok: windOk },
-            precip: { value: precipProb, ok: precipOk },
-            visibility: { value: cloudCover, ok: visibilityOk },
-            weather: { ok: weatherOk }
-        }
-    };
 }
 
 // NEW: Select hourly slot and update photo assistant
@@ -1155,190 +1022,42 @@ function selectHourlySlot(hourlyIndex, dayIndex) {
     const sunset = daily.sunset[dayIndex];
     const photo = getPhotoConditions(sunrise, sunset, weatherCode, cloudCover, moonPhase);
 
-    // Store selection globally
-    window.selectedPhotoSlot = {
-        dayIndex,
-        hourlyIndex,
+    // Update the display with selected hour info
+    const message = `
+        📸 CONDITIONS PHOTO - ${hour}h
+        
+        🌡️ Température: ${Math.round(temp)}°C
+        ☁️ Couverture nuageuse: ${cloudCover}%
+        💧 Précipitations: ${precipProb}%
+        💨 Vent: ${Math.round(windSpeed)} km/h
+        💧 Humidité: ${humidity}%
+        
+        📷 Conditions: ${photo.condition}
+        🔆 EV: ${photo.ev}
+        🌡️ Kelvin: ${photo.kelvin}K
+        ⭐ Qualité: ${photo.quality}
+        
+        ${weatherInfo.description}
+    `.trim();
+
+    if (window.speak) {
+        speak(`Créneau ${hour} heures sélectionné. ${photo.condition}. Température ${Math.round(temp)} degrés.`);
+    }
+
+    // Show alert with details
+    alert(message);
+
+    console.log('Selected Hour Data:', {
         hour,
-        date: timeStr,
         temp,
         weatherCode,
-        cloudCover,
         precipProb,
         windSpeed,
         humidity,
-        photo,
-        weatherInfo
-    };
-
-    // Update photo assistant panel
-    updatePhotoAssistantPanel();
-
-    // Visual feedback
-    const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-    if (window.speak) {
-        speak(`Créneau sélectionné : ${dateStr} à ${hour} heures. ${photo.condition}.`);
-    }
-
-    // Highlight selected slot
-    document.querySelectorAll('.hourly-mini-card').forEach((card) => {
-        card.classList.remove('ring-2', 'ring-neon-blue', 'ring-offset-2', 'ring-offset-black');
+        cloudCover,
+        photo
     });
-    event.currentTarget.classList.add('ring-2', 'ring-neon-blue', 'ring-offset-2', 'ring-offset-black');
 }
-
-// Update Photo Assistant Panel with selected slot data
-function updatePhotoAssistantPanel() {
-    if (!window.selectedPhotoSlot) {
-        console.log('❌ No slot selected');
-        return;
-    }
-
-    const slot = window.selectedPhotoSlot;
-    // Calculate compliance again for display
-    const daily = completeWeatherData.daily;
-    const sunrise = daily.sunrise[slot.dayIndex];
-    const sunset = daily.sunset[slot.dayIndex];
-    const drone = getDroneCompliance(sunrise, sunset, slot.weatherCode, slot.windSpeed, slot.precipProb, slot.cloudCover, slot.hour);
-
-    const dateObj = new Date(slot.date);
-    const dateStr = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-
-    console.log('🔄 Updating photo assistant for:', dateStr, 'at', slot.hour + 'h');
-    console.log('📊 Slot data:', slot);
-
-    // Update header with date/time
-    const headerEl = document.querySelector('.photo-conditions-panel .border-b');
-    if (headerEl) {
-        headerEl.innerHTML = `
-            <div class="flex items-center gap-2 mb-2">
-                <span class="text-3xl">📸</span>
-                <h3 class="text-base lg:text-lg font-bold text-white uppercase tracking-wider">Assistant Photo</h3>
-            </div>
-            <p class="text-sm lg:text-base text-gold font-mono font-semibold">${slot.photo.condition}</p>
-            <div class="mt-2 flex items-center gap-2 text-xs lg:text-sm text-neon-blue animate-pulse">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span class="font-semibold">${dateStr} à ${slot.hour}h</span>
-            </div>
-        `;
-        console.log('✅ Header updated');
-    } else {
-        console.log('❌ Header element not found');
-    }
-
-    // Update EV and Kelvin - Find the first grid in photo panel
-    const photoPanel = document.querySelector('.photo-conditions-panel');
-    if (photoPanel) {
-        const grids = photoPanel.querySelectorAll('.grid.grid-cols-2');
-        if (grids.length > 0) {
-            const photoMetrics = grids[0];
-            photoMetrics.innerHTML = `
-                <div class="text-center bg-black/30 rounded-lg p-4 border border-gold/10">
-                    <p class="text-xs lg:text-sm text-gray-400 uppercase mb-2">Exposition</p>
-                    <p class="text-3xl lg:text-4xl font-bold text-gold">EV${slot.photo.ev}</p>
-                </div>
-                <div class="text-center bg-black/30 rounded-lg p-4 border border-gold/10">
-                    <p class="text-xs lg:text-sm text-gray-400 uppercase mb-2">Température</p>
-                    <p class="text-2xl lg:text-3xl font-bold text-gold">${slot.photo.kelvin}K</p>
-                </div>
-            `;
-            console.log('✅ EV/Kelvin updated:', slot.photo.ev, slot.photo.kelvin);
-        } else {
-            console.log('❌ Photo metrics grid not found');
-        }
-
-        // Add/Update detailed conditions after sun times
-        if (grids.length > 1) {
-            const sunTimes = grids[1];
-
-            // Remove old details if exists
-            let nextEl = sunTimes.nextElementSibling;
-            while (nextEl && nextEl.classList.contains('bg-neon-blue/10')) {
-                const toRemove = nextEl;
-                nextEl = nextEl.nextElementSibling;
-                toRemove.remove();
-                console.log('🗑️ Removed old details');
-            }
-
-            // Insert new details
-            const detailsHTML = `
-            <div class="bg-black/40 border border-white/10 rounded-lg p-3 mb-4 animate-fade-in shadow-inner">
-                <p class="text-xs lg:text-sm font-bold text-white uppercase mb-3 flex items-center justify-between">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-neon-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Info Pilote Drone
-                    </span>
-                    <span class="text-[10px] font-mono text-gray-500">Réglementation EASA</span>
-                </p>
-
-                <!-- Main Status -->
-                <div class="flex items-center justify-between mb-3 bg-white/5 p-2 rounded border border-white/5">
-                    <span class="text-gray-300 text-xs">Statut estimé:</span>
-                    <span class="${drone.statusColor} font-bold text-sm flex items-center gap-2">${drone.icon} ${drone.status}</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <!-- Jour Aéronautique Info -->
-                    <div class="col-span-2 mb-1">
-                        <div class="flex justify-between text-[10px] text-gray-400 font-mono bg-black/30 rounded px-2 py-1.5 border border-white/5">
-                            <span title="Jour Aéronautique Début">☀️ Jour Aéro: <span class="text-white">${formatTime(drone.flightWindow.start)}</span></span>
-                            <span title="Jour Aéronautique Fin">🌙 Fin: <span class="text-white">${formatTime(drone.flightWindow.end)}</span></span>
-                        </div>
-                    </div>
-
-                    <!-- Reasons & Requirements -->
-                    ${drone.reasons.length > 0 ? `
-                            <div class="col-span-2">
-                                <p class="text-[10px] text-gray-400 mb-1">Analyse:</p>
-                                ${drone.reasons.map(r => `<p class="text-[11px] text-gray-200 pl-2 border-l-2 ${drone.status === 'AUTORISÉ' ? 'border-green-500' : 'border-red-400'} mb-1">${r}</p>`).join('')}
-                            </div>
-                         ` : ''}
-
-                     ${drone.requirements && drone.requirements.length > 0 ? `
-                        <div class="col-span-2 mt-1 bg-blue-500/10 p-2 rounded border border-blue-500/20">
-                            <p class="text-[10px] text-blue-300 font-bold mb-1 uppercase">Équipement Requis:</p>
-                            ${drone.requirements.map(req => `<div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span><p class="text-[10px] text-blue-100">${req}</p></div>`).join('')}
-                        </div>
-                     ` : ''}
-                </div>
-                
-                <!-- PRO TECHNICAL DATA (New Section) -->
-                <div class="grid grid-cols-2 gap-3 mt-4 border-t border-white/10 pt-3">
-                    <!-- Photo Tech -->
-                    <div class="bg-black/30 p-2 rounded border border-white/5">
-                        <p class="text-[10px] text-gold font-bold uppercase mb-1">Photo Pro</p>
-                        <ul class="text-[10px] space-y-1 text-gray-300">
-                            <li class="flex justify-between"><span>Lumière:</span> <span class="text-white">${slot.photo.lightDirection}</span></li>
-                            <li class="flex justify-between"><span>Ombres:</span> <span class="text-white">${slot.photo.shadowQuality}</span></li>
-                            <li class="flex justify-between"><span>Filtre ND:</span> <span class="text-white">${slot.photo.ndFilter}</span></li>
-                        </ul>
-                    </div>
-                    <!-- Drone Tech -->
-                    <div class="bg-black/30 p-2 rounded border border-white/5">
-                        <p class="text-[10px] text-neon-blue font-bold uppercase mb-1">Drone Tech</p>
-                        <ul class="text-[10px] space-y-1 text-gray-300">
-                            <li class="flex justify-between"><span>Sats GPS:</span> <span class="text-white">~${drone.satellites}</span></li>
-                            <li class="flex justify-between"><span>Indice Kp:</span> <span class="text-white">${drone.kpIndex}/9</span></li>
-                            <li class="flex justify-between"><span>Turbulence:</span> <span class="text-white">${slot.windSpeed > 20 ? 'Moyenne' : 'Faible'}</span></li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-            `;
-
-            sunTimes.insertAdjacentHTML('afterend', detailsHTML);
-            console.log('✅ Detailed conditions added');
-        }
-    } else {
-        console.log('❌ Photo panel not found');
-    }
-
-    console.log('✅ Photo assistant update complete');
-}
-
 
 // Render 10-Day Forecast Horizontal
 function renderForecastHorizontal(data, selectedIdx) {
@@ -1352,9 +1071,7 @@ function renderForecastHorizontal(data, selectedIdx) {
         const date = daily.time[i];
         const maxTemp = daily.temperature_2m_max[i];
         const minTemp = daily.temperature_2m_min[i];
-        // FIX: Use current weather code for today (i=0), daily for other days
-        const weatherCode = (i === 0 && data.current) ? data.current.weather_code : daily.weather_code[i];
-        const weatherInfo = getWeatherInfo(weatherCode);
+        const weatherInfo = getWeatherInfo(daily.weather_code[i]);
         const precip = daily.precipitation_sum[i];
         const isSelected = i === selectedIdx;
 
@@ -1363,21 +1080,133 @@ function renderForecastHorizontal(data, selectedIdx) {
         const dayDate = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
         html += `
-                <div onclick="selectDay(${i})" class="forecast-day-card ${isSelected ? 'selected' : ''} min-w-[7rem] flex-shrink-0 cursor-pointer hover:scale-105 transition-all">
+            <div onclick="selectDay(${i})" class="forecast-day-card ${isSelected ? 'selected' : ''} cursor-pointer hover:scale-105 transition-all">
                 <p class="text-sm font-bold text-white capitalize mb-1">${dayName}</p>
                 <p class="text-xs text-gray-400 mb-2">${dayDate}</p>
                 <div class="w-14 h-14 my-2 mx-auto">${weatherInfo.icon}</div>
                 ${precip > 0 ? `<p class="text-xs text-blue-400 font-semibold mb-1">💧${precip.toFixed(1)}mm</p>` : '<p class="text-xs text-transparent mb-1">-</p>'}
-            <div class="flex items-center justify-center gap-2 text-base font-bold">
-                <span class="${getTempColorClass(Math.round(minTemp))}">${Math.round(minTemp)}°</span>
-                <span class="text-gray-500">|</span>
-                <span class="${getTempColorClass(Math.round(maxTemp))}">${Math.round(maxTemp)}°</span>
+                <div class="flex items-center justify-center gap-2 text-base font-bold">
+                    <span class="${getTempColorClass(Math.round(minTemp))}">${Math.round(minTemp)}°</span>
+                    <span class="text-gray-500">|</span>
+                    <span class="${getTempColorClass(Math.round(maxTemp))}">${Math.round(maxTemp)}°</span>
+                </div>
             </div>
-            </div >
-                `;
+        `;
     }
 
     container.innerHTML = html;
+}
+
+function renderHourlyForecast(data, dayIndex) {
+    const container = document.getElementById('hourly-forecast-container');
+    if (!container) return;
+
+    const hourly = data.hourly;
+    const startIndex = dayIndex * 24;
+    const endIndex = startIndex + 24;
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const isToday = dayIndex === 0;
+
+    let html = '';
+
+    for (let i = startIndex; i < endIndex; i++) {
+        if (!hourly.time[i]) continue;
+
+        const timeStr = hourly.time[i];
+        const date = new Date(timeStr);
+        const hour = date.getHours();
+
+        const temp = hourly.temperature_2m[i];
+        const weatherInfo = getWeatherInfo(hourly.weather_code[i]);
+        const precipProb = hourly.precipitation_probability[i];
+
+        const isCurrentHour = isToday && hour === currentHour;
+
+        // iOS-style card
+        const cardClass = isCurrentHour
+            ? 'min-w-[80px] glass-card p-4 flex flex-col items-center gap-2 border-2 border-blue-400'
+            : 'min-w-[80px] bg-white/5 rounded-lg p-4 flex flex-col items-center gap-2 border border-white/10 ios-card-hover';
+
+        html += `
+            <div class="${cardClass}">
+                <p class="text-xs text-gray-400 font-semibold">${hour === 0 ? '00h' : hour + 'h'}</p>
+                <div class="w-10 h-10">${weatherInfo.icon}</div>
+                ${precipProb > 0 ? `<p class="text-xs text-blue-400 font-semibold">${precipProb}%</p>` : ''}
+                <p class="text-lg font-bold text-white">${Math.round(temp)}°</p>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
+
+    // Auto scroll to current hour if today
+    if (isToday) {
+        setTimeout(() => {
+            const cards = container.children;
+            if (cards[currentHour]) {
+                cards[currentHour].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }, 100);
+    }
+}
+
+function renderForecastGrid(data, selectedIdx) {
+    const grid = document.getElementById('forecast-grid');
+    if (!grid) return;
+
+    const daily = data.daily;
+    let html = '';
+
+    for (let i = 0; i < Math.min(daily.time.length, 10); i++) {
+        const date = daily.time[i];
+        const maxTemp = daily.temperature_2m_max[i];
+        const minTemp = daily.temperature_2m_min[i];
+        const weatherInfo = getWeatherInfo(daily.weather_code[i]);
+        const precip = daily.precipitation_sum[i];
+        const isSelected = i === selectedIdx;
+
+        const dateObj = new Date(date);
+        const dayName = i === 0 ? 'Aujourd\'hui' : dateObj.toLocaleDateString('fr-FR', { weekday: 'short' });
+        const dayDate = dateObj.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+
+        // iOS-style row
+        const rowClass = isSelected
+            ? 'bg-white/10 border border-blue-400/50 rounded-lg p-4 flex items-center justify-between cursor-pointer ios-card-hover'
+            : 'bg-white/5 border border-white/10 rounded-lg p-4 flex items-center justify-between cursor-pointer ios-card-hover';
+
+        html += `
+            <div onclick="selectDay(${i})" class="${rowClass}">
+                <!-- Left: Day Name -->
+                <div class="flex-1">
+                    <p class="text-sm font-semibold text-white capitalize">${dayName}</p>
+                    <p class="text-xs text-gray-400">${dayDate}</p>
+                </div>
+                
+                <!-- Center: Weather Icon -->
+                <div class="w-12 h-12 mx-4">
+                    ${weatherInfo.icon}
+                </div>
+                
+                <!-- Right: Temperatures & Precipitation -->
+                <div class="flex items-center gap-4">
+                    ${precip > 0 ? `<span class="text-xs text-blue-400 font-semibold">💧${precip.toFixed(1)}mm</span>` : ''}
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-400">${Math.round(minTemp)}°</span>
+                        <div class="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-blue-400 to-orange-400" 
+                                 style="width: ${((minTemp - Math.min(...daily.temperature_2m_min)) / (Math.max(...daily.temperature_2m_max) - Math.min(...daily.temperature_2m_min))) * 100}%">
+                            </div>
+                        </div>
+                        <span class="text-lg font-bold text-white">${Math.round(maxTemp)}°</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    grid.innerHTML = html;
 }
 
 // Hook for selectDay - updates entire dashboard
@@ -1386,22 +1215,6 @@ window.selectDay = function (index) {
     selectedDayIndex = index;
     // RENDER EVERYTHING
     renderDashboard(completeWeatherData, currentSearchLocation.name, index);
-
-    // AUTO-SELECT SLOT
-    // If today, select current hour. If other day, select 12h (noon).
-    const now = new Date();
-    const currentHour = now.getHours();
-
-    // Find index in hourly array
-    // Hourly data starts at 0 for day 0. Stride is 24.
-    // Index in hourly array = (dayIndex * 24) + hourOffset
-    let hourOffset = (index === 0) ? currentHour : 12;
-    let hourlyIndex = (index * 24) + hourOffset;
-
-    // Safety check
-    if (hourlyIndex < completeWeatherData.hourly.time.length) {
-        setTimeout(() => selectHourlySlot(hourlyIndex, index), 100); // Small delay to let DOM render
-    }
 };
 
 // Preview solar time - shows color temperature info
@@ -1421,7 +1234,7 @@ window.previewSolarTime = function (period, timeLabel, isoTime) {
 
     // Flash the timeline border with the period color
     timeline.style.borderColor = info.color;
-    timeline.style.boxShadow = `0 0 20px ${info.color} `;
+    timeline.style.boxShadow = `0 0 20px ${info.color}`;
 
     setTimeout(() => {
         timeline.style.borderColor = 'rgba(255,255,255,0.1)';
@@ -1430,9 +1243,11 @@ window.previewSolarTime = function (period, timeLabel, isoTime) {
 
     // Optional: Show a toast notification
     if (window.speak) {
-        speak(`${info.condition}, température de couleur ${info.kelvin}, EV ${info.ev} `);
+        speak(`${info.condition}, température de couleur ${info.kelvin}, EV ${info.ev}`);
     }
 };
+
+
 
 async function searchDestination() {
     const input = document.getElementById('webcam-search-input');
@@ -1459,7 +1274,7 @@ async function searchDestination() {
 
         if (loading) loading.classList.add('hidden');
         document.getElementById('search-results-info')?.classList.remove('hidden');
-        document.getElementById('search-location-name').textContent = `📍 ${location.fullName} `;
+        document.getElementById('search-location-name').textContent = `📍 ${location.fullName}`;
 
         if (window.speak) speak(`Météo affichée pour ${location.name}.`);
 
@@ -1481,32 +1296,25 @@ function resetSearch() {
 async function searchDestinationDefault() {
     // Baltzenheim (QG)
     const lat = 48.0945, lon = 7.5584;
-    try {
-        const data = await fetchWeatherData(lat, lon);
-        if (data) {
-            completeWeatherData = data;
-            currentSearchLocation = { name: "Baltzenheim (QG)", fullName: "Baltzenheim, Alsace" };
-            renderDashboard(data, "Baltzenheim (QG)");
-        }
-    } catch (e) {
+    const data = await fetchWeatherData(lat, lon);
+    if (data) {
+        completeWeatherData = data;
+        currentSearchLocation = { name: "Baltzenheim (QG)", fullName: "Baltzenheim, Alsace" };
+        renderDashboard(data, "Baltzenheim (QG)");
+    } else {
         // ERROR HANDLING IF FETCH FAILS
         const dashboardRoot = document.getElementById('weather-dashboard');
         if (dashboardRoot) {
             dashboardRoot.innerHTML = `
-                <div class="flex flex-col items-center justify-center h-full text-limit-red font-mono p-4 text-center">
+                <div class="flex flex-col items-center justify-center h-full text-limit-red font-mono">
                     <span class="text-3xl mb-2">⚠️</span>
-                    <p class="font-bold">Erreur Connexion Météo</p>
-                    <p class="text-xs mt-2 opacity-70 break-words max-w-md">${e.message || "Erreur inconnue"}</p>
-                    <button onclick="searchDestinationDefault()" class="mt-4 px-4 py-2 border border-limit-red hover:bg-limit-red/20 text-xs uppercase cursor-pointer">RÉESSAYER</button>
-                </div>`;
-            document.getElementById('weather-dashboard').classList.remove('hidden');
+                    <p>Erreur Connexion Météo</p>
+                    <button onclick="searchDestinationDefault()" class="mt-4 px-4 py-2 border border-limit-red hover:bg-limit-red/20 text-xs uppercase">RÉESSAYER</button>
+                </div>
+            `;
         }
     }
 }
-
-// EXPOSE GLOBALLY (Critical for Satellite Click)
-window.searchDestination = searchDestination;
-window.searchDestinationDefault = searchDestinationDefault;
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(searchDestinationDefault, 800);

@@ -474,6 +474,254 @@ window.speak = function (text) {
     });
 };
 
+// Fetch weather for BOTH departure and destination
+window.fetchBothWeatherForecasts = async function () {
+    const departure = document.getElementById('res-pickup')?.value;
+    const destination = document.getElementById('res-drop')?.value;
+    const pickupDateTime = document.getElementById('res-pickup-datetime')?.value;
+
+    if (!departure || !destination || !pickupDateTime) {
+        if (window.speak) {
+            speak("Veuillez renseigner le départ, la destination et la date avant de valider la météo.");
+        }
+        return;
+    }
+
+    try {
+        console.log('[WEATHER] Fetching for BOTH locations');
+
+        // Fetch both in parallel
+        const [depWeather, destWeather] = await Promise.all([
+            fetchWeatherForLocation(departure, pickupDateTime),
+            fetchWeatherForLocation(destination, pickupDateTime)
+        ]);
+
+        if (depWeather && destWeather) {
+            // Store for PDF
+            reservationWeatherData = {
+                departure: depWeather,
+                destination: destWeather
+            };
+
+            // Display
+            displayDualWeatherSummary(depWeather, destWeather);
+
+            // VOCALIZE - SMART FLUID SUMMARY
+            let voiceMsg = `Météo pour votre trajet le ${depWeather.dateTime}. `;
+
+            // Compare conditions
+            const tempDiff = Math.abs(depWeather.temp - destWeather.temp);
+            const isWeatherSimilar = depWeather.weatherDesc === destWeather.weatherDesc;
+            const avgTemp = Math.round((depWeather.temp + destWeather.temp) / 2);
+
+            if (tempDiff <= 3 && isWeatherSimilar) {
+                // UNIFORM
+                voiceMsg += `Temps homogène sur tout le parcours. ${depWeather.weatherDesc} avec une moyenne de ${avgTemp} degrés. `;
+            } else {
+                // CONTHAST
+                voiceMsg += `Au départ de ${depWeather.destination}, ${depWeather.weatherDesc} et ${depWeather.temp} degrés. `;
+                voiceMsg += `À l'arrivée à ${destWeather.destination}, ${destWeather.weatherDesc} et ${destWeather.temp} degrés. `;
+            }
+
+            // Single Suggestion (Based on Destination or Coldest point)
+            const suggestion = getClothingSuggestion(destWeather.temp).replace('💡 Suggestion: ', '').replace('💡 ', '');
+            voiceMsg += `Conseil confort : ${suggestion}`;
+
+            if (window.speak) {
+                speak(voiceMsg);
+            }
+        }
+    } catch (error) {
+        console.error('[WEATHER] Error fetching dual forecasts:', error);
+    }
+};
+
+// Helper: Fetch weather for a single location
+async function fetchWeatherForLocation(locationName, dateTime) {
+    if (typeof geocodeLocation !== 'function' || typeof fetchWeatherData !== 'function') {
+        console.error('[WEATHER] Required functions not available');
+        return null;
+    }
+
+    const location = await geocodeLocation(locationName);
+    if (!location) return null;
+
+    const weatherData = await fetchWeatherData(location.lat, location.lon);
+    if (!weatherData || !weatherData.hourly) return null;
+
+    // Convert French date format (DD/MM/YYYY HH:mm) to ISO format
+    let selectedDate;
+    if (dateTime.includes('/')) {
+        // French format: "16/01/2026 14:00"
+        const parts = dateTime.split(' ');
+        const dateParts = parts[0].split('/');
+        const timePart = parts[1] || '00:00';
+        // Convert to ISO: YYYY-MM-DDTHH:mm
+        const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timePart}`;
+        selectedDate = new Date(isoDate);
+        console.log('[WEATHER] Converted date:', dateTime, '→', isoDate, '→', selectedDate);
+    } else {
+        selectedDate = new Date(dateTime);
+    }
+
+    // Find closest hourly forecast
+    let closestIndex = -1;
+    let minDiff = Infinity;
+
+    for (let i = 0; i < weatherData.hourly.time.length; i++) {
+        const forecastTime = new Date(weatherData.hourly.time[i]);
+        const diff = Math.abs(forecastTime - selectedDate);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closestIndex = i;
+        }
+    }
+
+    if (closestIndex === -1) return null;
+
+    const temp = Math.round(weatherData.hourly.temperature_2m[closestIndex]);
+    const weatherCode = weatherData.hourly.weather_code[closestIndex];
+    const windSpeed = Math.round(weatherData.hourly.wind_speed_10m[closestIndex]);
+    const precipProb = weatherData.hourly.precipitation_probability?.[closestIndex] || 0;
+
+    const WMO_CODES = {
+        0: 'Ciel Dégagé', 1: 'Peu Nuageux', 2: 'Partiel. Nuageux', 3: 'Couvert',
+        45: 'Brouillard', 48: 'Brouillard Givrant',
+        51: 'Bruine Légère', 53: 'Bruine Modérée', 55: 'Bruine Dense',
+        61: 'Pluie Faible', 63: 'Pluie Modérée', 65: 'Pluie Forte',
+        71: 'Neige Faible', 73: 'Neige Modérée', 75: 'Neige Forte',
+        80: 'Averses Pluie', 95: 'Orage'
+    };
+    const weatherDesc = WMO_CODES[weatherCode] || 'Variable';
+
+    return {
+        destination: location.name || locationName,
+        temp,
+        weatherDesc,
+        weatherCode,
+        windSpeed,
+        precipProb,
+        dateTime: selectedDate.toLocaleString('fr-FR')
+    };
+}
+
+// Display dual weather summary
+function displayDualWeatherSummary(depWeather, destWeather) {
+    const summaryDiv = document.getElementById('res-weather-summary');
+    const iconDiv = document.getElementById('res-weather-icon');
+    const detailsDiv = document.getElementById('res-weather-details');
+    const suggestionP = document.getElementById('res-weather-suggestion');
+
+    if (!summaryDiv || !detailsDiv || !suggestionP) return;
+
+    // Get weather icons
+    let depIcon = '☀️';
+    let destIcon = '☀️';
+    if (typeof getAnimatedIcon === 'function') {
+        depIcon = getAnimatedIcon(depWeather.weatherCode);
+        destIcon = getAnimatedIcon(destWeather.weatherCode);
+    }
+
+    // Populate with BOTH forecasts
+    // Populate with BOTH forecasts
+    // Fix: Icons are now integrated into the details block clearly one below the other
+    if (iconDiv) iconDiv.style.display = 'none'; // Hide old icon container if it still exists (safety)
+
+    detailsDiv.innerHTML = `
+        <div class="space-y-4">
+            <!-- DEPARTURE ROW -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex-shrink-0 animate-fade-in">
+                    ${depIcon}
+                </div>
+                <div class="flex-1 border-l-2 border-neon-green pl-3">
+                    <p class="text-neon-green font-bold text-xs mb-1">🚗 DÉPART: ${depWeather.destination}</p>
+                    <p>🌡️ ${depWeather.temp}°C - ${depWeather.weatherDesc}</p>
+                    <p class="text-xs text-gray-400">💨 ${depWeather.windSpeed} km/h | ☔ ${depWeather.precipProb}%</p>
+                </div>
+            </div>
+
+            <!-- ARRIVAL ROW -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 flex-shrink-0 animate-fade-in">
+                    ${destIcon}
+                </div>
+                <div class="flex-1 border-l-2 border-gold pl-3">
+                    <p class="text-gold font-bold text-xs mb-1">🏁 ARRIVÉE: ${destWeather.destination}</p>
+                    <p>🌡️ ${destWeather.temp}°C - ${destWeather.weatherDesc}</p>
+                    <p class="text-xs text-gray-400">💨 ${destWeather.windSpeed} km/h | ☔ ${destWeather.precipProb}%</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Mutualize suggestions if identical
+    const depSuggestion = getClothingSuggestion(depWeather.temp);
+    const destSuggestion = getClothingSuggestion(destWeather.temp);
+
+    if (depSuggestion === destSuggestion) {
+        suggestionP.innerHTML = `<strong>Pour tout le trajet :</strong> ${depSuggestion}`;
+    } else {
+        suggestionP.innerHTML = `
+            <strong>Départ:</strong> ${depSuggestion}<br>
+            <strong>Arrivée:</strong> ${destSuggestion}
+        `;
+    }
+
+    // Keep weather summary hidden for surprise effect - only vocalize and show in PDF
+    summaryDiv.classList.remove('hidden');
+
+    // Calculate and set ideal cabin temperature
+    setIdealCabinTemperature(depWeather, destWeather);
+}
+
+// Calculate ideal cabin temperature based on outside conditions
+function setIdealCabinTemperature(depWeather, destWeather) {
+    const teslaTempDiv = document.getElementById('res-tesla-temp');
+    const cabinTempInput = document.getElementById('res-cabin-temp');
+    const comfortMsg = document.getElementById('res-temp-comfort');
+
+    if (!teslaTempDiv || !cabinTempInput || !comfortMsg) return;
+
+    // Calculate average outside temperature
+    const avgTemp = (depWeather.temp + destWeather.temp) / 2;
+
+    // Calculate ideal cabin temperature
+    let idealTemp;
+    if (avgTemp < 0) {
+        idealTemp = 22; // Très froid dehors → chaleur confortable
+    } else if (avgTemp < 10) {
+        idealTemp = 21; // Froid → température agréable
+    } else if (avgTemp < 20) {
+        idealTemp = 20; // Frais → légèrement chauffé
+    } else if (avgTemp < 25) {
+        idealTemp = 19; // Doux → température neutre
+    } else {
+        idealTemp = 18; // Chaud → climatisation légère
+    }
+
+    // Set default value
+    cabinTempInput.value = idealTemp;
+
+    // Display comfort message
+    const tempDiff = idealTemp - avgTemp;
+    let message;
+    if (tempDiff > 10) {
+        message = "Chaleur confortable pour contrer le froid extérieur";
+    } else if (tempDiff > 5) {
+        message = "Température agréable pour votre confort";
+    } else if (tempDiff > 0) {
+        message = "Ambiance neutre et reposante";
+    } else {
+        message = "Fraîcheur climatisée pour votre bien-être";
+    }
+    comfortMsg.textContent = message;
+
+    // Keep temperature control hidden for surprise effect - only show in PDF
+    teslaTempDiv.classList.remove('hidden');
+}
+
+
 /* =========================================
    SIMULATOR CALCULATOR (OSRM + Nominatim)
    ========================================= */
@@ -2451,13 +2699,237 @@ _DOCUMENT CERTIFIÉ PRÊT.
     const voiceMsg = `Dossier complet pour ${sPrenom}. Le Bon de Réservation a été édité avec photo et détails légaux. Envoyez ce document au QG immédiatement. Terminé.`;
     speak(voiceMsg);
 
-    // 3. GENERATE GRAPHIC PDF (FULL VTC LEGAL)
-    if (window.generateRecapPDF) {
-        window.generateRecapPDF();
+    // 3. FETCH WEATHER THEN GENERATE PDF
+    const departure = document.getElementById('res-pickup')?.value;
+    const destination = document.getElementById('res-drop')?.value;
+    const pickupDateTime = document.getElementById('res-pickup-datetime')?.value;
+
+    if (departure && destination && pickupDateTime && typeof window.fetchBothWeatherForecasts === 'function') {
+        console.log('[RECAP] Fetching weather before PDF generation');
+        // Fetch weather first, then generate PDF
+        window.fetchBothWeatherForecasts().then(() => {
+            console.log('[RECAP] Weather fetched, generating PDF');
+            setTimeout(() => {
+                if (window.generateRecapPDF) {
+                    window.generateRecapPDF();
+                }
+            }, 1000); // Wait 1s for weather to be stored and vocalized
+        });
     } else {
-        console.error("PDF Generator function not found");
+        // No weather data, generate PDF directly
+        console.log('[RECAP] No weather data, generating PDF directly');
+        if (window.generateRecapPDF) {
+            window.generateRecapPDF();
+        } else {
+            console.error("PDF Generator function not found");
+        }
     }
 }
+
+// ============================================
+// WEATHER FORECAST FOR RESERVATION
+// ============================================
+
+// Global variable to store weather data for PDF
+let reservationWeatherData = null;
+
+// Get clothing suggestion based on temperature
+function getClothingSuggestion(temp) {
+    if (temp < 0) return "💡 Suggestion: Manteau d'hiver, gants, bonnet recommandés";
+    if (temp < 10) return "💡 Suggestion: Manteau et écharpe recommandés";
+    if (temp < 15) return "💡 Suggestion: Veste chaude recommandée";
+    if (temp < 20) return "💡 Suggestion: Veste légère recommandée";
+    if (temp < 25) return "💡 Suggestion: Pull léger ou chemise suffisant";
+    return "💡 Suggestion: Vêtements légers, protection solaire recommandée";
+}
+
+// Fetch weather for destination at selected date/time
+async function fetchDestinationWeather() {
+    const destination = document.getElementById('res-drop')?.value;
+    const pickupDateTime = document.getElementById('res-pickup-datetime')?.value;
+
+    if (!destination || !pickupDateTime) {
+        console.log('[WEATHER] Missing destination or date/time');
+        return;
+    }
+
+    try {
+        console.log('[WEATHER] Fetching for:', destination, 'at', pickupDateTime);
+
+        // 1. Geocode destination
+        if (typeof geocodeLocation !== 'function') {
+            console.error('[WEATHER] geocodeLocation function not available');
+            return;
+        }
+
+        const location = await geocodeLocation(destination);
+        if (!location) {
+            console.error('[WEATHER] Could not geocode destination');
+            return;
+        }
+
+        // 2. Fetch weather data
+        if (typeof fetchWeatherData !== 'function') {
+            console.error('[WEATHER] fetchWeatherData function not available');
+            return;
+        }
+
+        const weatherData = await fetchWeatherData(location.lat, location.lon);
+        if (!weatherData || !weatherData.hourly) {
+            console.error('[WEATHER] No weather data received');
+            return;
+        }
+
+        // 3. Parse selected date/time and find matching forecast
+        const selectedDate = new Date(pickupDateTime);
+
+        // Find the closest hourly forecast
+        let closestIndex = -1;
+        let minDiff = Infinity;
+
+        for (let i = 0; i < weatherData.hourly.time.length; i++) {
+            const forecastTime = new Date(weatherData.hourly.time[i]);
+            const diff = Math.abs(forecastTime - selectedDate);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestIndex = i;
+            }
+        }
+
+        if (closestIndex === -1) {
+            console.error('[WEATHER] No matching forecast found');
+            return;
+        }
+
+        // 4. Extract weather info
+        const temp = Math.round(weatherData.hourly.temperature_2m[closestIndex]);
+        const weatherCode = weatherData.hourly.weather_code[closestIndex];
+        const windSpeed = Math.round(weatherData.hourly.wind_speed_10m[closestIndex]);
+        const precipProb = weatherData.hourly.precipitation_probability?.[closestIndex] || 0;
+
+        // Get weather description
+        const WMO_CODES = {
+            0: 'Ciel Dégagé', 1: 'Peu Nuageux', 2: 'Partiel. Nuageux', 3: 'Couvert',
+            45: 'Brouillard', 48: 'Brouillard Givrant',
+            51: 'Bruine Légère', 53: 'Bruine Modérée', 55: 'Bruine Dense',
+            61: 'Pluie Faible', 63: 'Pluie Modérée', 65: 'Pluie Forte',
+            71: 'Neige Faible', 73: 'Neige Modérée', 75: 'Neige Forte',
+            80: 'Averses Pluie', 95: 'Orage'
+        };
+        const weatherDesc = WMO_CODES[weatherCode] || 'Variable';
+
+        // 5. Store for PDF
+        reservationWeatherData = {
+            destination: location.name || destination,
+            temp,
+            weatherDesc,
+            weatherCode,
+            windSpeed,
+            precipProb,
+            dateTime: selectedDate.toLocaleString('fr-FR')
+        };
+
+        // 6. Display in form
+        displayWeatherSummary(reservationWeatherData);
+
+        // 7. Vocalize
+        const clothingSuggestion = getClothingSuggestion(temp);
+        const voiceMsg = `Météo prévue à ${reservationWeatherData.destination} le ${reservationWeatherData.dateTime}: ${temp} degrés, ${weatherDesc}. ${clothingSuggestion.replace('💡 Suggestion: ', '')}`;
+        if (window.speak) {
+            speak(voiceMsg);
+        }
+
+    } catch (error) {
+        console.error('[WEATHER] Error fetching weather:', error);
+    }
+}
+
+// Display weather summary in form
+function displayWeatherSummary(data) {
+    const summaryDiv = document.getElementById('res-weather-summary');
+    const iconDiv = document.getElementById('res-weather-icon');
+    const detailsDiv = document.getElementById('res-weather-details');
+    const suggestionP = document.getElementById('res-weather-suggestion');
+
+    if (!summaryDiv || !iconDiv || !detailsDiv || !suggestionP) return;
+
+    // Get weather icon (reuse from geolocation-search.js if available)
+    let weatherIcon = '☀️';
+    if (typeof getAnimatedIcon === 'function') {
+        weatherIcon = getAnimatedIcon(data.weatherCode);
+    }
+
+    // Populate
+    iconDiv.innerHTML = weatherIcon;
+    detailsDiv.innerHTML = `
+        <p><strong>📍 ${data.destination}</strong></p>
+        <p>🌡️ Température: <strong>${data.temp}°C</strong></p>
+        <p>☁️ Conditions: ${data.weatherDesc}</p>
+        <p>💨 Vent: ${data.windSpeed} km/h | ☔ Pluie: ${data.precipProb}%</p>
+    `;
+    suggestionP.textContent = getClothingSuggestion(data.temp);
+
+    // Show summary
+    summaryDiv.classList.remove('hidden');
+}
+
+// Automatic weather check when all fields are filled
+document.addEventListener('DOMContentLoaded', () => {
+    let weatherCheckTimeout = null;
+
+    // Function to check if all required fields are filled
+    function checkAndTriggerWeather() {
+        clearTimeout(weatherCheckTimeout);
+        weatherCheckTimeout = setTimeout(() => {
+            const departure = document.getElementById('res-pickup')?.value?.trim();
+            const destination = document.getElementById('res-drop')?.value?.trim();
+            const pickupDateTime = document.getElementById('res-pickup-datetime')?.value;
+
+            // Validate inputs: Min 3 chars each
+            if (departure && destination && pickupDateTime) {
+                if (departure.length < 3 || destination.length < 3) return;
+
+                console.log('[WEATHER] All fields valid, triggering automatic weather fetch');
+
+                // 1. Fetch Request/Reservation Logic
+                if (typeof window.fetchBothWeatherForecasts === 'function') {
+                    window.fetchBothWeatherForecasts();
+                }
+
+                // 2. Update Main Dashboard (Visual Sync)
+                if (typeof window.searchDestination === 'function') {
+                    console.log('[WEATHER] Syncing Main Dashboard with:', destination);
+                    window.searchDestination(destination);
+                }
+            }
+        }, 800); // Debounce 800ms (Reduced API spam)
+    }
+
+    // Listen to all relevant fields
+    const depInput = document.getElementById('res-pickup');
+    const destInput = document.getElementById('res-drop');
+    const dateInput = document.getElementById('res-pickup-datetime');
+
+    const triggerOptions = { passive: true };
+
+    if (depInput) {
+        depInput.addEventListener('blur', checkAndTriggerWeather, triggerOptions);
+        depInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
+        depInput.addEventListener('change', checkAndTriggerWeather, triggerOptions); // Added Change
+    }
+    if (destInput) {
+        destInput.addEventListener('blur', checkAndTriggerWeather, triggerOptions);
+        destInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
+        destInput.addEventListener('change', checkAndTriggerWeather, triggerOptions); // Added Change
+    }
+    if (dateInput) {
+        dateInput.addEventListener('change', checkAndTriggerWeather, triggerOptions);
+        dateInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
+    }
+
+    // Expose for external calls (e.g. from Flatpickr)
+    window.checkAndTriggerWeather = checkAndTriggerWeather;
+});
 
 window.generateRecapPDF = async function () {
     if (!window.jspdf) {
@@ -2472,6 +2944,17 @@ window.generateRecapPDF = async function () {
         format: 'a4'
     });
 
+    // --- CONSTANTS & CONFIG ---
+    const COLORS = {
+        BG: "#FFFFFF",
+        TEXT: "#1A1A1A", // Anthracite
+        ACCENT: "#E50914", // Scanner Red
+        SUB: "#666666", // Grey
+        NEON_BLUE: "#00d4ff",
+        GOLD: "#ff9d00",
+        GREEN: "#b8ff00"
+    };
+
     // --- DATA COLLECTION ---
     const prenom = document.getElementById('hero-prenom')?.value || "CLIENT";
     const nom = document.getElementById('hero-nom')?.value || "INCONNU";
@@ -2483,371 +2966,316 @@ window.generateRecapPDF = async function () {
     const dest = document.getElementById('sim-destination')?.value || "Non défini";
     const vehicle = "TESLA MODEL 3 (Blanc Nacré)";
     const pilot = "Laurent (Certifié iA_k)";
+    const cabinTemp = document.getElementById('res-cabin-temp')?.value;
+    const comfortMsg = document.getElementById('res-temp-comfort')?.textContent;
+    const idImg = document.getElementById('webcam-result');
 
-    // --- STYLING CONSTANTS ---
-    const COL_BG = "#FFFFFF";
-    const COL_TEXT = "#1A1A1A"; // Anthracite
-    const COL_ACCENT = "#E50914"; // Scanner Red
-    const COL_SUB = "#666666";
+    // --- VOCALIZATION ---
+    if (reservationWeatherData && reservationWeatherData.departure && reservationWeatherData.destination) {
+        const voiceMsg = `Conditions météo pour votre trajet. Au départ: ${reservationWeatherData.departure.temp} degrés. À l'arrivée: ${reservationWeatherData.destination.temp} degrés.`;
+        if (window.speak) speak(voiceMsg);
+    }
 
-    // --- BACKGROUND ---
-    doc.setFillColor(COL_BG);
-    doc.rect(0, 0, 210, 297, 'F');
+    // --- LAYOUT ENGINE ---
+    const Layout = {
+        cursorY: 45, // Start below header
+        margin: 15,
+        contentWidth: 180, // 210 - 2*15
+        pageHeight: 297,
+        footerHeight: 20,
 
-    // --- HEADER ---
-    doc.setFillColor(COL_TEXT);
-    doc.rect(0, 0, 210, 25, 'F');
+        // Check if we need a new page
+        checkPageBreak: function (heightNeeded) {
+            if (this.cursorY + heightNeeded > (this.pageHeight - this.footerHeight)) {
+                doc.addPage();
+                this.cursorY = 45; // Reset to top
+                this.drawBackground(); // Re-draw header/footer
+                return true;
+            }
+            return false;
+        },
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.setFont("helvetica", "bold");
-    doc.text("iA_k_venir", 15, 17);
+        // Draw Standard Header & Footer
+        drawBackground: function () {
+            const pageCount = doc.internal.getNumberOfPages();
 
-    doc.setTextColor(COL_ACCENT);
-    doc.setFontSize(14);
-    doc.text("BON DE RÉSERVATION", 195, 17, { align: "right" });
+            // HEADER
+            doc.setFillColor(COLORS.TEXT);
+            doc.rect(0, 0, 210, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.text("iA_k_venir", 15, 17);
+            doc.setTextColor(COLORS.ACCENT);
+            doc.setFontSize(14);
+            doc.text("BON DE RÉSERVATION", 195, 17, { align: "right" });
 
-    // --- CONTENT LAYOUT (Split) ---
-    const leftX = 15;
-    const rightX = 130;
-    let y = 45;
+            // FOOTER
+            const footerY = 280;
+            doc.setFillColor(COLORS.TEXT);
+            doc.rect(0, footerY, 210, 17, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(8);
+            doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
+            doc.setTextColor(COLORS.SUB);
+            doc.text(`Page ${pageCount} - Document généré automatiquement via Neural Link`, 105, footerY + 11, { align: "center" });
+        },
 
-    // --- LEFT COLUMN: DATA ---
+        // Draw Section Title
+        drawSection: function (title) {
+            this.checkPageBreak(15);
+            doc.setDrawColor(COLORS.ACCENT);
+            doc.setLineWidth(0.5);
+            doc.line(this.margin, this.cursorY, 110, this.cursorY); // Style underline
+            this.cursorY += 8;
+
+            doc.setTextColor(COLORS.ACCENT);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(title, this.margin, this.cursorY);
+            this.cursorY += 8;
+        },
+
+        // Draw Key-Value Field
+        drawField: function (label, value) {
+            this.checkPageBreak(12);
+            doc.setFontSize(9);
+            doc.setTextColor(COLORS.SUB);
+            doc.setFont("helvetica", "normal");
+            doc.text(label, this.margin, this.cursorY);
+            this.cursorY += 5;
+
+            doc.setFontSize(11);
+            doc.setTextColor(COLORS.TEXT);
+            doc.setFont("helvetica", "normal"); // Keep it clean
+            // Wrap text if needed
+            const splitText = doc.splitTextToSize(value, 90); // Left column width
+            doc.text(splitText, this.margin, this.cursorY);
+
+            this.cursorY += (splitText.length * 5) + 5;
+        },
+
+        // Helper for Badges
+        drawBadge: function (label, color, x, y) {
+            doc.setFillColor(color);
+            doc.roundedRect(x, y - 4, 18, 5, 1, 1, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(7);
+            doc.setFont("helvetica", "bold");
+            doc.text(label, x + 9, y - 0.5, { align: "center" });
+        }
+    };
+
+    // --- START GENERATION ---
+    Layout.drawBackground();
+
     // 1. CLIENT
-    doc.setDrawColor(COL_ACCENT);
-    doc.setLineWidth(0.5);
-    doc.line(leftX, y, 110, y);
-    y += 8;
-    doc.setFontSize(10);
-    doc.setTextColor(COL_ACCENT);
-    doc.text("CLIENT / PASSAGER", leftX, y);
-    y += 7;
-    doc.setFontSize(12);
-    doc.setTextColor(COL_TEXT);
-    doc.text(`${prenom} ${nom}`, leftX, y);
-    y += 6;
-    doc.setFontSize(10);
-    doc.setTextColor(COL_SUB);
-    doc.text(`Tél: ${phone}`, leftX, y);
-    y += 15;
+    Layout.drawSection("CLIENT / PASSAGER");
+    Layout.drawField("NOM COMPLET", `${prenom} ${nom}`);
+    Layout.drawField("TÉLÉPHONE", phone);
 
     // 2. MISSION
-    doc.setDrawColor(COL_ACCENT);
-    doc.line(leftX, y, 110, y);
-    y += 8;
-    doc.setTextColor(COL_ACCENT);
-    doc.text("DÉTAILS MISSION", leftX, y);
-    y += 7;
-    doc.setTextColor(COL_TEXT);
-    doc.text(`Date: ${date}`, leftX, y);
-    y += 10;
-    doc.setFontSize(9);
-    doc.setTextColor(COL_SUB);
-    doc.text("DÉPART", leftX, y);
-    y += 5;
-    doc.setFontSize(11);
-    doc.setTextColor(COL_TEXT);
-    doc.text(dep, leftX, y, { maxWidth: 90 });
-    const splitDep = doc.splitTextToSize(dep, 90);
-    y += (splitDep.length * 5) + 5;
-    doc.setFontSize(9);
-    doc.setTextColor(COL_SUB);
-    doc.text("ARRIVÉE", leftX, y);
-    y += 5;
-    doc.setFontSize(11);
-    doc.setTextColor(COL_TEXT);
-    doc.text(dest, leftX, y, { maxWidth: 90 });
-    const splitDest = doc.splitTextToSize(dest, 90);
-    y += (splitDest.length * 5) + 15;
+    Layout.drawSection("DÉTAILS MISSION");
+    Layout.drawField("DATE DE PRISE EN CHARGE", date);
+    Layout.drawField("DÉPART", dep);
+    Layout.drawField("ARRIVÉE", dest);
 
     // 3. LOGISTICS
-    doc.setDrawColor(COL_ACCENT);
-    doc.line(leftX, y, 110, y);
-    y += 8;
-    doc.setTextColor(COL_ACCENT);
-    doc.setFontSize(10);
-    doc.text("LOGISTIQUE", leftX, y);
-    y += 7;
-    doc.setTextColor(COL_TEXT);
-    doc.text(`Distance estimée: ${dist}`, leftX, y);
-    y += 10;
-    doc.setFillColor(COL_TEXT);
-    doc.rect(leftX, y, 60, 20, 'F');
-    doc.setTextColor(COL_ACCENT);
+    Layout.drawSection("LOGISTIQUE");
+    Layout.drawField("DISTANCE ESTIMÉE", dist);
+
+    // Price Box
+    Layout.checkPageBreak(30);
+    doc.setFillColor(COLORS.TEXT);
+    doc.rect(Layout.margin, Layout.cursorY, 60, 20, 'F');
+    doc.setTextColor(COLORS.ACCENT);
     doc.setFontSize(9);
-    doc.text("PRIX ESTIMÉ TTC", leftX + 5, y + 6);
+    doc.text("PRIX ESTIMÉ TTC", Layout.margin + 5, Layout.cursorY + 6);
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(16);
-    doc.text(price, leftX + 5, y + 16);
-    y += 35;
+    doc.text(price, Layout.margin + 5, Layout.cursorY + 16);
+    Layout.cursorY += 30;
 
-    // 4. FLEET - FIXED
-    doc.setDrawColor(COL_ACCENT);
-    doc.line(leftX, y, 110, y);
-    y += 8;
-    doc.setTextColor(COL_ACCENT);
-    doc.setFontSize(10);
-    doc.text("UNITÉ DE TRANSPORT", leftX, y);
-    y += 7;
-    doc.setTextColor(COL_TEXT);
-    doc.text(vehicle, leftX, y);
-    y += 6;
-    doc.setTextColor(COL_SUB);
-    doc.setFontSize(10);
-    doc.text(`Pilote: ${pilot}`, leftX, y);
-    y += 6;
-    doc.text("Motorisation: 100% Électrique", leftX, y);
+    Layout.drawField("VÉHICULE", vehicle);
+    Layout.drawField("PILOTE", pilot);
 
-    // --- RIGHT COLUMN: VISUAL ID ---
-    const idImg = document.getElementById('webcam-result');
+    // 4. WEATHER (Graphical)
+    if (reservationWeatherData) {
+        Layout.drawSection("METEO PREVUE");
+
+        // Departure
+        if (reservationWeatherData.departure) {
+            Layout.checkPageBreak(30);
+            Layout.drawBadge("DEPART", COLORS.NEON_BLUE, Layout.margin, Layout.cursorY);
+            doc.setTextColor(COLORS.TEXT);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(reservationWeatherData.departure.destination, Layout.margin + 22, Layout.cursorY);
+            Layout.cursorY += 6;
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${reservationWeatherData.departure.temp}°C - ${reservationWeatherData.departure.weatherDesc}`, Layout.margin, Layout.cursorY);
+            Layout.cursorY += 5;
+
+            doc.setTextColor(COLORS.SUB);
+            doc.setFontSize(9);
+            doc.text(`Vent: ${reservationWeatherData.departure.windSpeed} km/h | Pluie: ${reservationWeatherData.departure.precipProb}%`, Layout.margin, Layout.cursorY);
+            Layout.cursorY += 10;
+        }
+
+        // Arrival
+        if (reservationWeatherData.destination) {
+            Layout.checkPageBreak(30);
+            Layout.drawBadge("ARRIVEE", COLORS.GOLD, Layout.margin, Layout.cursorY);
+            // Handle if destination is object or string (legacy compat)
+            const destName = reservationWeatherData.destination.destination || reservationWeatherData.destination;
+            const destTemp = reservationWeatherData.destination.temp || reservationWeatherData.temp;
+            const destDesc = reservationWeatherData.destination.weatherDesc || reservationWeatherData.weatherDesc;
+            const destWind = reservationWeatherData.destination.windSpeed || reservationWeatherData.windSpeed;
+            const destRain = reservationWeatherData.destination.precipProb || reservationWeatherData.precipProb;
+
+            doc.setTextColor(COLORS.TEXT);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            doc.text(destName, Layout.margin + 22, Layout.cursorY);
+            Layout.cursorY += 6;
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${destTemp}°C - ${destDesc}`, Layout.margin, Layout.cursorY);
+            Layout.cursorY += 5;
+
+            doc.setTextColor(COLORS.SUB);
+            doc.setFontSize(9);
+            doc.text(`Vent: ${destWind} km/h | Pluie: ${destRain}%`, Layout.margin, Layout.cursorY);
+            Layout.cursorY += 10;
+
+            // Suggestion
+            Layout.checkPageBreak(25);
+            Layout.drawBadge("CONSEIL", COLORS.GREEN, Layout.margin, Layout.cursorY);
+            const suggRaw = getClothingSuggestion(destTemp);
+            const suggClean = suggRaw.replace('💡 Suggestion: ', '').replace('💡 ', '');
+            doc.setTextColor(COLORS.SUB);
+            const splitSugg = doc.splitTextToSize(suggClean, 85);
+            doc.text(splitSugg, Layout.margin + 22, Layout.cursorY);
+            Layout.cursorY += (splitSugg.length * 4) + 8;
+        }
+    }
+
+    // 5. TESLA TEMP
+    if (cabinTemp) {
+        Layout.drawSection("TEMPERATURE TESLA");
+        Layout.checkPageBreak(30);
+
+        doc.setFillColor(COLORS.TEXT);
+        doc.roundedRect(Layout.margin, Layout.cursorY, 20, 16, 2, 2, 'F');
+        doc.setTextColor(COLORS.ACCENT);
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${cabinTemp}`, Layout.margin + 10, Layout.cursorY + 10, { align: "center" });
+        doc.setFontSize(8);
+        doc.text("°C", Layout.margin + 10, Layout.cursorY + 14, { align: "center" });
+
+        doc.setTextColor(COLORS.SUB);
+        doc.setFontSize(9);
+        doc.setFont("helvetica", "italic");
+        const msg = comfortMsg || "Température idéale";
+        const splitMsg = doc.splitTextToSize(msg, 65);
+        doc.text(splitMsg, Layout.margin + 25, Layout.cursorY + 6);
+        Layout.cursorY += 25;
+    }
+
+    // 6. WEBCAM ID (Absolute positioning on Right Column, but check page)
+    // For this specific design, we put it fixed on First Page usually, but let's be smart.
+    // If we are still on Page 1, put it on right. If not, put it at end.
+    // Given the request "don't cut off", simplest is to treat it as a section if on new page, 
+    // OR fixed position if on Page 1.
+    // STRATEGY: Fixed Position on Page 1 if possible.
+
     if (idImg && !idImg.classList.contains('hidden') && idImg.src) {
         try {
-            // FIX: Portrait Mode Aspect Ratio
-            // We want to fit the image within a box of 65mm width and reasonable height (e.g. 80mm)
-            // while preserving the aspect ratio.
             const rawW = idImg.naturalWidth || 640;
             const rawH = idImg.naturalHeight || 480;
             const imgRatio = rawH / rawW;
-
-            const columnW = 65; // Full available width
-            const maxImageW = 60; // Restrict width for margin
-            const maxImageH = 80; // Max allowed height
-
-            let finalW = maxImageW;
+            let finalW = 60;
             let finalH = finalW * imgRatio;
+            if (finalH > 80) { finalH = 80; finalW = finalH / imgRatio; }
 
-            // If height exceeds max, scale down
-            if (finalH > maxImageH) {
-                finalH = maxImageH;
-                finalW = finalH / imgRatio;
-            }
-
-            // Center horizontally in the 65mm column
-            const xOffset = rightX + (columnW - finalW) / 2;
-
-            doc.addImage(idImg.src, 'PNG', xOffset, 45, finalW, finalH);
+            // Always put on Page 1 Right Column for "Identity Card" feel
+            doc.setPage(1);
+            const rightColX = 130;
+            doc.addImage(idImg.src, 'PNG', rightColX, 45, finalW, finalH);
             doc.setFontSize(8);
-            doc.setTextColor(COL_ACCENT);
-            // Place label below the image with a small margin
-            doc.text("IDENTITÉ NUMÉRIQUE", rightX, 45 + finalH + 6);
-        } catch (e) {
-            console.warn("Could not add image to PDF", e);
-        }
-    } else {
-        doc.setDrawColor(COL_SUB);
-        doc.setLineWidth(0.2);
-        doc.rect(rightX, 45, 65, 40);
-        doc.setTextColor(COL_SUB);
-        doc.setFontSize(8);
-        doc.text("AUCUNE PHOTO VALIDÉE", rightX + 32.5, 65, { align: "center" });
+            doc.setTextColor(COLORS.ACCENT);
+            doc.text("IDENTITÉ NUMÉRIQUE", rightColX, 45 + finalH + 6);
+        } catch (e) { console.warn("PDF Image Error", e); }
     }
 
-    // --- FOOTER ---
-    const footerY = 280;
-    doc.setFillColor(COL_TEXT);
-    doc.rect(0, footerY, 210, 17, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(8);
-    doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
-    doc.setTextColor(COL_SUB);
-    doc.text("Document généré automatiquement. Merci de votre confiance.", 105, footerY + 11, { align: "center" });
 
-    // --- PAGE 2: SUGGESTIONS DE VISITE ---
-    // Find matching key for POI suggestions
+    // 7. TOP 3 SUGGESTIONS (New Page ensured via Layout)
+    // Find key
     let cleanDest = dest.toLowerCase();
-
-    // Apply Redirects/Aliases (Same logic as suggestPOIs)
+    // (Existing alias logic)
     const aliases = {
-        "artzenheim": "neuf-brisach",
-        "baltzenheim": "neuf-brisach",
-        "kunheim": "neuf-brisach",
-        "bimbisheim": "neuf-brisach",
-        "widensolen": "neuf-brisach",
-        "wolfgantzen": "neuf-brisach",
-        "volgelsheim": "neuf-brisach",
-        "biesheim": "neuf-brisach",
-        "vogelgrun": "neuf-brisach",
-        "algolsheim": "neuf-brisach",
-        "obersaasheim": "neuf-brisach",
-        "geiswasser": "neuf-brisach",
-        "heiteren": "neuf-brisach",
-        "marckolsheim": "neuf-brisach",
-        "sasbach": "neuf-brisach",
-        "brecht": "neuf-brisach",
-        "ihringen": "neuf-brisach",
-        "jebsheim": "colmar",
-        "muntzenheim": "colmar",
-        "horbourg-wihr": "colmar",
-        "andolsheim": "colmar",
-        "sundhoffen": "colmar",
-        "logelheim": "colmar",
-        "sainte-croix-en-plaine": "colmar",
-        "herrlisheim-pres-colmar": "colmar",
-        "wettolsheim": "colmar",
-        "eguisheim": "eguisheim",
-        "wintzenheim": "colmar",
-        "turckheim": "colmar",
-        "ingersheim": "colmar",
-        "bennwihr": "colmar",
-        "houssen": "colmar",
-        "ostheim": "colmar",
-        "guemar": "ribeauville", // close to ribeauville
-        "bergheim": "ribeauville",
-        "saint-hippolyte": "ribeauville",
-        "orschwiller": "selestat",
-        "kintzheim": "selestat", // Volerie des aigles
-        "chatenois": "selestat",
-        "scherwiller": "selestat",
-        "ebersheim": "selestat",
-        "baldenheim": "selestat",
-        "mussig": "selestat",
-        "heidolsheim": "selestat",
-        "artolsheim": "selestat",
-        "mackenheim": "selestat",
-        "bootzheim": "selestat",
-        "elscheim": "selestat",
-        "illhaeusern": "ribeauville", // Auberge de l'ill
-        "mittelwihr": "riquewihr",
-        "beblenheim": "riquewihr",
-        "hunawihr": "riquewihr",
-        "zellenberg": "riquewihr",
-        "kaysersberg": "kaysersberg",
-        "ammerschwihr": "kaysersberg",
-        "sigolsheim": "kaysersberg",
-        "kienzheim": "kaysersberg",
-        "katzenthal": "kaysersberg",
-        "niedermorschwihr": "colmar",
-        "obermorschwihr": "eguisheim",
-        "voegtlinshoffen": "eguisheim",
-        "husseren-les-chateaux": "eguisheim",
-        "hattstatt": "eguisheim",
-        "gueberschwihr": "eguisheim",
-        "pfaffenheim": "eguisheim",
-        "rouffach": "eguisheim", // Approximation
-        "gundolsheim": "eguisheim",
-        "bergholtz": "eguisheim",
-        "soultzmatt": "eguisheim",
-        "westhalten": "eguisheim",
-        "osenbach": "eguisheim",
-        "selestat": "selestat",
-        "strasbourg": "strasbourg",
-        "entzheim": "strasbourg",
-        "lingolsheim": "strasbourg",
-        "illkirch": "strasbourg",
-        "schiltigheim": "strasbourg",
-        "gare de strasbourg": "strasbourg",
-        "aéroport strasbourg": "strasbourg",
-        "obernai": "strasbourg",
-        "mont sainte-odile": "strasbourg",
-        "ungersheim": "mulhouse",
-        "europa-park": "rust",
-        "rulantica": "rust",
-        "rust": "rust",
-        "basel": "bale",
-        "bale": "bale",
-        "euroairport": "bale",
-        "freiburg": "freiburg",
-        "fribourg": "freiburg",
-        "baden-baden": "baden-baden",
-        "baden": "baden-baden",
-        "gerardmer": "gerardmer",
-        "vosges": "gerardmer"
+        "artzenheim": "neuf-brisach", "baltzenheim": "neuf-brisach", "kunheim": "neuf-brisach", "bimbisheim": "neuf-brisach", "widensolen": "neuf-brisach", "wolfgantzen": "neuf-brisach", "volgelsheim": "neuf-brisach", "biesheim": "neuf-brisach", "vogelgrun": "neuf-brisach", "algolsheim": "neuf-brisach", "obersaasheim": "neuf-brisach", "geiswasser": "neuf-brisach", "heiteren": "neuf-brisach", "marckolsheim": "neuf-brisach", "sasbach": "neuf-brisach", "brecht": "neuf-brisach", "ihringen": "neuf-brisach", "jebsheim": "colmar", "muntzenheim": "colmar", "horbourg-wihr": "colmar", "andolsheim": "colmar", "sundhoffen": "colmar", "logelheim": "colmar", "sainte-croix-en-plaine": "colmar", "herrlisheim-pres-colmar": "colmar", "wettolsheim": "colmar", "eguisheim": "eguisheim", "wintzenheim": "colmar", "turckheim": "colmar", "ingersheim": "colmar", "bennwihr": "colmar", "houssen": "colmar", "ostheim": "colmar", "guemar": "ribeauville", "bergheim": "ribeauville", "saint-hippolyte": "ribeauville", "orschwiller": "selestat", "kintzheim": "selestat", "chatenois": "selestat", "scherwiller": "selestat", "ebersheim": "selestat", "baldenheim": "selestat", "mussig": "selestat", "heidolsheim": "selestat", "artolsheim": "selestat", "mackenheim": "selestat", "bootzheim": "selestat", "elscheim": "selestat", "illhaeusern": "ribeauville", "mittelwihr": "riquewihr", "beblenheim": "riquewihr", "hunawihr": "riquewihr", "zellenberg": "riquewihr", "kaysersberg": "kaysersberg", "ammerschwihr": "kaysersberg", "sigolsheim": "kaysersberg", "kienzheim": "kaysersberg", "katzenthal": "kaysersberg", "niedermorschwihr": "colmar", "obermorschwihr": "eguisheim", "voegtlinshoffen": "eguisheim", "husseren-les-chateaux": "eguisheim", "hattstatt": "eguisheim", "gueberschwihr": "eguisheim", "pfaffenheim": "eguisheim", "rouffach": "eguisheim", "gundolsheim": "eguisheim", "bergholtz": "eguisheim", "soultzmatt": "eguisheim", "westhalten": "eguisheim", "osenbach": "eguisheim", "selestat": "selestat", "strasbourg": "strasbourg", "entzheim": "strasbourg", "lingolsheim": "strasbourg", "illkirch": "strasbourg", "schiltigheim": "strasbourg", "gare de strasbourg": "strasbourg", "aéroport strasbourg": "strasbourg", "obernai": "strasbourg", "mont sainte-odile": "strasbourg", "ungersheim": "mulhouse", "europa-park": "rust", "rulantica": "rust", "rust": "rust", "basel": "bale", "bale": "bale", "euroairport": "bale", "freiburg": "freiburg", "fribourg": "freiburg", "baden-baden": "baden-baden", "baden": "baden-baden", "gerardmer": "gerardmer", "vosges": "gerardmer"
     };
 
     for (const [key, target] of Object.entries(aliases)) {
-        if (cleanDest.includes(key)) {
-            cleanDest = target;
-            break;
-        }
+        if (cleanDest.includes(key)) { cleanDest = target; break; }
     }
 
     let matchedKey = null;
-    for (const key of Object.keys(POI_DATA)) {
-        const normalizedKey = key.replace(/-/g, " ");
-        // 1. Standard: Destination includes Key ("Ribeauville Centre")
-        if (cleanDest.includes(normalizedKey)) {
-            matchedKey = key;
-            break;
-        }
-        // 2. Reverse: Key includes Destination ("ibeauville" match "ribeauville")
-        // Only if input length > 4 to avoid matching "le" or "ville" too broadly
-        if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) {
-            matchedKey = key;
-            break;
+    if (typeof POI_DATA !== 'undefined') {
+        for (const key of Object.keys(POI_DATA)) {
+            const normalizedKey = key.replace(/-/g, " ");
+            if (cleanDest.includes(normalizedKey)) { matchedKey = key; break; }
+            if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) { matchedKey = key; break; }
         }
     }
 
     if (matchedKey && POI_DATA[matchedKey]) {
+        // Force new page for Suggestions
         doc.addPage();
+        Layout.cursorY = 45;
+        Layout.drawBackground();
 
-        // Background
-        doc.setFillColor(COL_BG);
-        doc.rect(0, 0, 210, 297, 'F');
-
-        // Header Page 2
-        doc.setFillColor(COL_TEXT);
-        doc.rect(0, 0, 210, 25, 'F');
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(14);
-        doc.text(`SUGGESTIONS DE VISITE : ${matchedKey.toUpperCase()}`, 105, 17, { align: "center" });
+        doc.text(`SUGGESTIONS : ${matchedKey.toUpperCase()}`, 105, 17, { align: "center" }); // Overwrite header title logic? Or just add subtitle
 
+        // Let's use the Layout Engine for Top 3
         const categories = POI_DATA[matchedKey];
-        const catLabels = {
-            "insolite": "LIEUX INSOLITES",
-            "gastronomy": "GASTRONOMIE",
-            "culture": "CULTURE & MUSÉES",
-            "leisure": "LOISIRS & PARCS",
-            "wine": "CAVES VITICOLES"
-        };
+        // Flatten to get top 3 mix or just specific categories? User said "Top 3".
+        // Let's take 1 from Gastronomy, 1 from Insolite, 1 from Leisure if available.
+        // Or just list first 3 categories.
 
-        let yPos = 40;
-        const leftMargin = 20;
+        const catLabels = { "insolite": "LIEUX INSOLITES", "gastronomy": "GASTRONOMIE", "culture": "CULTURE", "leisure": "LOISIRS", "wine": "VINS" };
 
         for (const [catKey, items] of Object.entries(categories)) {
             if (!items || items.length === 0) continue;
-
-            const displayLabel = catLabels[catKey] || catKey.toUpperCase();
-
-            // Category Title
-            doc.setFontSize(12);
-            doc.setTextColor(COL_ACCENT);
-            doc.setFont("helvetica", "bold");
-            doc.text(displayLabel, leftMargin, yPos);
-            yPos += 8;
-
-            // Items
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
+            Layout.drawSection(catLabels[catKey] || catKey.toUpperCase());
 
             items.slice(0, 3).forEach(poi => {
-                doc.setTextColor(COL_TEXT);
-                doc.text(`- ${poi.name}`, leftMargin, yPos);
+                Layout.checkPageBreak(10);
+                // Custom bullet render
+                doc.setTextColor(COLORS.TEXT);
+                doc.setFontSize(10);
+                doc.text(`• ${poi.name}`, Layout.margin, Layout.cursorY);
 
-                // Link (Blue, Underlined style implied by looking like a link, 
-                // but jspdf link annotation is invisible hotzone).
-                // We will make it look clickable.
+                // Link
+                const linkLabel = " (Voir Site)";
+                const w = doc.getTextWidth(`• ${poi.name}`);
+                doc.setTextColor(COLORS.NEON_BLUE);
+                doc.textWithLink(linkLabel, Layout.margin + w, Layout.cursorY, { url: poi.url });
 
-                const textWidth = doc.getTextWidth(`- ${poi.name} `);
-                doc.setTextColor(0, 0, 255); // Blue
-                doc.textWithLink("[SITE OFFICIEL]", leftMargin + textWidth, yPos, { url: poi.url });
-                doc.setTextColor(COL_TEXT);
-
-                yPos += 7;
+                Layout.cursorY += 7;
             });
-
-            yPos += 5; // Spacing between categories
+            Layout.cursorY += 5;
         }
-
-        // Footer Page 2
-        doc.setFillColor(COL_TEXT);
-        doc.rect(0, 280, 210, 17, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(8);
-        doc.text("iA_k_venir - Suggestions touristiques à titre indicatif.", 105, 280 + 9, { align: "center" });
     }
 
-    // --- OUTPUT ---
-    // Store BLOB directly to avoid fetch errors later
+    // --- FINAL BLOB ---
     currentPdfBlob = doc.output('blob');
     currentPdfBlobUrl = URL.createObjectURL(currentPdfBlob);
 
@@ -2858,14 +3286,9 @@ window.generateRecapPDF = async function () {
     const btnWa = document.getElementById('btn-share-wa');
     const btnMail = document.getElementById('btn-share-mail');
 
-    if (previewFrame) {
-        previewFrame.src = currentPdfBlobUrl;
-        previewFrame.classList.remove('opacity-0');
-    }
+    if (previewFrame) { previewFrame.src = currentPdfBlobUrl; previewFrame.classList.remove('opacity-0'); }
     if (placeholder) placeholder.style.display = 'none';
     if (overlay) overlay.style.display = 'flex';
-
-    // Enable Buttons
     if (btnWa) { btnWa.disabled = false; btnWa.classList.remove('opacity-50', 'cursor-not-allowed'); }
     if (btnMail) { btnMail.disabled = false; btnMail.classList.remove('opacity-50', 'cursor-not-allowed'); }
 
@@ -3668,7 +4091,17 @@ function initFlatpickr() {
         minDate: "today",
         locale: "fr",
         disableMobile: "true", // Force custom theme on mobile
-        theme: "dark"
+        theme: "dark",
+        onChange: function (selectedDates, dateStr, instance) {
+            // If this is the pickup datetime field, fetch weather
+            if (instance.element.id === 'res-pickup-datetime' && selectedDates.length > 0) {
+                console.log('[FLATPICKR] Pickup date/time selected:', dateStr);
+                // Trigger global change event for auto-weather logic (Dual Forecast)
+                setTimeout(() => {
+                    instance.element.dispatchEvent(new Event('change'));
+                }, 300);
+            }
+        }
     });
 }
 
@@ -4738,6 +5171,9 @@ const initApp = () => {
     }
 
     console.log("iA_k_venir: Logic Ready.");
+
+    // 3. Init Starlink Animation (Hero)
+    initStarlinkAnimation();
 };
 
 // Use window.load to ensure all resources (including partial HTML) are ready
@@ -4827,4 +5263,108 @@ function openFullscreenWebcam(url, title) {
 function closeFullscreenWebcam() {
     // Not needed anymore since we open in new window
     // Kept for compatibility
+}
+
+/* =========================================
+   WEATHER SATELLITE ANIMATION (Refined)
+   ========================================= */
+function initStarlinkAnimation() {
+    const heroSection = document.getElementById('home');
+    if (!heroSection) return;
+
+    console.log("[SATELLITE] Initializing weather satellite system...");
+
+    const spawnSatellite = () => {
+        // Create Satellite Container
+        const sat = document.createElement('div');
+        sat.className = 'weather-satellite';
+        sat.title = "Satellite Météo: Lancer Analyse";
+
+        // Random Position (Sky Area) -> Top 5% to 40%
+        const topPos = Math.random() * 35 + 5;
+        const leftPos = Math.random() * 80 + 10; // 10% to 90% width
+
+        sat.style.top = `${topPos}%`;
+        sat.style.left = `${leftPos}%`;
+
+        // Random Animation Duration (Drift Speed)
+        const duration = Math.random() * 5 + 8; // 8s - 13s (Slower drift)
+        sat.style.animation = `drift-fade ${duration}s ease-in-out forwards`;
+
+        // Create Crosshair Icon (REMOVED - Single Dot Design)
+        // const cross = document.createElement('div');
+        // cross.className = 'satellite-crosshair';
+        // sat.appendChild(cross);
+
+        // Click Interaction
+        sat.onclick = (e) => {
+            e.stopPropagation();
+            console.log("-----------------------------------------");
+            console.log("[SATELLITE] HIT! Star clicked.");
+
+            // Visual Feedback
+            sat.style.animationPlayState = 'paused';
+            sat.style.filter = "drop-shadow(0 0 15px white)";
+
+            // VOICE FEEDBACK
+            if (window.speak) {
+                speak("Flux météo connecté. Analyse en cours.");
+            }
+
+            // --- CRITICAL LAUNCH LOGIC ---
+            console.log("[SATELLITE] Forced Launch Sequence Initiated.");
+
+            // 1. OPEN MODAL CONTAINER (Crucial Step: Was missing before)
+            const modal = document.getElementById('webcams-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => { modal.style.opacity = '1'; }, 10);
+            }
+
+            // 2. Force Dashboard Visible (Fail-safe)
+            const dashboard = document.getElementById('weather-dashboard');
+            if (dashboard) {
+                console.log("[SATELLITE] Dashboard found. Forcing visible.");
+                dashboard.classList.remove('hidden');
+                dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                console.error("[SATELLITE] CRITICAL: #weather-dashboard NOT FOUND in DOM");
+            }
+
+            // 3. Execute Data Fetch (Search vs Default)
+            const searchInput = document.getElementById('webcam-search-input');
+
+            if (searchInput && searchInput.value.trim() && typeof window.searchDestination === 'function') {
+                window.searchDestination();
+            } else if (typeof window.searchDestinationDefault === 'function') {
+                console.log("[SATELLITE] Launching Default (QG).");
+                window.searchDestinationDefault();
+            } else {
+                alert("Erreur Système: Module Météo introuvable.");
+            }
+
+            // Remove star after effect
+            setTimeout(() => {
+                sat.style.transition = "all 0.5s ease-in";
+                sat.style.transform = "scale(0) rotate(180deg)";
+                sat.style.opacity = "0";
+                setTimeout(() => sat.remove(), 500);
+            }, 1000);
+        };
+
+        // Append to Hero
+        heroSection.appendChild(sat);
+
+        // Auto-remove after animation
+        setTimeout(() => {
+            if (sat.parentNode) sat.remove();
+        }, duration * 1000 + 100);
+
+        // Schedule Next Appearance (Random Interval)
+        const nextLaunch = Math.random() * 15000 + 10000; // 10s - 25s interval
+        setTimeout(spawnSatellite, nextLaunch);
+    };
+
+    // Initial Launch
+    setTimeout(spawnSatellite, 3000); // Start 3s after load
 }

@@ -2,12 +2,13 @@
 // HELPER FUNCTIONS FOR COLOR-CODED METRICS
 // ============================================
 
-// Get temperature color class based on celsius value
-// Get temperature color class based on celsius value
+// Get temperature color class based on celsius value (5 levels for better distinction)
 function getTempColorClass(temp) {
-    if (temp >= 25) return 'text-limit-red'; // Hot -> Red
-    if (temp <= 10) return 'text-neon-blue'; // Cold -> Blue
-    return 'text-white'; // Mild/Current -> White
+    if (temp >= 30) return 'text-limit-red';      // Very Hot -> Red
+    if (temp >= 25) return 'text-orange-400';     // Warm -> Orange
+    if (temp > 15) return 'text-white';           // Mild -> White
+    if (temp > 5) return 'text-blue-300';         // Cool -> Light Blue
+    return 'text-neon-blue';                      // Very Cold -> Neon Blue
 }
 
 // Get wind color class based on km/h
