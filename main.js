@@ -430,11 +430,30 @@ function playRadio(ambianceKey) {
     const playPromise = audioPlayer.play();
     if (playPromise !== undefined) {
         playPromise
-            .then(() => console.log(`[AUDIO] Playback started successfully (CORS: ${audioPlayer.crossOrigin}).`))
+            .then(() => {
+                console.log(`[AUDIO] ✓ Playback started successfully: ${ambianceKey}`);
+                console.log(`[AUDIO] Stream URL: ${streamUrl}`);
+                console.log(`[AUDIO] AudioContext state: ${audioContext ? audioContext.state : 'not initialized'}`);
+            })
             .catch(e => {
-                console.warn(`[AUDIO] Playback Error:`, e);
-                // If it's a CORS error, this will often show as "The play() request was interrupted by a new load request" or similar in debug.
-                if (window.speak) speak("Impossible de lancer le flux radio. Erreur de sécurité ou de connexion.");
+                console.error(`[AUDIO] ✗ Playback Error:`, e);
+                console.error(`[AUDIO] Error name: ${e.name}, message: ${e.message}`);
+                console.error(`[AUDIO] Stream URL: ${streamUrl}`);
+                console.error(`[AUDIO] AudioContext state: ${audioContext ? audioContext.state : 'not initialized'}`);
+
+                // Try to resume AudioContext if suspended
+                if (audioContext && audioContext.state === 'suspended') {
+                    console.log('[AUDIO] Attempting to resume suspended AudioContext...');
+                    audioContext.resume().then(() => {
+                        console.log('[AUDIO] AudioContext resumed, retrying playback...');
+                        audioPlayer.play().catch(e2 => {
+                            console.error('[AUDIO] Retry failed:', e2);
+                            if (window.speak) speak("Impossible de lancer le flux radio. Vérifiez votre connexion.");
+                        });
+                    });
+                } else {
+                    if (window.speak) speak("Impossible de lancer le flux radio. Cliquez d'abord sur la page.");
+                }
             });
     }
 
@@ -444,6 +463,9 @@ function playRadio(ambianceKey) {
     // Update active state in selector if needed
     const sel = document.getElementById('nav-ambiance');
     if (sel && sel.value !== ambianceKey) sel.value = ambianceKey;
+
+    const selMobile = document.getElementById('nav-ambiance-mobile');
+    if (selMobile && selMobile.value !== ambianceKey) selMobile.value = ambianceKey;
 }
 
 function pauseRadio() {
