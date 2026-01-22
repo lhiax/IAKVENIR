@@ -2959,24 +2959,37 @@ async function calculateTrajectory() {
                 // Lateral trips (e.g. Sélestat -> Guebwiller) MUST use OSRM/Satellite to be accurate.
                 if (depData.id === 'baltzenheim') {
                     tripDist = destData.dist;
+                    isSuccess = true;
                 } else if (destData.id === 'baltzenheim') {
                     tripDist = depData.dist;
+                    isSuccess = true;
                 } else {
-                    // Lateral Trip (e.g. Colmar -> Guebwiller)
-                    // Do NOT use heuristic triangulation (Sum of dists) as it creates massive errors (56km vs 34km).
-                    // If OSRM failed, we simply fail/warn rather than giving a wrong price.
-                    console.warn("Lateral Trip detected without OSRM - Aborting Heuristic");
-                    return;
+                    // Lateral Trip (e.g. Ribeauvillé -> Eguisheim)
+                    // OSRM should have already calculated this above.
+                    // If OSRM failed, Haversine fallback was used.
+                    // If both failed, isSuccess is still false and we'll show an error below.
+                    console.log("Lateral trip - relying on OSRM/Haversine calculation above");
                 }
 
-                isSuccess = true;
+                // Only show city-based estimate message if we used hardcoded data
+                if ((depData.id === 'baltzenheim' || destData.id === 'baltzenheim') && detailDisplay) {
+                    detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name || depData.name}</div>`;
+                }
+
                 duration = Math.round(tripDist * 1.0);
-
-                // Inform user it's an estimate based on city
-                if (detailDisplay) {
-                    detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name}</div>`;
-                }
             }
+        }
+
+        // If still no success, show error
+        if (!isSuccess || tripDist === 0) {
+            if (priceDisplay) priceDisplay.textContent = "Erreur";
+            if (distDisplay) distDisplay.textContent = "N/A";
+            if (durDisplay) durDisplay.textContent = "N/A";
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `<div class="text-limit-red animate-pulse">⚠️ IMPOSSIBLE DE CALCULER L'ITINÉRAIRE.<br>Vérifiez les adresses ou réessayez.</div>`;
+            }
+            speak("Impossible de calculer l'itinéraire. Vérifiez les adresses saisies.");
+            return;
         }
 
         // Calculate Price
