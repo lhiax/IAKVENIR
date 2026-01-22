@@ -1501,3 +1501,71 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
 .satellite-crosshair::after {
     display: none;
 }
+
+/* =========================================
+   MOBILE LAYOUT FIXES & OPTIMIZATIONS
+   ========================================= */
+@media (max-width: 768px) {
+    /* Prevent Section Overlaps */
+    section {
+        padding-top: 5rem !important;
+        padding-bottom: 5rem !important;
+        min-height: auto !important;
+    }
+
+    /* Hero Slogan Scaling */
+    #hero-slogan-container h1 {
+        font-size: 1.5rem !important;
+        line-height: 1.4 !important;
+    }
+
+    #hero-slogan-container p {
+        font-size: 0.875rem !important;
+    }
+
+    /* Fix HUD / Menu overlap */
+    #navbar-audio-group {
+        display: none !important; /* Force hide in case Tailwind classes conflict */
+    }
+
+    /* Improve Simulator Card on Mobile */
+    #simulator-card {
+        padding: 1.5rem !important;
+        margin: 0.5rem !important;
+    }
+
+    /* Adjust Navigation link spacing */
+    .mobile-link {
+        font-size: 1.25rem !important;
+        padding: 1rem 0 !important;
+    }
+
+    /* Pilot Section Optimization */
+    #pilot-container {
+        margin-bottom: 2rem;
+    }
+
+    /* Video Banner visibility */
+    #home .object-cover {
+        filter: brightness(0.7) contrast(1.1); /* Better contrast for mobile readability */
+    }
+    
+    /* Ensure the validation button doesn't hide behind system bars */
+    #tour-validation-btn {
+        bottom: 5rem !important;
+        width: 90% !important;
+        max-width: 320px;
+    }
+}
+
+/* Landscape Mobile Fixes */
+@media (max-height: 500px) and (orientation: landscape) {
+    #mobile-menu {
+        padding-top: 4rem !important;
+        gap: 1rem !important;
+    }
+    .mobile-link {
+        padding: 0.5rem 0 !important;
+        font-size: 1rem !important;
+    }
+}

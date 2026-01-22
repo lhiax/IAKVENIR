@@ -5942,8 +5942,8 @@ window.startGuidedTour = async function () {
             const btn = document.createElement('button');
             const label = isFinal ? "TERMINER LA VISITE" : "VALIDER & CONTINUER ▶";
             btn.innerHTML = `<span class="animate-pulse">${isFinal ? '★' : '▶'}</span> ${label}`;
-            // POSITION: Mobile = Center Bottom | Desktop = Bottom Right
-            btn.className = "fixed bottom-10 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-xs tracking-widest border border-black/20 flex items-center gap-2";
+            // POSITION: Mobile = Center Bottom (Higher to avoid OS bars) | Desktop = Bottom Right
+            btn.className = "fixed bottom-16 left-1/2 -translate-x-1/2 md:bottom-10 md:left-auto md:right-8 md:translate-x-0 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-sm tracking-widest border border-black/20 flex items-center gap-2";
             btn.id = "tour-validation-btn";
 
             document.body.appendChild(btn);
@@ -6022,8 +6022,20 @@ window.startGuidedTour = async function () {
             // 5. Special Case: Play Pilot Video (After Speaking)
             if (step.id === 'about' && pilotVideo) {
                 // Now play the video for surprise effect
-                pilotVideo.muted = false;
-                pilotVideo.play().catch(e => console.log("Video play error", e));
+                // MOBILE COMPLIANCE: Mute by default on mobile to ensure autoplay works
+                if (window.innerWidth < 768) {
+                    pilotVideo.muted = true;
+                    console.log("[TOUR] Mobile: Playing video MUTED to satisfy autoplay policy");
+                } else {
+                    pilotVideo.muted = false;
+                }
+
+                pilotVideo.play().catch(e => {
+                    console.log("Video play error", e);
+                    // Fallback: Mute and Retry
+                    pilotVideo.muted = true;
+                    pilotVideo.play().catch(p2 => console.error("Still blocked", p2));
+                });
                 console.log("[TOUR] Pilot video playing after vocalization");
             }
 
