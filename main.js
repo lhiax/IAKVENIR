@@ -291,6 +291,10 @@ window.setLanguage = (lang) => {
     if (flagSpan) flagSpan.innerText = TRANSLATIONS[lang].flag;
     if (labelSpan) labelSpan.innerText = TRANSLATIONS[lang].label;
 
+    // Update Mobile Selector
+    const mobileLangSelector = document.getElementById('lang-selector-mobile');
+    if (mobileLangSelector) mobileLangSelector.value = lang;
+
     // Update Placeholders (Specific IDs)
     const deptInput = document.getElementById('sim-departure');
     const destInput = document.getElementById('sim-destination');
@@ -499,23 +503,39 @@ function connectRadioSource(playerElement) {
 // Volume Slider Listener
 document.addEventListener('DOMContentLoaded', () => {
     const volSlider = document.getElementById('vol-control'); // Correct ID
+    const volSliderMobile = document.getElementById('vol-control-mobile'); // Mobile slider
+
+    const updateVolume = (val) => {
+        console.log(`[AUDIO] Volume slider changed to: ${val}`);
+        if (gainNode) {
+            gainNode.gain.setTargetAtTime(val, audioContext.currentTime, 0.1);
+            console.log(`[AUDIO] GainNode updated to: ${val}`);
+        } else {
+            if (audioPlayer) audioPlayer.volume = val;
+            console.log(`[AUDIO] Fallback: audioPlayer.volume set to: ${val}`);
+        }
+    };
+
     if (volSlider) {
         volSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value) / 100; // Convert 0-100 to 0-1
-            console.log(`[AUDIO] Volume slider changed to: ${val}`);
-            if (gainNode) {
-                // Smooth ramp to prevent clicking
-                gainNode.gain.setTargetAtTime(val, audioContext.currentTime, 0.1);
-                console.log(`[AUDIO] GainNode updated to: ${val}`);
-            } else {
-                // Fallback if context not ready
-                if (audioPlayer) audioPlayer.volume = val;
-                console.log(`[AUDIO] Fallback: audioPlayer.volume set to: ${val}`);
-            }
+            const val = parseFloat(e.target.value) / 100;
+            updateVolume(val);
+            if (volSliderMobile) volSliderMobile.value = e.target.value; // Sync mobile
         });
-        console.log('[AUDIO] Volume slider listener attached successfully');
-    } else {
-        console.warn('[AUDIO] Volume slider #vol-control not found in DOM');
+        console.log('[AUDIO] Desktop volume slider listener attached');
+    }
+
+    if (volSliderMobile) {
+        volSliderMobile.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value) / 100;
+            updateVolume(val);
+            if (volSlider) volSlider.value = e.target.value; // Sync desktop
+        });
+        console.log('[AUDIO] Mobile volume slider listener attached');
+    }
+
+    if (!volSlider && !volSliderMobile) {
+        console.warn('[AUDIO] No volume sliders found in DOM');
     }
 });
 
@@ -6711,6 +6731,53 @@ function initHeroValidation() {
 document.addEventListener('DOMContentLoaded', () => {
     initHeroValidation();
     // Animation will only start when user clicks "DESTINATION FUTUR"
+
+    // Connect Mobile Radio Selector
+    const mobileAmbianceSelector = document.getElementById('nav-ambiance-mobile');
+    if (mobileAmbianceSelector) {
+        mobileAmbianceSelector.addEventListener('change', (e) => {
+            const ambianceKey = e.target.value;
+            console.log(`[MOBILE] Ambiance changed to: ${ambianceKey}`);
+            playRadio(ambianceKey);
+
+            // Sync desktop selector
+            const desktopSelector = document.getElementById('nav-ambiance');
+            if (desktopSelector) desktopSelector.value = ambianceKey;
+        });
+        console.log('[MOBILE] Radio selector listener attached');
+    }
+
+    // Fix Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    if (mobileMenuBtn && mobileMenu) {
+        // Open/close menu with hamburger button
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('translate-x-full');
+            console.log('[MOBILE] Menu toggled');
+        });
+
+        // Close menu with X button
+        if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+                console.log('[MOBILE] Menu closed via X button');
+            });
+        }
+
+        // Close menu when clicking on navigation links
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
+                console.log('[MOBILE] Menu closed via link click');
+            });
+        });
+
+        console.log('[MOBILE] Menu toggle listeners attached');
+    }
 });
 
 
