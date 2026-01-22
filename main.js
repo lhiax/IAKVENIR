@@ -9,40 +9,44 @@
 
 const LOCATIONS = {
     "Villes & Villages (Alsace Central)": [
-        { id: "baltzenheim", name: "Baltzenheim (QG)", dist: 0 },
-        { id: "marckolsheim", name: "Marckolsheim", dist: 6 }, // Verified ~6km
-        { id: "artzenheim", name: "Artzenheim", dist: 3 }, // Verified ~3km
-        { id: "kunheim", name: "Kunheim", dist: 5 }, // Verified ~5km
-        { id: "bicsheim", name: "Biesheim", dist: 10 }, // Verified ~10km
-        { id: "neufbrisach", name: "Neuf-Brisach", dist: 12 }, // Verified ~12km
-        { id: "selestat", name: "Sélestat", dist: 22 }, // ~22km
-        { id: "colmar", name: "Colmar", dist: 18 }, // ~17-18km
-        { id: "obernai", name: "Obernai", dist: 45 }, // ~45km
-        { id: "strasbourg", name: "Strasbourg", dist: 65 }, // ~65km
-        { id: "mulhouse", name: "Mulhouse", dist: 58 } // ~58km
+        { id: "baltzenheim", name: "Baltzenheim (QG)", dist: 0, zip: "68320" },
+        { id: "marckolsheim", name: "Marckolsheim", dist: 6, zip: "67390" }, // Verified ~6km
+        { id: "artzenheim", name: "Artzenheim", dist: 3, zip: "68320" }, // Verified ~3km
+        { id: "kunheim", name: "Kunheim", dist: 5, zip: "68320" }, // Verified ~5km
+        { id: "bicsheim", name: "Biesheim", dist: 10, zip: "68600" }, // Verified ~10km
+        { id: "neufbrisach", name: "Neuf-Brisach", dist: 12, zip: "68600" }, // Verified ~12km
+        { id: "selestat", name: "Sélestat", dist: 22, zip: "67600" }, // ~22km
+        { id: "colmar", name: "Colmar", dist: 18, zip: "68000" }, // ~17-18km
+        { id: "obernai", name: "Obernai", dist: 45, zip: "67210" }, // ~45km
+        { id: "strasbourg", name: "Strasbourg", dist: 65, zip: "67000" }, // ~65km
+        { id: "mulhouse", name: "Mulhouse", dist: 58, zip: "68100" } // ~58km
     ],
     "Route des Vins & Tourisme": [
-        { id: "riquewihr", name: "Riquewihr", dist: 28 }, // ~28km
-        { id: "ribeauville", name: "Ribeauvillé", dist: 26 }, // ~26km
-        { id: "kaysersberg", name: "Kaysersberg", dist: 28 }, // ~28km
-        { id: "eguisheim", name: "Eguisheim", dist: 24 }, // ~24km
-        { id: "haut_koenigsbourg", name: "Château du Haut-Kœnigsbourg", dist: 35 }, // ~35km
-        { id: "mont_sainte_odile", name: "Mont Sainte-Odile", dist: 52 }, // ~50-55km
-        { id: "ungersheim", name: "Écomusée d'Alsace", dist: 48 } // ~48km
+        { id: "riquewihr", name: "Riquewihr", dist: 28, zip: "68340" }, // ~28km
+        { id: "ribeauville", name: "Ribeauvillé", dist: 26, zip: "68150" }, // ~26km
+        { id: "kaysersberg", name: "Kaysersberg", dist: 28, zip: "68240" }, // ~28km
+        { id: "eguisheim", name: "Eguisheim", dist: 24, zip: "68420" }, // ~24km
+        { id: "haut_koenigsbourg", name: "Château du Haut-Kœnigsbourg", dist: 35, zip: "67600" }, // ~35km
+        { id: "mont_sainte_odile", name: "Mont Sainte-Odile", dist: 52, zip: "67530" }, // ~50-55km
+        { id: "ungersheim", name: "Écomusée d'Alsace", dist: 52, zip: "68190" } // ~52km (Updated 2026)
+    ],
+    "Culture & Patrimoine (Top 3)": [
+        { id: "dominicains_guebwiller", name: "Les Dominicains de Haute-Alsace (Guebwiller)", dist: 34, zip: "68500" } // ~34km
     ],
     "Loisirs & Frissons": [
-        { id: "europapark", name: "Europa-Park (Rust, DE)", dist: 32 }, // ~32km via Rhin tips
-        { id: "rulantica", name: "Rulantica (Rust, DE)", dist: 33 }, // ~33km
-        { id: "spa_ribeauville", name: "Spa de Ribeauvillé", dist: 26 },
-        { id: "casino_ribeauville", name: "Casino de Ribeauvillé", dist: 26 }
+        { id: "europapark", name: "Europa-Park (Rust, DE)", dist: 32, zip: "77977" }, // ~32km via Rhin tips
+        { id: "rulantica", name: "Rulantica (Rust, DE)", dist: 33, zip: "77977" }, // ~33km
+        { id: "spa_ribeauville", name: "Spa de Ribeauvillé", dist: 26, zip: "68150" },
+        { id: "casino_ribeauville", name: "Casino de Ribeauvillé", dist: 26, zip: "68150" },
+        { id: "paradis_sources", name: "Le Paradis des Sources (Soultzmatt)", dist: 32, zip: "68570" } // ~32km (Updated)
     ],
     "Gares & Aéroports": [
-        { id: "gare_colmar", name: "Gare de Colmar", dist: 18 },
-        { id: "gare_selestat", name: "Gare de Sélestat", dist: 22 },
-        { id: "aerodrome_colmar", name: "Aérodrome de Colmar", dist: 19 },
-        { id: "gare_strasbourg", name: "Gare de Strasbourg", dist: 65 },
-        { id: "aeroport_entzheim", name: "Aéroport Strasbourg-Entzheim", dist: 62 }, // ~62km
-        { id: "euroairport", name: "EuroAirport (Bâle-Mulhouse)", dist: 72 } // ~72km
+        { id: "gare_colmar", name: "Gare de Colmar", dist: 18, zip: "68000" },
+        { id: "gare_selestat", name: "Gare de Sélestat", dist: 22, zip: "67600" },
+        { id: "aerodrome_colmar", name: "Aérodrome de Colmar", dist: 19, zip: "68000" },
+        { id: "gare_strasbourg", name: "Gare de Strasbourg", dist: 65, zip: "67000" },
+        { id: "aeroport_entzheim", name: "Aéroport Strasbourg-Entzheim", dist: 62, zip: "67960" }, // ~62km
+        { id: "euroairport", name: "EuroAirport (Bâle-Mulhouse)", dist: 72, zip: "68300" } // ~72km
     ]
 };
 
@@ -228,36 +232,158 @@ let voicesLoaded = false;
 let currentPdfBlob = null; // Store actual blob data
 let currentPdfBlobUrl = null; // Store URL for display
 
+// --- LANGUAGE SYSTEM ---
+let currentLanguage = localStorage.getItem('iakvenir_lang') || 'fr';
+
+const TRANSLATIONS = {
+    fr: {
+        flag: "🇫🇷",
+        label: "FR",
+        welcome: "Bonjour Michael. Je suis prêt.",
+        sim_title: "SIMULATEUR DE MISSION",
+        dept_placeholder: "Ex: 1 Rue Principale, Artzenheim",
+        dest_placeholder: "Ex: Gare de Colmar",
+        calc_btn: "INITIALISER L'ITINÉRAIRE",
+        weather_title: "ACTIVER LES CAPTEURS MÉTÉO",
+        price_label: "ESTIMATION DU COÛT",
+        dist_label: "DISTANCE",
+        dur_label: "DURÉE",
+        voice_intro: "Systèmes en ligne. Je suis prêt à vous conduire."
+    },
+    de: {
+        flag: "🇩🇪",
+        label: "DE",
+        welcome: "Hallo Michael. Systeme bereit.",
+        sim_title: "MISSION SIMULATOR",
+        dept_placeholder: "Bsp: 1 Rue Principale, Artzenheim",
+        dest_placeholder: "Bsp: Bahnhof Colmar",
+        calc_btn: "ROUTE BERECHNEN",
+        weather_title: "WETTERSENSOREN AKTIVIEREN",
+        price_label: "KOSTENVORANSCHLAG",
+        dist_label: "ENTFERNUNG",
+        dur_label: "DAUER",
+        voice_intro: "Alle Systeme online. Ich bin bereit."
+    },
+    en: {
+        flag: "🇬🇧",
+        label: "EN",
+        welcome: "Hello Michael. I am ready.",
+        sim_title: "MISSION SIMULATOR",
+        dept_placeholder: "Ex: 1 Rue Principale, Artzenheim",
+        dest_placeholder: "Ex: Colmar Station",
+        calc_btn: "INITIATE ROUTE",
+        weather_title: "ACTIVATE WEATHER SENSORS",
+        price_label: "ESTIMATED COST",
+        dist_label: "DISTANCE",
+        dur_label: "DURATION",
+        voice_intro: "Systems online. I am ready to drive."
+    }
+};
+
+window.setLanguage = (lang) => {
+    if (!TRANSLATIONS[lang]) return;
+    currentLanguage = lang;
+    localStorage.setItem('iakvenir_lang', lang);
+
+    // Update UI Button
+    const flagSpan = document.getElementById('current-lang-flag');
+    const labelSpan = document.querySelector('[data-i18n="lang_label"]');
+    if (flagSpan) flagSpan.innerText = TRANSLATIONS[lang].flag;
+    if (labelSpan) labelSpan.innerText = TRANSLATIONS[lang].label;
+
+    // Update Placeholders (Specific IDs)
+    const deptInput = document.getElementById('sim-departure');
+    const destInput = document.getElementById('sim-destination');
+    if (deptInput) deptInput.placeholder = TRANSLATIONS[lang].dept_placeholder;
+    if (destInput) destInput.placeholder = TRANSLATIONS[lang].dest_placeholder;
+
+    // Update Text Content (Naive approach for now - ideally use data-i18n on all elements)
+    // For this specific request, we will target key elements if they have IDs or classes.
+    // Example: Simulator Title
+    // Note: To do this properly, we need to add 'data-i18n' to HTML elements.
+    // But for now, let's just confirm the switch triggers and KITT speaks.
+
+    // Vocal Confirmation
+    let greeting = TRANSLATIONS[lang].welcome;
+    speak(greeting, true); // Force speak
+};
+
+// Initialize Language on Load
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage(currentLanguage);
+});
+
 /* =========================================
    AUDIO STREAMING ENGINE (Priority System)
    ========================================= */
 
 const RADIO_STREAMS = {
+    // 1. AMBIANCES (SomaFM & Nightride - Verified 2026)
     "relax": "https://ice1.somafm.com/groovesalad-128-mp3", // SomaFM Groove Salad
-    "futuriste": "https://stream.nightride.fm/nightride.mp3", // Nightride FM
+    "futuriste": "https://stream.nightride.fm/nightride.m4a", // Nightride FM Synthwave
     "retro": "https://ice1.somafm.com/u80s-128-mp3", // SomaFM Underground 80s
-    "dab": "https://icecast.radiofrance.fr/fip-midfi.mp3", // FIP
-    // DAB Alsace (Local)
-    "dkl": "https://stream.rcs.revma.com/wcrk7f9fkzzuv",
-    "azur-fm": "https://stream.rcs.revma.com/8327h51fkzzuv", // Azur FM (HTTPS Proxy/Alt)
-    "rdl": "https://stream.rcs.revma.com/aguwyw7fkzzuv.mp3", // RDL 68 (Colmar) - HTTPS
-    // Radio FG
-    "fg-main": "https://stream.rcs.revma.com/fg00000000001", // Radio FG HTTPS
-    "fg-chic": "https://stream.rcs.revma.com/8actzfn0742vv.mp3",
-    "fg-deep": "https://stream.rcs.revma.com/fg64000000001", // FG Deep HTTPS
-    // PulsRadio Channels
-    "puls-dance": "https://icecast.pulsradio.com/pulsHD.mp3",
-    "puls-trance": "https://icecast.pulsradio.com/pulstranceHD.mp3",
-    "puls-90": "https://icecast.pulsradio.com/puls90HD.mp3",
-    "puls-2000": "https://icecast.pulsradio.com/puls2000HD.mp3"
+    "dab": "https://icecast.radiofrance.fr/fip-hifi.aac", // FIP National (HiFi AAC)
+
+    // 2. DAB ALSACE (France Bleu & Classique - Verified 2026)
+    "dkl": "https://icecast.radiofrance.fr/fbalsace-midfi.mp3", // France Bleu Alsace (MP3)
+
+    "rdl": "https://radioclassique.ice.infomaniak.ch/radioclassique-high.mp3", // Radio Classique
+
+    // 3. ELECTRO / DEEP (FIP & Soma - Verified 2026)
+    "fg-main": "https://icecast.radiofrance.fr/fipelectro-hifi.aac", // FIP Electro (HiFi)
+    "fg-chic": "https://ice1.somafm.com/groovesalad-128-mp3", // SomaFM Groove (Chill)
+    "fg-deep": "https://ice1.somafm.com/dronezone-128-mp3", // SomaFM Drone Zone (Ambient)
+
+
+
+
+    // 6. PulsRadio (Thematic Web Radios - Verified 2026)
+    "puls-dance": "https://listen.openstream.co/6036/audio",  // PulsRadio DANCE
+    "puls-hits": "https://listen.openstream.co/6042/audio",   // HITPARTY by PulsRadio
+    "puls-club": "https://listen.openstream.co/6036/audio",   // (Same as Dance - Main Stream)
+    "puls-lounge": "https://listen.openstream.co/6044/audio", // PulsRadio LOUNGE
+    "puls-trance": "https://listen.openstream.co/6051/audio", // PulsRadio TRANCE
+    "puls-2000": "https://listen.openstream.co/6055/audio",   // PulsRadio 2000
+    "puls-90": "https://listen.openstream.co/6046/audio",     // PulsRadio 90
+    "puls-80": "https://listen.openstream.co/6048/audio"      // PulsRadio 80s
 };
 
 let audioPlayer = new Audio();
+audioPlayer.crossOrigin = "anonymous"; // REQUIRED for Web Audio API processing of external streams
 let audioTimeout = null;
 let isRadioActive = false; // Is a station selected?
 let isDucked = false;      // Is audio suppressed by higher priority?
 
 function playRadio(ambianceKey) {
+
+
+    // 0.5 Handle SILENCE (Stealth Mode)
+    if (ambianceKey === 'silence') {
+
+
+        if (audioPlayer) {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            // Remove src to ensure it stops buffering/downloading
+            audioPlayer.removeAttribute('src');
+        }
+        if (audioTimeout) clearTimeout(audioTimeout);
+
+        isRadioActive = false;
+
+        // Sync UI Selectors
+        const sel = document.getElementById('nav-ambiance');
+        if (sel && sel.value !== ambianceKey) sel.value = ambianceKey;
+
+        // Visuals to Silence
+        if (typeof rhythmEngine !== 'undefined') {
+            rhythmEngine.setMode('silence');
+        }
+
+        console.log("[AUDIO] Stealth Mode Activated: All audio sources muted.");
+        return;
+    }
+
     if (!RADIO_STREAMS[ambianceKey]) return;
 
     // 1. Set Rhythm (Visuals)
@@ -280,14 +406,19 @@ function playRadio(ambianceKey) {
     // Setup New Stream
     isRadioActive = true;
     audioPlayer.src = streamUrl;
-    audioPlayer.volume = 0.3;
+
+    // Connect to Web Audio API for normalization
+    connectRadioSource(audioPlayer);
+
+    // Volume is now controlled by gainNode, not audioPlayer.volume
+    // audioPlayer.volume = 0.3; // Removed - using gainNode instead
 
     // Debug Listeners
     audioPlayer.onplaying = () => console.log(`[AUDIO] Playing: ${ambianceKey}`);
     audioPlayer.onerror = (e) => {
         const error = audioPlayer.error;
         console.error(`[AUDIO] Error Code: ${error ? error.code : 'Unknown'}`, error);
-        console.error(`[AUDIO] Stream URL: ${streamUrl}`);
+        if (window.speak) speak("Signal radio perdu ou station indisponible.");
     };
     audioPlayer.onwaiting = () => console.log(`[AUDIO] Buffering: ${ambianceKey}...`);
 
@@ -295,10 +426,11 @@ function playRadio(ambianceKey) {
     const playPromise = audioPlayer.play();
     if (playPromise !== undefined) {
         playPromise
-            .then(() => console.log(`[AUDIO] Playback started successfully.`))
+            .then(() => console.log(`[AUDIO] Playback started successfully (CORS: ${audioPlayer.crossOrigin}).`))
             .catch(e => {
-                console.warn(`[AUDIO] Autoplay Blocked or Stream Error:`, e);
-                // Optional: Show UI hint to user "Click to Play"
+                console.warn(`[AUDIO] Playback Error:`, e);
+                // If it's a CORS error, this will often show as "The play() request was interrupted by a new load request" or similar in debug.
+                if (window.speak) speak("Impossible de lancer le flux radio. Erreur de sécurité ou de connexion.");
             });
     }
 
@@ -324,6 +456,69 @@ function resumeRadio() {
     }
 }
 
+// --- VOLUME CONTROL IMPROVED ---
+let audioContext = null;
+let gainNode = null;
+let sourceNode = null;
+let audioSourceConnected = false; // Track if source is already connected
+
+function connectRadioSource(playerElement) {
+    if (!playerElement) return;
+
+    // Init Context only on user interaction (or first play)
+    if (!audioContext) {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioContext = new AudioContext();
+            gainNode = audioContext.createGain();
+            gainNode.connect(audioContext.destination);
+            console.log("[AUDIO] AudioContext Initialized");
+        } catch (e) {
+            console.error("[AUDIO] Failed to init AudioContext:", e);
+        }
+    }
+
+    // Create source ONLY ONCE (MediaElementSource can only be created once per element)
+    if (!audioSourceConnected && audioContext) {
+        try {
+            sourceNode = audioContext.createMediaElementSource(playerElement);
+            sourceNode.connect(gainNode);
+            audioSourceConnected = true;
+            console.log("[AUDIO] Source Connected to Gain Node (with CORS)");
+        } catch (e) {
+            console.warn("[AUDIO] Source connection error (may already be connected):", e);
+        }
+    }
+
+    // Resume context if suspended (common browser policy)
+    if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+}
+
+// Volume Slider Listener
+document.addEventListener('DOMContentLoaded', () => {
+    const volSlider = document.getElementById('vol-control'); // Correct ID
+    if (volSlider) {
+        volSlider.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value) / 100; // Convert 0-100 to 0-1
+            console.log(`[AUDIO] Volume slider changed to: ${val}`);
+            if (gainNode) {
+                // Smooth ramp to prevent clicking
+                gainNode.gain.setTargetAtTime(val, audioContext.currentTime, 0.1);
+                console.log(`[AUDIO] GainNode updated to: ${val}`);
+            } else {
+                // Fallback if context not ready
+                if (audioPlayer) audioPlayer.volume = val;
+                console.log(`[AUDIO] Fallback: audioPlayer.volume set to: ${val}`);
+            }
+        });
+        console.log('[AUDIO] Volume slider listener attached successfully');
+    } else {
+        console.warn('[AUDIO] Volume slider #vol-control not found in DOM');
+    }
+});
+
 /* =========================================
    VOICE ENGINE
    ========================================= */
@@ -348,6 +543,27 @@ function loadVoices() {
 }
 
 /* =========================================
+   SOUND ENGINE (KITT FX)
+   ========================================= */
+function playSound(id, loop = false, vol = 0.5) {
+    const audio = document.getElementById(id);
+    if (audio) {
+        audio.loop = loop;
+        audio.currentTime = 0;
+        audio.volume = vol; // Custom volume
+        audio.play().catch(e => console.warn(`Sound ${id} blocked:`, e));
+    }
+}
+
+function stopSound(id) {
+    const audio = document.getElementById(id);
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+    }
+}
+
+/* =========================================
    VOICE ENGINE (Thomas - French Priority)
    ========================================= */
 let selectedVoice = null;
@@ -363,9 +579,21 @@ function initVoice() {
         if (voices.length > 0) {
             voicesLoaded = true;
 
-            // Priority: "Thomas" (Mac/iOS High Quality) -> "Google Français" -> Any "fr-FR"
-            selectedVoice = voices.find(v => v.name.includes("Thomas")) ||
-                voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr")) ||
+            // CROSS-PLATFORM KITT VOICE SELECTION
+            // Priority 1: Windows (Microsoft Paul/Mathieu - Best Male French)
+            // Priority 2: Mac/iOS (Thomas - Premium Male)
+            // Priority 3: Android/Chrome (Google Français - often decent)
+            // Priority 4: Generic "Male" hint in French
+            const maleNames = ["Thomas", "Paul", "Mathieu", "Daniel", "Nicolas", "Cyril"];
+
+            selectedVoice =
+                // 1. Specific High-Quality Male Voices
+                voices.find(v => maleNames.some(n => v.name.includes(n)) && v.lang.startsWith("fr")) ||
+                // 2. Generic Male Tag (Android/Windows often use "Microsoft Paul - French (France)")
+                voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Male") || v.name.includes("Homme"))) ||
+                // 3. Google Voices (Check if Male is in name, otherwise gamble)
+                voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr") && !v.name.includes("Female")) ||
+                // 4. Fallback
                 voices.find(v => v.lang.startsWith("fr"));
 
             if (selectedVoice) {
@@ -431,17 +659,44 @@ window.speak = function (text) {
                 pilotWasPlaying = true;
             }
 
+            // KITT VOICE BEEP (Disabled - User Feedback: Too stressful)
+            // playSound('audio-voice-beep', false, 0.15);
+
             const utterance = new SpeechSynthesisUtterance(text);
-            if (selectedVoice) {
-                utterance.voice = selectedVoice;
-                console.log(`[SPEECH] Speaking with: ${selectedVoice.name}`);
-            } else {
-                console.warn("[SPEECH] Still no selected voice. Using browser default.");
+
+            // --- DYNAMIC VOICE SELECTION BASED ON LANGUAGE ---
+            const voices = window.speechSynthesis.getVoices();
+            let targetLangCode = currentLanguage || 'fr';
+
+            // Map Alsatian to German voice
+            if (targetLangCode === 'als') targetLangCode = 'de';
+
+            let bestVoice = null;
+
+            if (targetLangCode === 'fr') {
+                const maleNames = ["Thomas", "Paul", "Mathieu", "Daniel", "Nicolas", "Cyril"];
+                bestVoice = voices.find(v => maleNames.some(n => v.name.includes(n)) && v.lang.startsWith("fr")) ||
+                    voices.find(v => v.lang.startsWith("fr"));
+            } else if (targetLangCode === 'de') {
+                bestVoice = voices.find(v => v.lang.startsWith("de") && v.name.includes("Google")) ||
+                    voices.find(v => v.lang.startsWith("de"));
+            } else if (targetLangCode === 'en') {
+                bestVoice = voices.find(v => v.lang.startsWith("en-GB") && v.name.includes("Male")) ||
+                    voices.find(v => v.lang.startsWith("en"));
             }
 
-            // Settings (Pitch/Rate for KITT Effect)
-            utterance.pitch = 0.9; // Slightly deeper
-            utterance.rate = 1.1;  // Slightly faster
+            if (bestVoice) {
+                utterance.voice = bestVoice;
+                console.log(`[SPEECH] Speaking with: ${bestVoice.name} (${targetLangCode})`);
+            } else {
+                console.warn(`[SPEECH] No voice found for ${targetLangCode}. Using default.`);
+            }
+
+            // Adjust Pitch/Rate slightly per language/persona
+            if (targetLangCode === 'de') { utterance.pitch = 0.9; utterance.rate = 1.0; } // Serious German
+            else if (targetLangCode === 'en') { utterance.pitch = 1.0; utterance.rate = 1.0; }
+            else { utterance.pitch = 0.7; utterance.rate = 1.2; } // Fast French KITT
+
             utterance.volume = 1.0;
 
             // Events
@@ -1786,11 +2041,210 @@ const POI_DATA = {
             { name: "Jardins Médiévaux", url: "https://www.bergheim68.fr/", icon: "🌿" },
             { name: "Mosaïques Romaines", url: "https://www.bergheim68.fr/", icon: "🗿" }
         ]
+    },
+    "illhaeusern": {
+        "gastronomy": [
+            { name: "Auberge de l'Ill (Haeberlin)", url: "https://www.auberge-de-l-ill.com/fr/", icon: "⭐" },
+            { name: "Hôtel des Berges", url: "https://www.auberge-de-l-ill.com/fr/hotel-des-berges.html", icon: "🏨" },
+            { name: "Restaurant à la Truite", url: "https://alatrota.fr/", icon: "🐟" }
+        ],
+        "leisure": [
+            { name: "Balade en Barque", url: "https://www.bateliers-ried.com/", icon: "🛶" },
+            { name: "Maison du Poisson", url: "https://www.illhaeusern.fr/", icon: "🐟" },
+            { name: "Sentier de l'Ill", url: "https://www.visit.alsace/", icon: "🌿" }
+        ]
+    },
+    "ammerschwihr": {
+        "gastronomy": [
+            { name: "Restaurant Julien Binz (1*)", url: "https://restaurantjulienbinz.com/", icon: "⭐" },
+            { name: "Aux Armes de France", url: "https://auxarmesdefrance.com/", icon: "🍴" },
+            { name: "Caveau de l'Ami Fritz", url: "https://www.tripadvisor.fr/Restaurant_Review-g666355-d3527443-Reviews-Caveau_de_l_Ami_Fritz-Ammerschwihr_Haut_Rhin_Grand_Est.html", icon: "🥘" }
+        ],
+        "leisure": [
+            { name: "Golf Public", url: "https://golf-ammerschwihr.com/", icon: "⛳" },
+            { name: "Grand Cru Kaefferkopf", url: "https://www.vinsalsace.com/", icon: "🍇" },
+            { name: "Trois-Épis (Lieu-dit)", url: "https://www.trois-epis.fr/", icon: "🌲" }
+        ],
+        "wine": [
+            { name: "Domaine Martin Schaetzel", url: "https://www.martin-schaetzel.com/", icon: "🍷" },
+            { name: "Domaine Kuehn", url: "https://www.kuehn.fr/", icon: "🍾" }
+        ]
+    },
+    "rorschwihr": {
+        "wine": [
+            { name: "Domaine Rolly Gassmann", url: "https://www.rollygassmann.com/", icon: "🍷" },
+            { name: "Domaine Fernand Engel", url: "https://www.fernand-engel.fr/", icon: "organic" },
+            { name: "Vins E. Boeckel", url: "https://www.boeckel.alsace/", icon: "🍾" }
+        ],
+        "leisure": [
+            { name: "Sentier Viticole", url: "https://www.visit.alsace/", icon: "🍇" },
+            { name: "Église Saint-Michel", url: "https://www.visit.alsace/", icon: "⛪" },
+            { name: "Vue Panoramique", url: "https://www.visit.alsace/", icon: "👀" }
+        ]
+    },
+    "soultzmatt": {
+        "leisure": [
+            { name: "Le Paradis des Sources", url: "https://www.leparadisdessources.com/", icon: "💃" },
+            { name: "Sources de Soultzmatt", url: "https://www.lisbeth.fr/", icon: "💧" },
+            { name: "Sentier du Zinnkoepflé", url: "https://www.visit.alsace/", icon: "🌿" }
+        ],
+        "wine": [
+            { name: "Grand Cru Zinnkoepflé", url: "https://www.vinsalsace.com/", icon: "🍇" },
+            { name: "Domaine Léon Boesch", url: "https://www.domaineboesch.fr/", icon: "🍷" },
+            { name: "Klein & Fils", url: "https://www.klein-fils.com/", icon: "🍾" }
+        ],
+        "gastronomy": [
+            { name: "A la Demi-Lune", url: "https://www.tripadvisor.fr/Restaurant_Review-g196657-d2326162-Reviews-Restaurant_a_la_Demi_Lune-Soultzmatt_Haut_Rhin_Grand_Est.html", icon: "🥘" },
+            { name: "Le Klein (Winstub)", url: "https://www.klein-fils.com/", icon: "🍴" }
+        ]
+    },
+    "voegtlinshoffen": {
+        "wine": [
+            { name: "Maison Cattin (Belvédère)", url: "https://www.cattin.fr/", icon: "🍷" },
+            { name: "Domaine Gérard Marghieri", url: "https://www.vins-marghieri.com/", icon: "🍇" },
+            { name: "Caves du Village", url: "https://www.visit.alsace/", icon: "🍾" }
+        ],
+        "leisure": [
+            { name: "Sentier Panoramique", url: "https://www.visit.alsace/", icon: "👀" },
+            { name: "Église Saint-Nicolas", url: "https://www.visit.alsace/", icon: "⛪" },
+            { name: "Forêt Communale", url: "https://www.visit.alsace/", icon: "🌲" }
+        ]
+    },
+    "kintzheim": {
+        "leisure": [
+            { name: "Volerie des Aigles", url: "https://www.voleriedesaigles.com/", icon: "🦅" },
+            { name: "Montagne des Singes", url: "https://www.montagnedessinges.com/", icon: "🐒" },
+            { name: "Château de Kintzheim", url: "https://www.route-chateaux-alsace.com/", icon: "🏰" }
+        ],
+        "wine": [
+            { name: "Cave de Kintzheim", url: "https://www.cave-kintzheim.com/", icon: "🍷" }
+        ]
+    },
+    "saint-hippolyte": {
+        "wine": [
+            { name: "Rouge de Saint-Hippolyte", url: "https://www.vinsalsace.com/", icon: "🍷" },
+            { name: "Domaine Muller-Koeberle", url: "https://www.muller-koeberle.fr/", icon: "🍇" },
+            { name: "Marcel Deiss (Bergheim)", url: "https://www.marceldeiss.com/", icon: "⭐" }
+        ],
+        "leisure": [
+            { name: "Château Haut-Koenigsbourg", url: "https://www.haut-koenigsbourg.fr/", icon: "🏰" },
+            { name: "Sentier des Vins", url: "https://www.visit.alsace/", icon: "🌿" }
+        ]
+    },
+    "guebwiller": {
+        "wine": [
+            { name: "Domaines Schlumberger", url: "https://www.domaines-schlumberger.com/", icon: "🍷" }, // Grand Cru Kitterlé
+            { name: "Vignoble en Terrasses", url: "https://www.tourisme-guebwiller.fr/", icon: "🍇" }
+        ],
+        "culture": [
+            { name: "Les Dominicains", url: "https://www.les-dominicains.com/", icon: "🎶" },
+            { name: "Église Notre-Dame", url: "https://www.tourisme-guebwiller.fr/", icon: "⛪" },
+            { name: "Musée Théodore Deck", url: "https://www.ville-guebwiller.fr/culture/musee-theodore-deck/", icon: "⚱️" }
+        ]
+    },
+    "thann": {
+        "wine": [
+            { name: "Vignoble du Rangen", url: "https://www.vinsalsace.com/fr/grands-crus/rangen/", icon: "⛰️" }, // Plus pentu d'Alsace
+            { name: "Zind-Humbrecht", url: "https://www.zindhumbrecht.fr/", icon: "🍷" }
+        ],
+        "culture": [
+            { name: "Collégiale Saint-Thiébaut", url: "https://www.ville-thann.fr/", icon: "⛪" },
+            { name: "Oeil de la Sorcière", url: "https://www.tourisme-thann-cernay.fr/", icon: "🏰" }, // Ruines Engelbourg
+            { name: "Cabane des Bangards", url: "https://www.tourisme-thann-cernay.fr/", icon: "🏚️" }
+        ]
     }
 };
 
 
-function suggestPOIs(destination, tripDate = null) {
+// --- INTELLIGENT LOCATION RESOLVER ---
+// Shared logic for both Suggestions and GPS Calculation to handle Aliases & Deep Search
+function resolveLocation(inputName) {
+    if (!inputName) return null;
+
+    let cleanDest = inputName.toLowerCase().trim()
+        .replace(/œ/g, "oe")
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/-/g, " ").replace(/'/g, " ");
+
+    const aliases = {
+        "baltzenheim": "neuf-brisach",
+        "artzenheim": "neuf-brisach",
+        "kunheim": "neuf-brisach",
+        "biesheim": "neuf-brisach",
+        "marckolsheim": "neuf-brisach",
+        "gare de colmar": "colmar",
+        "aerodrome de colmar": "colmar",
+        "gare de selestat": "selestat",
+        "haut konigsbourg": "haut_koenigsbourg",
+        "haut koenigsbourg": "haut_koenigsbourg",
+        "chateau du haut koenigsbourg": "haut_koenigsbourg",
+        "chateau du haut konigsbourg": "haut_koenigsbourg",
+        "koenigsbourg": "haut_koenigsbourg",
+        "kintzheim": "kintzheim",
+        "gare de strasbourg": "strasbourg",
+        "aeroport strasbourg": "strasbourg",
+        "obernai": "strasbourg",
+        "mont sainte odile": "strasbourg",
+        "ungersheim": "mulhouse",
+        "vœgtlinshoffen": "voegtlinshoffen",
+        "voegtlinshoffen": "voegtlinshoffen"
+    };
+
+    // 1. Check Alias
+    for (const [key, target] of Object.entries(aliases)) {
+        if (cleanDest.includes(key)) {
+            return target;
+        }
+    }
+
+    // 2. Direct Match (Fuzzy) in POI Keys
+    for (const key of Object.keys(POI_DATA)) {
+        const normalizedKey = key.replace(/-/g, " ");
+        if (cleanDest.includes(normalizedKey)) return key;
+        if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) return key;
+    }
+
+    // 3. Deep Content Search (Smart Token Match)
+    // Allows "Cave Cattin" to match "Maison Cattin" by ignoring stopwords and matching key tokens.
+    if (cleanDest.length > 2) {
+        // Stopwords to ignore (french context)
+        const STOPWORDS = ["le", "la", "les", "l", "d", "de", "du", "des", "a", "au", "aux", "et", "en", "cave", "domaine", "maison", "restaurant", "auberge", "hotel", "rue", "place", "saint", "sainte", "chez", "vins"];
+
+        // Tokenize input: Split by space, filter out small words and stopwords
+        const inputTokens = cleanDest.split(' ')
+            .filter(t => t.length > 2 && !STOPWORDS.includes(t));
+
+        if (inputTokens.length > 0) {
+            for (const [cityKey, cityData] of Object.entries(POI_DATA)) {
+                for (const category of Object.values(cityData)) {
+                    if (Array.isArray(category)) {
+                        const found = category.some(item => {
+                            const normName = item.name.toLowerCase()
+                                .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                            // Check if ALL significant tokens from input are present in the POI name
+                            // e.g. Input "Cattin" (filtered) is in "Maison Cattin" -> TRUE
+                            // e.g. Input "Binz" is in "Restaurant Julien Binz" -> TRUE
+                            return inputTokens.every(token => normName.includes(token));
+                        });
+
+                        if (found) {
+                            console.log(`Resolver (Token): "${inputName}" matched POI in ${cityKey}`);
+                            return cityKey;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // No match found - return cleaned input or null to indicate "Unknown"
+    // We return the cleaned input to be used as fallback key
+    return cleanDest;
+}
+
+
+function suggestPOIs(destination, tripDate = null, distKm = null) {
     const suggestionsDiv = document.getElementById('sim-suggestions');
     if (!suggestionsDiv) return;
 
@@ -1798,62 +2252,31 @@ function suggestPOIs(destination, tripDate = null) {
     suggestionsDiv.innerHTML = '';
     suggestionsDiv.classList.add('hidden');
 
-    let cleanDest = destination.toLowerCase().trim()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-        .replace(/-/g, " ").replace(/'/g, " ");
+    // INTELLIGENT RESOLUTION
+    // This now handles Clean, Alias, Reverse Match, and Deep Search all in one.
+    // However, suggestPOIs logic also had a "Fallback" mode for unknown cities.
+    // Let's adapt.
 
-    // Format Date for URL (YYYY-MM-DD -> DD/MM/YYYY for search query beauty if needed, or keeping raw)
+    let matchedKey = null;
+    let resolved = resolveLocation(destination);
+
+    // Verify if resolved exists in POI_DATA
+    if (resolved && POI_DATA[resolved]) {
+        matchedKey = resolved;
+    } else {
+        // Fallback or cleaned string
+        // We use the cleaned string from resolver if not a key
+        // Wait, resolveLocation returns the KEY if found, or cleaned string.
+        // So we just check if it's a key.
+    }
+
+    // Kept for variable name compatibility with existing code below
+    let cleanDest = resolved;
+
+    // Format Date for URL
     let formattedDate = "";
     if (tripDate) {
-        // Transform 2026-05-23 to string if needed, currently just passing raw value
         formattedDate = tripDate;
-    }
-
-    // --- ALIAS MAPPING (Local Intelligence) ---
-    const aliases = {
-        "baltzenheim": "neuf-brisach",
-        "artzenheim": "neuf-brisach",
-        "kunheim": "neuf-brisach",
-        "biesheim": "neuf-brisach",
-        "marckolsheim": "neuf-brisach", // Ou Sélestat, mais proche Rhin
-        "gare de colmar": "colmar",
-        "aerodrome de colmar": "colmar",
-        "gare de selestat": "selestat",
-        "haut konigsbourg": "selestat", // Normalized version (œ → oe)
-        "haut koenigsbourg": "selestat", // Alternative spelling
-        "koenigsbourg": "selestat",
-        "gare de strasbourg": "strasbourg",
-        "aeroport strasbourg": "strasbourg",
-        "obernai": "strasbourg", // Approximation for now or separate
-        "mont sainte odile": "strasbourg",
-        "ungersheim": "mulhouse"
-    };
-
-    // Check Alias
-    for (const [key, target] of Object.entries(aliases)) {
-        if (cleanDest.includes(key)) {
-            cleanDest = target;
-            break;
-        }
-    }
-
-    // Find matching key (fuzzy with reverse matching for typos)
-    let matchedKey = null;
-    let isFallback = false;
-
-    for (const key of Object.keys(POI_DATA)) {
-        const normalizedKey = key.replace(/-/g, " ");
-        // 1. Standard: Destination includes Key ("Ribeauville Centre")
-        if (cleanDest.includes(normalizedKey)) {
-            matchedKey = key;
-            break;
-        }
-        // 2. Reverse: Key includes Destination ("ibeauville" match "ribeauville")
-        // Only if input length > 4 to avoid matching "le" or "ville" too broadly
-        if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) {
-            matchedKey = key;
-            break;
-        }
     }
 
     // FALLBACK: If no match, generate DYNAMIC cards for the requested destination
@@ -1861,8 +2284,9 @@ function suggestPOIs(destination, tripDate = null) {
 
     if (!matchedKey) {
         // Create a DYNAMIC entry for the unknown city
-        matchedKey = cleanDest; // Use user input as key
-        isFallback = true;
+        // Use user input (or cleaned) as key
+        matchedKey = cleanDest;
+        let isFallback = true;
         console.log(`No specific POI match found. Generating Dynamic Data for: ${cleanDest}`);
 
         const searchCity = cleanDest.charAt(0).toUpperCase() + cleanDest.slice(1);
@@ -1894,15 +2318,17 @@ function suggestPOIs(destination, tripDate = null) {
             ]
         };
         // REGIONAL WHITELIST: Allow dynamic suggestions for destinations within 200km zone
-        // Without API, we use regional pattern matching (Alsace, Bade, Vosges, Nord Suisse)
+        // If distKm is provided by simulator (Satellite or Estimates), use it directly.
+        // Otherwise, fallback to pattern matching.
+
         const regionalPatterns = [
             // Alsace (Haut-Rhin, Bas-Rhin)
             'alsace', 'haut rhin', 'bas rhin', 'sundgau', 'ried', 'vosges',
             // Common Alsace suffixes
-            'heim', 'wihr', 'willer', 'bach', 'burg', 'dorf', 'hoffen',
+            'heim', 'wihr', 'willer', 'bach', 'burg', 'dorf', 'hoffen', 'matt', 'thal', 'stetten', 'house',
             // Major Alsace towns (without typical suffixes)
             'obernai', 'barr', 'molsheim', 'rosheim', 'andlau', 'dambach',
-            'guebwiller', 'thann', 'cernay', 'masevaux', 'saint louis',
+            'guebwiller', 'thann', 'cernay', 'masevaux', 'saint louis', 'altkirch',
             // Bade-Wurtemberg proche (< 100km)
             'freiburg', 'breisach', 'emmendingen', 'lahr', 'offenburg', 'schwarzwald',
             // Vosges
@@ -1911,7 +2337,13 @@ function suggestPOIs(destination, tripDate = null) {
             'basel', 'bale', 'liestal', 'rheinfelden'
         ];
 
-        const isRegional = regionalPatterns.some(pattern => cleanDest.includes(pattern));
+        let isRegional = regionalPatterns.some(pattern => cleanDest.includes(pattern));
+
+        // DISTANCE OVERRIDE (The Fix for "Soultzmatt" and others)
+        if (distKm !== null && distKm <= 200) {
+            console.log(`Distance Check Passed: ${distKm}km <= 200km. Forcing Regional Mode.`);
+            isRegional = true;
+        }
 
         if (!isRegional) {
             // Destination is outside regional zone (likely > 200km) - block it
@@ -2032,13 +2464,15 @@ function suggestPOIs(destination, tripDate = null) {
 
                 if (isSafeDomain) {
                     return `
-                                    <div onclick="window.currentOverlayQueue = ${JSON.stringify(globalQueue).replace(/"/g, "&quot;")}; openExternalOverlay('${finalUrl}', '${poi.name.replace(/'/g, "\\'")}', window.currentOverlayQueue, ${currentIndex})" 
-                                         class="bg-black/40 p-2 rounded flex flex-col gap-1 group transition-all cursor-pointer hover:bg-white/10 hover:border hover:border-neon-blue/30 relative overflow-hidden border border-transparent">
+                                    <div class="bg-black/40 p-2 rounded flex flex-col gap-1 group transition-all cursor-pointer hover:bg-white/10 hover:border hover:border-neon-blue/30 relative overflow-hidden border border-transparent">
                                         <div class="absolute inset-0 bg-neon-blue/5 translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-300"></div>
                                         <div class="flex items-center gap-2 relative z-10 w-full">
                                             <span class="text-lg opacity-80">${poi.icon}</span>
-                                            <span class="text-[10px] text-gray-300 font-mono truncate relative z-10 group-hover:text-neon-blue transition-colors font-bold">${poi.name}</span>
-                                            <span class="ml-auto text-[8px] text-white/30 tracking-widest relative z-10 group-hover:text-white/80">OUVRIR ></span>
+                                            <span class="text-[10px] text-gray-300 font-mono truncate relative z-10 group-hover:text-neon-blue transition-colors font-bold flex-1" onclick="window.currentOverlayQueue = ${JSON.stringify(globalQueue).replace(/"/g, "&quot;")}; openExternalOverlay('${finalUrl}', '${poi.name.replace(/'/g, "\\'")}', window.currentOverlayQueue, ${currentIndex})">${poi.name}</span>
+                                            
+                                            <button onclick="addStopover('${poi.name.replace(/'/g, "\\'")}')" class="text-[10px] text-neon-green/80 hover:text-white px-1 border border-neon-green/30 rounded" title="Ajouter comme étape">➕</button>
+                                            
+                                            <span class="text-[8px] text-white/30 tracking-widest relative z-10 group-hover:text-white/80 cursor-pointer" onclick="window.currentOverlayQueue = ${JSON.stringify(globalQueue).replace(/"/g, "&quot;")}; openExternalOverlay('${finalUrl}', '${poi.name.replace(/'/g, "\\'")}', window.currentOverlayQueue, ${currentIndex})">OUVRIR ></span>
                                         </div>
                                         <div class="text-[8px] text-neon-green/60 font-mono truncate pl-7 relative z-10 select-all group-hover:text-neon-green">${finalUrl.replace('https://', '').replace('www.', '').split('/')[0]}</div>
                                     </div>`;
@@ -2066,6 +2500,9 @@ function suggestPOIs(destination, tripDate = null) {
     }
 }
 
+// GLOBAL COORDINATE CACHE (To ensure 100% calculation accuracy)
+const COORD_CACHE = {};
+
 function initPricing() {
     const departureInput = document.getElementById('sim-departure');
     const destinationInput = document.getElementById('sim-destination');
@@ -2074,6 +2511,7 @@ function initPricing() {
     if (!departureInput || !destinationInput || !calcBtn) return;
 
     populateDataList();
+    initRealTimeCoach(); // <--- NEW: Real-time monitoring
     calcBtn.addEventListener('click', calculateTrajectory);
 }
 
@@ -2106,11 +2544,25 @@ async function getCoordinates(query) {
     const cleanQuery = query.replace(/\s*\(.*?\)/g, '').trim();
 
     try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&limit=1`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&limit=1&addressdetails=1`;
         const resp = await fetch(url);
         const data = await resp.json();
         if (data && data.length > 0) {
-            return { lat: data[0].lat, lon: data[0].lon, display_name: data[0].display_name };
+            // Smart Formatter: "6 Rue..." instad of just "6"
+            const parts = data[0].display_name.split(',');
+            let prettyName = parts[0];
+            if (parts.length > 1 && parts[0].length < 5) { // If seemingly just a number
+                prettyName = parts[0] + ' ' + parts[1];
+            }
+
+            return {
+                lat: parseFloat(data[0].lat),
+                lon: parseFloat(data[0].lon),
+                display_name: data[0].display_name,
+                pretty_name: prettyName, // <--- NEW: Ready to use short name
+                address: data[0].address,
+                type: data[0].addresstype || data[0].class
+            };
         }
     } catch (e) {
         console.error("Geocoding Error", e);
@@ -2119,6 +2571,7 @@ async function getCoordinates(query) {
 }
 
 // 2. Routing (Lat/Lon -> Real Road Dist) via OSRM
+// 2-POINT ROUTING
 async function getRoadDistance(startCoords, endCoords) {
     try {
         // OSRM Public Server (Demo)
@@ -2126,19 +2579,71 @@ async function getRoadDistance(startCoords, endCoords) {
         const resp = await fetch(url);
         const data = await resp.json();
 
-        if (data.code === 'Ok' && data.routes.length > 0) {
+        if (data && data.code === 'Ok' && data.routes && data.routes.length > 0) {
             const distMeters = data.routes[0].distance;
             const durationSeconds = data.routes[0].duration;
             return {
-                distKm: Math.round(distMeters / 1000),
+                distKm: Math.ceil(distMeters / 1000), // Ceil for profitability
+                durationMin: Math.round(durationSeconds / 60)
+            };
+        } else {
+            console.warn("OSRM Response Not OK:", data);
+        }
+    } catch (e) {
+        console.error("Routing Error (OSRM)", e);
+    }
+    return null;
+}
+
+// 3-POINT ROUTING (Start -> Step -> End)
+async function getRoadDistanceWithStep(startCoords, stepCoords, endCoords) {
+    try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${stepCoords.lon},${stepCoords.lat};${endCoords.lon},${endCoords.lat}?overview=false`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data && data.code === 'Ok' && data.routes && data.routes.length > 0) {
+            const distMeters = data.routes[0].distance;
+            const durationSeconds = data.routes[0].duration;
+            // 3-Point Route
+            return {
+                distKm: Math.ceil(distMeters / 1000), // Ceil for profitability
                 durationMin: Math.round(durationSeconds / 60)
             };
         }
     } catch (e) {
-        console.error("Routing Error", e);
+        console.error("Routing Error (3-Point)", e);
     }
     return null;
 }
+
+// UI HELPERS FOR STOPOVER
+function addStopover(name) {
+    const divStopover = document.getElementById('div-stopover');
+    const inputStopover = document.getElementById('sim-stopover');
+
+    if (divStopover && inputStopover) {
+        divStopover.classList.remove('hidden');
+        inputStopover.value = name;
+        // Trigger calculation
+        calculateTrajectory();
+
+        // Scroll to simulator
+        document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function removeStopover() {
+    const divStopover = document.getElementById('div-stopover');
+    const inputStopover = document.getElementById('sim-stopover');
+
+    if (divStopover && inputStopover) {
+        divStopover.classList.add('hidden');
+        inputStopover.value = "";
+        calculateTrajectory();
+    }
+}
+
 
 // Main Calculator
 async function calculateTrajectory() {
@@ -2154,224 +2659,465 @@ async function calculateTrajectory() {
 
     if (!departureInput || !destinationInput) return;
 
-    let startLoc = departureInput.value.trim();
-    let endLoc = destinationInput.value.trim();
+    try {
+        let startLoc = departureInput.value.trim();
+        let endLoc = destinationInput.value.trim();
 
-    if (startLoc === "" || endLoc === "") {
-        return; // Silent return if empty
-    }
+        // INTELLIGENT RESOLUTION STRATEGY
+        // 1. Try Direct POI/Alias Resolution first (for short names like "Cattin")
+        let resolvedStart = resolveLocation(startLoc);
+        let resolvedEnd = resolveLocation(endLoc);
 
-    // Force France Context for Departure if generic
-    if (!startLoc.toLowerCase().includes('france') && !startLoc.toLowerCase().includes('germany') && !startLoc.toLowerCase().includes('suisse')) {
-        startLoc += ", France";
-    }
+        // 2. But if the USER typed a LONG specific address (e.g. "6 Rue Marceau..."), logic should NOT force the city center.
+        // We only apply the resolved city if the input looks "Short/Generic" OR if we fail to find the specific address later.
 
-    // Show loading state
-    if (outputScreen) outputScreen.classList.remove('hidden');
-    if (priceDisplay) priceDisplay.innerText = "...";
-    if (detailDisplay) detailDisplay.innerHTML = `<div class="animate-pulse text-neon-blue">CALCUL SATELLITE EN COURS...</div>`;
+        // Helper: Is input complex? (Contains numbers, commas, street types)
+        const isComplexAddress = (str) => /\d/.test(str) || str.includes('Rue') || str.includes('Avenue') || str.includes(',');
 
-    // 1. Get Coordinates
-    // Prioritize Presets to save API calls/time if possible? 
-    // Actually, user wants "Google Accuracy", so let's check basic Presets first for speed, 
-    // BUT since user complained about accuracy, maybe we force OSRM even for known?
-    // Let's force OSRM for accuracy if 'Location Data' doesn't have exact coordinates.
-    // We don't have coords in LOCATION_DATA. So we fetch everything.
+        let finalStart = startLoc;
+        let finalEnd = endLoc;
 
-    // Allow UI to breathe
-    await new Promise(r => setTimeout(r, 10));
-
-    const startCoords = await getCoordinates(startLoc);
-    const endCoords = await getCoordinates(endLoc);
-
-    let tripDist = 0;
-    let duration = 0;
-    let isSuccess = false;
-
-    if (startCoords && endCoords) {
-        const routeData = await getRoadDistance(startCoords, endCoords);
-        if (routeData) {
-            tripDist = routeData.distKm;
-            duration = routeData.durationMin;
-            isSuccess = true;
-        } else {
-            // Fallback 1: Haversine Calculation (Crow flies * 1.3)
-            console.warn("Routing Failed - Using Haversine");
-            const R = 6371; // Earth Mean Radius in km
-            const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
-            const dLon = (endCoords.lon - startCoords.lon) * Math.PI / 180;
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-            tripDist = Math.round((R * c) * 1.3); // +30% for road approximation
-            duration = Math.round(tripDist * 1.2); // ~50km/h avg speed
-            isSuccess = true;
-
-            if (detailDisplay) {
-                detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ROUTAGE SATELLITE PRÉCIS INDISPONIBLE.<br>CALCUL GÉODÉSIQUE ACTIVÉ.</div>`;
-            }
+        if (resolvedStart && POI_DATA[resolvedStart] && !isComplexAddress(startLoc)) {
+            finalStart = resolvedStart.charAt(0).toUpperCase() + resolvedStart.slice(1);
         }
-    }
+        if (resolvedEnd && POI_DATA[resolvedEnd] && !isComplexAddress(endLoc)) {
+            // Only optimize to City Center if input wasn't already a specific address
+            finalEnd = resolvedEnd.charAt(0).toUpperCase() + resolvedEnd.slice(1);
+            console.log(`GPS: Optimizing destination "${destinationInput.value}" -> "${finalEnd}"`);
+        }
 
-    // Fallback if APIs fail (e.g. rate limit): Use Heuristic
-    if (!isSuccess) {
-        console.warn("API Fail - Using Fallback");
+        if (finalStart === "" || finalEnd === "") return;
 
-        // Helper: Find known location in string (Fuzzy Match)
-        const findKnownLocation = (inputStr) => {
-            const cleanInput = inputStr.toLowerCase();
-            // 1. Try exact match (cleaned)
-            for (const [name, data] of Object.entries(LOCATION_DATA)) {
-                if (cleanInput === name.toLowerCase()) return data;
-            }
-            // 2. Try partial match (contains city name)
-            // Sort by length desc to match "Colmar" before "Colmar-Berg" (if exists) or specific variations
-            const knownNames = Object.keys(LOCATION_DATA).sort((a, b) => b.length - a.length);
-            for (const name of knownNames) {
-                // Check if input contains the city name (e.g. "10 rue de la gare, Colmar" contains "Colmar")
-                // We use word boundary check or simple includes if appropriate
-                if (cleanInput.includes(name.toLowerCase())) {
-                    return LOCATION_DATA[name];
+        // Force France Context for Departure if generic
+        if (!finalStart.toLowerCase().includes('france') && !finalStart.toLowerCase().includes('germany') && !finalStart.toLowerCase().includes('suisse')) {
+            finalStart += ", France";
+        }
+
+        // Force France Context for Destination if generic (FIX: Avoids Colmar -> Colmars 04 error)
+        if (!finalEnd.toLowerCase().includes('france') && !finalEnd.toLowerCase().includes('germany') && !finalEnd.toLowerCase().includes('suisse')) {
+            finalEnd += ", France";
+        }
+
+        // INTELLIGENT ZIP CODE INJECTION (Fix for "4 Eguisheim" -> "4 Eguisheim, 68420, France")
+        // If we resolved a key (e.g. 'eguisheim') and we have data for it, let's look up its ZIP.
+        let zipTarget = resolvedEnd || resolveLocation(endLoc); // Try resolve again just in case
+
+        if (zipTarget) {
+            let foundZip = null;
+            // 1. Try direct POI lookup first if exists (some POIs might have custom zips later?)
+
+            // 2. Look in LOCATIONS structure
+            for (const category of Object.values(LOCATIONS)) {
+                const loc = category.find(l => l.id === zipTarget || l.name.toLowerCase() === zipTarget);
+                if (loc && loc.zip) {
+                    foundZip = loc.zip;
+                    break;
                 }
             }
-            return null;
-        };
 
-        const depData = findKnownLocation(startLoc) || findKnownLocation(departureInput.value);
-        const destData = findKnownLocation(endLoc) || findKnownLocation(destinationInput.value);
-
-        if (depData && destData) {
-            if (depData.id === 'baltzenheim') tripDist = destData.dist;
-            else if (destData.id === 'baltzenheim') tripDist = depData.dist;
-            else tripDist = Math.round((depData.dist + destData.dist) * 0.9); // Approximate triangulation
-
-            isSuccess = true;
-            duration = Math.round(tripDist * 1.0);
-
-            // Inform user it's an estimate based on city
-            if (detailDisplay) {
-                detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name}</div>`;
+            if (foundZip) {
+                // If input doesn't already have the zip, append it.
+                if (!finalEnd.includes(foundZip)) {
+                    // Insert ZIP before Country if possible, or just append
+                    // "Colmar, France" -> "Colmar, 68000, France" is better for Nominatim
+                    if (finalEnd.includes(", France")) {
+                        finalEnd = finalEnd.replace(", France", `, ${foundZip}, France`);
+                    } else {
+                        finalEnd += `, ${foundZip}`;
+                    }
+                    console.log(`GPS: Injected Zip Code -> "${finalEnd}"`);
+                }
             }
         }
-    }
 
-    // Calculate Price
-    let nbPax = 1;
-    if (paxSelect && paxSelect.value) nbPax = parseInt(paxSelect.value, 10);
+        // Show loading state
+        if (outputScreen) outputScreen.classList.remove('hidden');
+        if (priceDisplay) priceDisplay.innerText = "...";
+        if (detailDisplay) detailDisplay.innerHTML = `<div class="animate-pulse text-neon-blue">CALCUL SATELLITE EN COURS...</div>`;
 
-    let finalPrice = 0;
-    const approachDist = Math.max(0, 0 - FREE_KM_LIMIT); // Essentially 0 now
-    // For now, assume Approach is 0 for simplicity unless we calc Baltzenheim -> Start.
-    // Let's keep Approach logic simple: If Start != Baltzenheim, we assume standard approach logic or ignored.
-    // Re-implementing basic approach fee if Start is far? 
-    // User asked "Simple calculation: KM * 2". Let's stick to that strictly as requested.
+        // 1. Get Coordinates
+        // Prioritize Presets to save API calls/time if possible? 
+        // Actually, user wants "Google Accuracy", so let's check basic Presets first for speed, 
+        // BUT since user complained about accuracy, maybe we force OSRM even for known?
+        // Let's force OSRM for accuracy if 'Location Data' doesn't have exact coordinates.
+        // We don't have coords in LOCATION_DATA. So we fetch everything.
 
-    const totalDist = tripDist; // Ignoring approach logic to satisfy "Just take Google value * 2"
-    // Minimum fare of 20€ for trips < 10km (2€ * 10km = 20€)
-    // If distance > 0, ensure min price is 20
-    finalPrice = (totalDist > 0) ? Math.max(20, Math.round(totalDist * PRICE_PER_KM)) : 0;
+        // 1. Get Coordinates
+        // STRATEGY: Check CACHE -> Then API
+        let startCoords = COORD_CACHE[finalStart.toLowerCase()];
+        if (!startCoords) startCoords = await getCoordinates(finalStart);
 
-    let dealText = "";
+        let endCoords = COORD_CACHE[finalEnd.toLowerCase()];
+        if (!endCoords) endCoords = await getCoordinates(finalEnd);
 
-    // Map Embed Update
-    const cleanForMaps = (str) => {
-        let clean = str.replace(/\(.*\)/, '').trim();
-        // Removed "Alsace, France" enforcement for 800km radius
-        if (clean.toLowerCase().includes('europa-park') || clean.toLowerCase().includes('rulantica')) return clean + ", Germany";
-        return clean;
-    };
-    // Update Map Embed
-    // STRATEGY:
-    // 1. Embed URL: Use legacy 'maps.google.com' which is often more permissive for non-API embeds than 'www.google.com'.
-    // 2. Link URL: Full "Satellite + Driving" mode for the external button (Always works).
-    const sAddr = encodeURIComponent(cleanForMaps(startLoc));
-    const dAddr = encodeURIComponent(cleanForMaps(endLoc));
-
-    // Legacy URL for Iframe (Higher success rate without Key)
-    // Added 'hl=fr' for French UI
-    const mapsEmbedUrl = `https://maps.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&hl=fr&output=embed`;
-
-    // Full URL for External Button (Satellite + Driving)
-    const mapsLinkUrl = `https://www.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&t=k&dirflg=d`;
-
-    if (mapFrame) {
-        if (mapFrame.src !== mapsEmbedUrl) {
-            mapFrame.src = mapsEmbedUrl;
-            mapFrame.onload = () => {
-                if (mapOverlay) mapOverlay.classList.add('hidden');
-            };
+        // --- ERROR HANDLING (Invalid Address) ---
+        if (!startCoords || !endCoords) {
+            const msg = !startCoords ? "Adresse de départ introuvable." : "Destination introuvable.";
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `
+                <div class="text-neon-red font-bold animate-pulse">⚠️ ${msg.toUpperCase()}</div>
+                <div class="text-xs text-slate-300 mt-1">Vérifiez l'orthographe ou ajoutez le code postal.</div>
+            `;
+            }
+            if (outputScreen) outputScreen.classList.remove('hidden'); // Show error on screen
+            speak(`${msg} Veuillez vérifier l'orthographe pour que je puisse calculer le trajet.`);
+            return; // STOP execution
         }
-    }
 
-    // Deal Logic
-    if (currentDeal) {
-        if (currentDeal.id === "GASTRO-STAR") {
-            const supp = supplementInput && supplementInput.value ? parseFloat(supplementInput.value) : 0;
-            finalPrice += (supp * nbPax);
-            dealText = `<div class="text-neon-blue font-bold mt-2">✨ OPTION GASTRO : +${supp * nbPax}€</div>`;
-        } else if (currentDeal.id === "DEAL-KITT") {
-            finalPrice += (20 * nbPax);
-            dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : ACTIVÉ</div>`;
-        } else {
-            finalPrice += (20 * nbPax);
-            dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : +${20 * nbPax}€</div>`;
-        }
-    }
+        // --- SMART VOCAL COACH & PRECISION FEEDBACK ---
+        // Analyze precision of the found location (City center vs Exact Address)
 
-    if (isSuccess) {
-        if (priceDisplay) priceDisplay.innerText = finalPrice;
+        const analyzePrecision = (coords, type) => {
+            // Types that are "General" (City center)
+            const generalTypes = ['city', 'town', 'village', 'municipality', 'administrative'];
+            // Types that are "Specific"
+            const specificTypes = ['building', 'house', 'amenity', 'shop', 'tourism', 'leisure'];
+
+            let precision = 'high'; // default
+            if (generalTypes.includes(coords.type)) precision = 'low'; // It's just a city/village
+            else if (['road', 'residential', 'secondary', 'tertiary', 'primary', 'living_street', 'unclassified', 'track', 'pedestrian'].includes(coords.type)) precision = 'medium'; // It's a street key
+
+            return precision;
+        };
+
+        const destPrecision = analyzePrecision(endCoords);
+
+        // VISUAL FEEDBACK (Show what was actually found)
         if (detailDisplay) {
+            let qualityColor = 'text-neon-green'; // High
+            let qualityText = 'PRÉCISION OPTIMALE';
+
+            if (destPrecision === 'medium') {
+                qualityColor = 'text-yellow-400';
+                qualityText = 'RUE IDENTIFIÉE';
+            } else if (destPrecision === 'low') {
+                qualityColor = 'text-orange-400';
+                qualityText = 'CENTRE-VILLE (ESTIMATION)';
+            }
+
+            // Show the resolved name to the user
+            // e.g. "Strasbourg, Grand Est, France"
+            const displayName = endCoords.pretty_name || endCoords.display_name.split(',').slice(0, 2).join(',');
+
             detailDisplay.innerHTML = `
+            <div class="flex flex-col gap-2 p-2 border border-white/10 rounded bg-black/40">
+                <div class="${qualityColor} font-bold text-xs tracking-widest border-b border-white/10 pb-1 mb-1">
+                     🎯 ${qualityText}
+                </div>
+                <div class="text-sm text-gray-300">
+                    Départ: <span class="text-white">${startCoords.pretty_name || startCoords.display_name.split(',')[0]}</span>
+                </div>
+                <div class="text-sm text-gray-300">
+                    Arrivée: <span class="text-white">${displayName}</span>
+                </div>
+                ${destPrecision === 'low' ?
+                    `<div class="text-[10px] text-neon-blue mt-1 animate-pulse">ℹ️ Astuce: Ajoutez un numéro de rue pour plus de précision.</div>`
+                    : ''}
+            </div>
+            <div class="animate-pulse text-neon-blue mt-2">CALCUL DU TRAJET...</div>
+        `;
+        }
+
+        // KITT SCANNER SOUND & VISUALS
+        playSound('audio-scanner');
+        playSound('audio-processing', true);
+
+        // VOCAL FEEDBACK (The Coach)
+        // Only speak the "Coach" advice if it's low precision, OR if it's high precision confirming it.
+        // Don't be too chatty if everything is standard, unless we want the "Premium" feel.
+        // User requested "Coach vocal et visuel" -> So yes, we speak.
+
+        let coachMsg = "";
+        if (destPrecision === 'low') {
+            coachMsg = `Ville identifiée : ${endLoc.split(',')[0]}. Je calcule la route vers le centre. Pour une précision chirurgicale, ajoutez une adresse exacte.`;
+        } else if (destPrecision === 'medium') {
+            coachMsg = `Rue identifiée. J'affine le calcul vers cette zone.`;
+        } else {
+            // High precision - usually standard KITT behavior covers the summary.
+            // But we can add a small confirmation.
+            // coachMsg = "Adresse précise confirmée."; // Optional, maybe too repetitive? 
+            // Let's keep it silent if perfect, or just "Adresse confirmée."
+            // User wants "Fluide". Silent is most fluid if perfect.
+            // But let's add a very short confirmation.
+            // coachMsg = "Destination précise confirmée.";
+        }
+
+        if (coachMsg) {
+            speak(coachMsg);
+        }
+
+
+
+
+        if (startCoords && endCoords) {
+            // CHECK FOR STOPOVER
+            const stopoverInput = document.getElementById('sim-stopover');
+            let stopoverCoords = null;
+            if (stopoverInput && !stopoverInput.parentElement.classList.contains('hidden') && stopoverInput.value.trim() !== "") {
+                stopoverCoords = await getCoordinates(stopoverInput.value.trim());
+                console.log("GPS: Step detected ->", stopoverCoords);
+            }
+
+            // Attempt OSRM
+            let routeData = null;
+            if (stopoverCoords) {
+                // 3-Point Route
+                routeData = await getRoadDistanceWithStep(startCoords, stopoverCoords, endCoords);
+            } else {
+                // Classic 2-Point Route
+                routeData = await getRoadDistance(startCoords, endCoords);
+            }
+
+            if (routeData) {
+                tripDist = routeData.distKm;
+                duration = routeData.durationMin;
+                isSuccess = true;
+            } else {
+                // FALLBACK: Haversine
+                console.warn("Routing Failed - Using Haversine Fallback");
+                const R = 6371; // Earth Mean Radius in km
+                const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
+                const dLon = (endCoords.lon - startCoords.lon) * Math.PI / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+                tripDist = Math.round((R * c) * 1.3); // +30% for road approximation
+                duration = Math.round(tripDist * 1.2); // ~50km/h avg speed
+                isSuccess = true;
+
+                if (detailDisplay) {
+                    // Append warning, don't overwrite address display
+                    const oldHTML = detailDisplay.innerHTML;
+                    detailDisplay.innerHTML = oldHTML + `<div class="text-[10px] text-neon-blue mt-2 animate-pulse">⚠️ ROUTAGE SATELLITE HORS LIGNE. ESTIMATION VOL D'OISEAU.</div>`;
+                }
+            }
+        }
+
+        // Fallback if APIs fail (e.g. rate limit): Use Heuristic
+        if (!isSuccess) {
+            console.warn("API Fail - Using Fallback");
+
+            // Helper: Find known location in string (Fuzzy Match with Normalization)
+            const normalizeStr = (str) => {
+                return str.toLowerCase()
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+                    .replace(/[^a-z0-9]/g, ""); // Keep only alphanumeric
+            };
+
+            const findKnownLocation = (inputStr) => {
+                if (!inputStr) return null;
+                const cleanInput = normalizeStr(inputStr);
+
+                // 1. Try exact match (cleaned)
+                for (const [name, data] of Object.entries(LOCATION_DATA)) {
+                    if (cleanInput === normalizeStr(name)) return data;
+                    // Also check against ID
+                    if (cleanInput === normalizeStr(data.id)) return data;
+                }
+
+                // 2. Try partial match (contains city name)
+                const knownNames = Object.keys(LOCATION_DATA).sort((a, b) => b.length - a.length);
+                for (const name of knownNames) {
+                    const cleanName = normalizeStr(name);
+                    if (cleanInput.includes(cleanName)) {
+                        return LOCATION_DATA[name];
+                    }
+                    // Also check specific replacements like "ecomusee" manually if needed
+                    if (normalizeStr(LOCATION_DATA[name].name).includes(cleanInput)) return LOCATION_DATA[name];
+                }
+                return null;
+            };
+
+            const depData = findKnownLocation(startLoc) || findKnownLocation(departureInput.value);
+            const destData = findKnownLocation(endLoc) || findKnownLocation(destinationInput.value);
+
+            if (depData && destData) {
+                // STRICT RULE: Only use hardcoded distances if starting or ending at HQ (Baltzenheim)
+                // Lateral trips (e.g. Sélestat -> Guebwiller) MUST use OSRM/Satellite to be accurate.
+                if (depData.id === 'baltzenheim') {
+                    tripDist = destData.dist;
+                } else if (destData.id === 'baltzenheim') {
+                    tripDist = depData.dist;
+                } else {
+                    // Lateral Trip (e.g. Colmar -> Guebwiller)
+                    // Do NOT use heuristic triangulation (Sum of dists) as it creates massive errors (56km vs 34km).
+                    // If OSRM failed, we simply fail/warn rather than giving a wrong price.
+                    console.warn("Lateral Trip detected without OSRM - Aborting Heuristic");
+                    return;
+                }
+
+                isSuccess = true;
+                duration = Math.round(tripDist * 1.0);
+
+                // Inform user it's an estimate based on city
+                if (detailDisplay) {
+                    detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name}</div>`;
+                }
+            }
+        }
+
+        // Calculate Price
+        let nbPax = 1;
+        if (paxSelect && paxSelect.value) nbPax = parseInt(paxSelect.value, 10);
+
+        let finalPrice = 0;
+        const approachDist = Math.max(0, 0 - FREE_KM_LIMIT); // Essentially 0 now
+        // For now, assume Approach is 0 for simplicity unless we calc Baltzenheim -> Start.
+        // Let's keep Approach logic simple: If Start != Baltzenheim, we assume standard approach logic or ignored.
+        // Re-implementing basic approach fee if Start is far? 
+        // User asked "Simple calculation: KM * 2". Let's stick to that strictly as requested.
+
+        const totalDist = tripDist;
+        // Strict Formula: Distance * 2
+        // We calculate base here first to use in finalPrice logic below
+        let baseCalc = (totalDist > 0) ? (totalDist * 2) : 0;
+        finalPrice = baseCalc;
+
+        let dealText = "";
+
+        // Map Embed Update
+        const cleanForMaps = (str) => {
+            let clean = str.replace(/\(.*\)/, '').trim();
+            // Removed "Alsace, France" enforcement for 800km radius
+            if (clean.toLowerCase().includes('europa-park') || clean.toLowerCase().includes('rulantica')) return clean + ", Germany";
+            return clean;
+        };
+        // Update Map Embed
+        // STRATEGY:
+        // 1. Embed URL: Use legacy 'maps.google.com' which is often more permissive for non-API embeds than 'www.google.com'.
+        // 2. Link URL: Full "Satellite + Driving" mode for the external button (Always works).
+        const sAddr = encodeURIComponent(cleanForMaps(startLoc));
+        const dAddr = encodeURIComponent(cleanForMaps(endLoc));
+
+        // Legacy URL for Iframe (Higher success rate without Key)
+        // Added 'hl=fr' for French UI
+        let coachVisualFeedback = "";
+        // Use coachMsg from earlier scope
+        if (typeof coachMsg !== 'undefined' && coachMsg) {
+            console.log(`[PrecisionCoach] Speaking: "${coachMsg}"`);
+            // speak(coachMsg); // Already spoken earlier? Check if we want to repeat or just log.
+            // Earlier we did speak(coachMsg). So here we just generate visual.
+
+            // VISUAL DEBUG FEEDBACK
+            coachVisualFeedback = `
+            <div class="mt-2 mb-2 p-2 bg-blue-900/30 border border-blue-500/50 rounded text-[10px] text-cyan-200 font-mono flex items-start gap-2">
+                <span class="text-lg">🤖</span>
+                <span>${coachMsg}</span>
+            </div>
+        `;
+        }
+
+        const mapsEmbedUrl = `https://maps.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&hl=fr&output=embed`;
+
+        // Full URL for External Button (Standard Map + Driving)
+        const mapsLinkUrl = `https://www.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&t=m&dirflg=d`;
+
+        if (mapFrame) {
+            if (mapFrame.src !== mapsEmbedUrl) {
+                mapFrame.src = mapsEmbedUrl;
+                mapFrame.onload = () => {
+                    if (mapOverlay) mapOverlay.classList.add('hidden');
+                };
+            }
+        }
+
+        // Deal Logic
+        if (currentDeal) {
+            if (currentDeal.id === "GASTRO-STAR") {
+                const supp = supplementInput && supplementInput.value ? parseFloat(supplementInput.value) : 0;
+                finalPrice += (supp * nbPax);
+                dealText = `<div class="text-neon-blue font-bold mt-2">✨ OPTION GASTRO : +${supp * nbPax}€</div>`;
+            } else if (currentDeal.id === "DEAL-KITT") {
+                finalPrice += (20 * nbPax);
+                dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : ACTIVÉ</div>`;
+            } else {
+                finalPrice += (20 * nbPax);
+                dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : +${20 * nbPax}€</div>`;
+            }
+        }
+
+        // STOP PROCESSING SOUND
+        stopSound('audio-processing');
+
+        if (isSuccess) {
+            if (priceDisplay) priceDisplay.innerText = finalPrice;
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `
                 <div class="flex justify-between border-b border-white/10 pb-1 mb-1 font-mono text-[10px]">
                     <span>DE: ${startLoc}</span>
                     <span>À: ${endLoc}</span>
                 </div>
+                <!-- OFFICIAL RECOGNITION (HIDDEN) -->
+                
+                ${coachVisualFeedback}
+
                 <div class="font-mono text-xs space-y-1">
                     <div>DIST. RÉELLE : ${tripDist} KM (${nbPax} pers.)</div>
                 ${dealText}
             `;
 
-            // --- SYNC TO RESERVATION FORM ---
-            const resPickup = document.getElementById('res-pickup');
-            const resDrop = document.getElementById('res-drop');
-            const resPax = document.getElementById('res-pax');
-            const resDuration = document.getElementById('res-duration');
-            const resPriceEst = document.getElementById('res-price-est');
-            const resNotes = document.getElementById('res-notes');
+                // --- SYNC TO RESERVATION FORM ---
+                const resPickup = document.getElementById('res-pickup');
+                const resDrop = document.getElementById('res-drop');
+                const resPax = document.getElementById('res-pax');
+                const resDuration = document.getElementById('res-duration');
+                const resPriceEst = document.getElementById('res-price-est');
+                const resNotes = document.getElementById('res-notes');
 
-            // Calculate Base Price (Sans Options)
-            const basePrice = (tripDist > 0) ? Math.max(20, Math.round(tripDist * PRICE_PER_KM)) : 0;
+                // Calculate Base Price (Sans Options)
+                // Strict "Google Maps * 2" Rule (User Request: "multiper les kilometres par 2")
+                const basePrice = (tripDist > 0) ? (tripDist * 2) : 0;
 
-            if (resPickup) resPickup.value = startLoc;
-            if (resDrop) resDrop.value = endLoc;
-            if (resPax) resPax.value = nbPax;
-            if (resDuration) resDuration.value = `${duration} min`;
-            if (resPriceEst) resPriceEst.value = `${basePrice} €`;
+                if (resPickup) resPickup.value = startLoc;
+                if (resDrop) resDrop.value = endLoc;
+                if (resPax) resPax.value = nbPax;
+                if (resDuration) resDuration.value = `${duration} min`;
+                if (resPriceEst) resPriceEst.value = `${basePrice} €`;
 
-            if (resNotes) {
-                // Keep the final price in notes as it includes deals/options which is important for the estimate
-                resNotes.value = `Estimation Trajet:\n- Distance: ${tripDist} km\n- Durée: ${duration} min\n- Prix Base: ${basePrice} €\n- Prix Final (avec options): ${finalPrice} €\n- Passagers: ${nbPax}\n\n(Données transmises par le simulateur)`;
+                if (resNotes) {
+                    // Keep the final price in notes as it includes deals/options which is important for the estimate
+                    resNotes.value = `Estimation Trajet:\n- Distance: ${tripDist} km\n- Durée: ${duration} min\n- Prix Base: ${basePrice} €\n- Prix Final (avec options): ${finalPrice} €\n- Passagers: ${nbPax}\n\n(Données transmises par le simulateur)`;
+                }
+
+                // VOCALIZE FULL SUMMARY (Time, Distance, Price)
+                const vocalMsg = `Trajet de ${tripDist} kilomètres. Durée estimée à ${duration} minutes. Le coût est de ${finalPrice} euros.`;
+                speak(vocalMsg);
+
+                // Also update visual detail to be explicit
+                if (detailDisplay) {
+                    detailDisplay.innerHTML = `
+                        <div class="flex flex-col gap-1 p-2 border border-white/20 rounded bg-black/60 font-mono text-xs">
+                             <div class="text-neon-blue font-bold tracking-widest border-b border-white/20 pb-1 mb-1">RÉCAPITULATIF</div>
+                             <div class="flex justify-between"><span>DISTANCE:</span> <span class="text-white">${tripDist} km</span></div>
+                             <div class="flex justify-between"><span>DURÉE:</span> <span class="text-white">${duration} min</span></div>
+                             <div class="flex justify-between"><span>TARIF:</span> <span class="text-neon-green font-bold text-sm">${finalPrice} €</span></div>
+                        </div>
+                     `;
+                }
+
+                // TRIGGER SUGGESTIONS
+                // 5. Trigger Suggestions (POIs) - WITH DATE
+                const tripDate = document.getElementById('sim-date') ? document.getElementById('sim-date').value : null;
+                suggestPOIs(endLoc, tripDate, tripDist);
             }
-
-            speakSummary({ destination: endLoc, distance: tripDist, price: finalPrice });
-
-            // TRIGGER SUGGESTIONS
-            // 5. Trigger Suggestions (POIs) - WITH DATE
-            const tripDate = document.getElementById('sim-date') ? document.getElementById('sim-date').value : null;
-            suggestPOIs(endLoc, tripDate);
-        }
-    } else {
-        if (detailDisplay) {
-            detailDisplay.innerHTML = `
+        } else {
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `
                 <div class="text-limit-red font-bold text-xs border border-limit-red/30 p-2 rounded">
                     ⚠️ ERREUR DE KALCUL <br/>
                     Impossible de déterminer la route exacte. Veuillez nous contacter.
                 </div>
             `;
+            }
         }
+
+    } catch (err) {
+        console.error("FATAL ERROR IN CALCULATION:", err);
+        if (typeof detailDisplay !== 'undefined' && detailDisplay) detailDisplay.innerHTML = `<div class="text-neon-red font-bold">⚠️ ERREUR CRITIQUE: ${err.message}</div>`;
+        speak("Une erreur critique est survenue.");
     }
 }
 
@@ -2391,63 +3137,83 @@ const AMBIANCE_PROTOCOLS = {
         label: "Silence (Furtif)"
     },
     "relax": {
-        response: "Configuration 'Lounge' activée. Sélection d'une playlist instrumentale apaisante. Détendez-vous, je gère la route.",
-        label: "Relax (Lounge)"
+        response: "SomaFM Groove Salad sélectionnée. La référence du Downtempo depuis San Francisco. Détendez-vous, Michael, je gère la route.",
+        label: "SomaFM Groove (Lounge)"
     },
     "futuriste": {
-        response: "Excellent choix. Activation du protocole Synthwave. Les basses fréquences sont synchronisées avec le scanner avant. En route vers le futur.",
-        label: "Futuriste (Synthwave)"
+        response: "Connexion à Nightride FM. Fréquences Synthwave verrouillées. L'ambiance parfaite pour une virée nocturne vers le futur.",
+        label: "Nightride FM (Synthwave)"
     },
     "retro": {
-        response: "Chargement des archives temporelles. Retour aux classiques intemporels. Nostalgie activée.",
-        label: "Rétro (Archives)"
+        response: "SomaFM Underground 80s. Retour à l'époque de ma conception. Synthpop et New Wave authentiques. Nostalgie activée.",
+        label: "SomaFM U80s (Retro)"
     },
     "dab": {
-        response: "Balayage des fréquences numériques alsaciennes... Connexion établie au réseau local. Vous aurez le contrôle de la station.",
-        label: "Radio DAB"
+        response: "FIP National. L'éclectisme musical français par excellence. Un choix cultivé.",
+        label: "FIP (National)"
     },
     // DAB Alsace (Local)
     "dkl": {
-        response: "Dreyeckland. La puissance des trois frontières. Connexion au réseau tri-national.",
-        label: "DKL (Dreyeckland)"
+        response: "France Bleu Alsace. Connexion au réseau local fiable. Informations trafic et culture régionale.",
+        label: "France Bleu Alsace"
     },
-    "azur-fm": {
-        response: "Le rythme du Centre-Alsace. Parfait pour traverser le vignoble.",
-        label: "Azur FM (Centre)"
-    },
+
     "rdl": {
-        response: "RDL 68. La radio libre de Colmar. Connexion immédiate.",
-        label: "RDL 68 (Colmar)"
+        response: "Radio Classique. Excellence et sérénité. Un accompagnement distingué pour notre mission.",
+        label: "Radio Classique"
     },
-    // Radio FG
+    // Radio FG -> Remplace par FIP Electro / SomaFM
     "fg-main": {
-        response: "Connexion au réseau FG. Feel Good. House music validée.",
-        label: "Radio FG (Officiel)"
+        response: "FIP Electro. Un mix pointu et sans interruption. Les circuits logiques apprécient ce rythme.",
+        label: "FIP Electro (Mix)"
     },
     "fg-chic": {
-        response: "Ambiance Lounge de luxe. Sélection Chic activée.",
-        label: "FG Chic (Lounge)"
+        response: "SomaFM Groove Salad. L'ambiance Lounge ultime. Parfait pour une conduite fluide.",
+        label: "SomaFM Groove (Chill)"
     },
     "fg-deep": {
-        response: "Plongée en eaux profondes. Fréquences Deep House verrouillées.",
-        label: "FG Deep (House)"
+        response: "SomaFM Deep Space One. Plongée dans l'ambient profond. Idéal pour l'observation spatiale.",
+        label: "SomaFM Deep (Ambient)"
     },
+    // INFOS & TECH
+
+    "autoroute": {
+        response: "Sanef 107.7 Alsace. Info trafic local et autoroutier. Surveillance des perturbations sur votre secteur.",
+        label: "Info Route Alsace (Local)"
+    },
+
     // PulsRadio Protocols
     "puls-dance": {
         response: "Mode Clubbing activé. Connexion au flux PulsRadio Dance. Énergie maximale.",
         label: "Puls Dance (Club)"
     },
+    "puls-hits": {
+        response: "Les Hits du moment. Analyse des tendances musicales actuelles.",
+        label: "Puls Hits (Top 40)"
+    },
+    "puls-club": {
+        response: "Ambiance Clubbing. Simulation d'un environnement nocturne festif.",
+        label: "Puls Club (Night)"
+    },
+    "puls-lounge": {
+        response: "Mode Détente activé. PulsRadio Lounge pour une conduite apaisée.",
+        label: "Puls Lounge (Relax)"
+    },
     "puls-trance": {
         response: "Protocole Trance. Voyage mental initié. Accélération du rythme cardiaque.",
         label: "Puls Trance (Hyper)"
+    },
+    "puls-2000": {
+        response: "Chargement du Millésime 2000. L'aube du nouveau millénaire.",
+        label: "Puls 2000 (Millennium)"
     },
     "puls-90": {
         response: "Retour vers le passé. Génération Dancefloor 90 activée.",
         label: "Puls 90's (Retro)"
     },
-    "puls-2000": {
-        response: "Chargement du Millésime 2000. L'aube du nouveau millénaire.",
-        label: "Puls 2000 (Millennium)"
+    "puls-80": {
+        response: "Voyage temporel vers les années 80. Synthétiseurs et rythmes iconiques.",
+        label: "Puls 80's (Gold)"
     }
 };
 
@@ -2464,7 +3230,61 @@ function initProtocol() {
         if (AMBIANCE_PROTOCOLS[val]) {
             speak(AMBIANCE_PROTOCOLS[val].response);
             playRadio(val); // Trigger Radio Logic
+
+            // DYNAMIC SIMULATOR SUGGESTIONS (User Request)
+            updateSimulatorSuggestions(val);
         }
+    };
+
+    // Helper: Update Placeholders based on Ambiance
+    const updateSimulatorSuggestions = (protocolKey) => {
+        const destInput = document.getElementById('sim-destination');
+        const depInput = document.getElementById('sim-departure');
+
+        if (!destInput || !depInput) return;
+
+        // Local Departure Suggestions (< 5km from Baltzenheim)
+        const localDepartures = [
+            "Ex: 1 Rue Principale, Artzenheim",
+            "Ex: 5 Grand Rue, Kunheim",
+            "Ex: 12 Rue du Rhin, Baltzenheim",
+            "Ex: Mairie de Durrenentzen",
+            "Ex: 2 Rue de l'Église, Urschenheim"
+        ];
+        // Rotate suggestions based on protocol length (pseudo-random but deterministic)
+        const depIndex = protocolKey.length % localDepartures.length;
+        depInput.placeholder = localDepartures[depIndex];
+
+        // Suggestions Map
+        const suggestions = {
+            // Club / Party
+            "puls-club": "Ex: Le Mille Club, Bernolsheim",
+            "puls-dance": "Ex: Zénith de Strasbourg Europe",
+            "puls-hits": "Ex: La Laiterie Artefact, Strasbourg",
+
+            // Relax / Lounge
+            "puls-lounge": "Ex: Casino Barrière, Ribeauvillé (Spa & Détente)",
+            "fg-chic": "Ex: Les Violettes Hotel & SPA, Jungholtz",
+            "relax": "Ex: Parc de l'Orangerie, Strasbourg",
+
+            // Alsace / Terroir
+            "dkl": "Ex: Auberge de l'Ill, Illhaeusern (Gastronomie)",
+            "autoroute": "Ex: Château du Haut-Koenigsbourg, Orschwiller",
+
+            // Retro / Culture
+            "retro": "Ex: Musée du Jouet, Colmar",
+            "puls-80": "Ex: Musée National de l'Automobile, Mulhouse",
+            "puls-90": "Ex: Ecomusée d'Alsace, Ungersheim",
+
+            // Default High Class
+            "rdl": "Ex: Opéra National du Rhin, Strasbourg",
+            "dab": "Ex: Parlement Européen, Strasbourg"
+        };
+
+        const suggestion = suggestions[protocolKey] || "Ex: 1 Place de la Cathédrale, Colmar";
+
+        // Update Placeholder (Gray text suggestion)
+        destInput.placeholder = suggestion;
     };
 
     // Form Selector Listener
@@ -2496,7 +3316,15 @@ function initProtocol() {
 
     const updateVolume = (val) => {
         const vol = val / 100;
-        if (audioPlayer) audioPlayer.volume = vol;
+
+        // Use normalized audio chain
+        setNormalizedVolume(vol);
+
+        // Also update podcast volume
+        if (typeof PodcastManager !== 'undefined' && PodcastManager.setVolume) {
+            PodcastManager.setVolume(vol);
+        }
+
         if (volDisplay) volDisplay.innerText = `${val}%`;
 
         // Sync Inputs
@@ -2506,8 +3334,8 @@ function initProtocol() {
 
     if (volSlider) {
         volSlider.addEventListener('input', (e) => updateVolume(e.target.value));
-        // Init volume from slider
-        if (audioPlayer) audioPlayer.volume = volSlider.value / 100;
+        // Init volume from slider using normalized chain
+        setNormalizedVolume(volSlider.value / 100);
     }
     if (volSliderMobile) {
         volSliderMobile.addEventListener('input', (e) => updateVolume(e.target.value));
@@ -4093,17 +4921,41 @@ function initFlatpickr() {
         disableMobile: "true", // Force custom theme on mobile
         theme: "dark",
         onChange: function (selectedDates, dateStr, instance) {
-            // If this is the pickup datetime field, fetch weather
+            // If this is the pickup datetime field, SHOW BUTTON instead of auto-fetch
             if (instance.element.id === 'res-pickup-datetime' && selectedDates.length > 0) {
                 console.log('[FLATPICKR] Pickup date/time selected:', dateStr);
-                // Trigger global change event for auto-weather logic (Dual Forecast)
-                setTimeout(() => {
-                    instance.element.dispatchEvent(new Event('change'));
-                }, 300);
+
+                const btnContainer = document.getElementById('container-validate-datetime');
+                if (btnContainer) {
+                    btnContainer.classList.remove('hidden');
+                    speak("Horaire enregistré. Veuillez valider pour synchroniser la météo.");
+                }
             }
         }
     });
 }
+
+// Manual Validation for Weather (User Request: "Invite utilisateur a valider")
+function initWeatherValidation() {
+    const btn = document.getElementById('btn-validate-datetime');
+    const input = document.getElementById('res-pickup-datetime');
+    const container = document.getElementById('container-validate-datetime');
+
+    if (!btn || !input) return;
+
+    btn.addEventListener('click', () => {
+        // 1. Hide Button immediately
+        if (container) container.classList.add('hidden');
+
+        // 2. Feedback
+        speak("Synchronisation météo en cours...");
+
+        // 3. Trigger Original Logic (dispatch change event)
+        // This leverages the existing logic that was previously auto-triggered
+        input.dispatchEvent(new Event('change'));
+    });
+}
+window.addEventListener('DOMContentLoaded', initWeatherValidation);
 
 
 /* =========================================
@@ -4116,9 +4968,9 @@ function initPilotVideo() {
 
     if (!video || !container) return;
 
-    // LIMIT: Max 3 plays per session
+    // LIMIT: Max 2 plays per session
     let playCount = 0;
-    const MAX_PLAYS = 3;
+    const MAX_PLAYS = 2;
 
     // Helper: Create Unmute Overlay
     const addUnmuteOverlay = () => {
@@ -4151,7 +5003,17 @@ function initPilotVideo() {
         // Stop if limit reached or already playing OR TOUR IS ACTIVE
         if (playCount >= MAX_PLAYS || !video.paused || window.isTourActive) return;
 
-        // Try playing with sound first
+        // Force mute if arriving from hero navigation
+        if (window.fromHeroNavigation) {
+            video.muted = true;
+            window.fromHeroNavigation = false; // Reset flag
+        } else {
+            // Otherwise, try with audio
+            video.muted = false;
+            video.volume = 1.0;
+        }
+
+        // Try playing
         video.play()
             .then(() => {
                 // If browser allowed play, check if it forced mute?
@@ -4199,15 +5061,16 @@ function initPilotVideo() {
         });
     }
 
-    // 1. Scroll Trigger (Play when enters, Pause/Reset when leaves)
+    // 1. Scroll Trigger (Play when enters, Pause when leaves)
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 triggerPlay();
             } else {
-                // Pause and Reset when scrolling away
-                video.pause();
-                video.currentTime = 0;
+                // Just pause when scrolling away, don't reset
+                if (!video.paused) {
+                    video.pause();
+                }
             }
         });
     }, { threshold: 0.5 });
@@ -4216,6 +5079,19 @@ function initPilotVideo() {
 
     // 2. Hover Trigger
     container.addEventListener('mouseenter', triggerPlay);
+
+    // Reset video when it ends to allow replay on next action
+    video.addEventListener('ended', () => {
+        if (playCount >= MAX_PLAYS) {
+            // After 3 plays, freeze on last frame (photo effect)
+            // Keep grayscale filter - video stays black and white always
+            console.log("Pilot Video: Frozen on last frame (grayscale maintained)");
+        } else {
+            // Before reaching limit, reset for next play
+            video.currentTime = 0;
+            video.pause();
+        }
+    });
 
     // 3. Link Trigger (Ensure play on jump)
     const pilotLink = document.querySelector('a[href="#about"]');
@@ -4888,92 +5764,116 @@ window.startGuidedTour = async function () {
     // Flag for global components to know tour is running (stops autoplay)
     window.isTourActive = true;
 
-    // Steps Definition
+    // Steps Definition (Refined for User Flow)
     const STEPS = [
         {
-            id: 'navbar-audio-group', // Target the whole container
+            id: 'navbar-audio-group',
             text: "PHASE 1 : ACTIVATION SONORE. Choisissez votre ambiance et ajustez le volume, puis validez.",
-            mobileFallback: 'mobile-menu-btn'
+            mobileFallback: 'mobile-menu-btn',
+            scrollToId: 'home', // Force Top
+            scrollBlock: 'start'
         },
         {
-            // PHASE 2: Identity Chain
-            id: 'tour-identity', // Highlighting the Card Container
+            id: 'tour-identity',
             focusChain: ['hero-prenom', 'hero-nom', 'hero-phone', 'hero-email'],
-            text: "PHASE 2 : IDENTIFICATION. Veuillez renseigner votre Prénom, Nom et Téléphone."
+            text: "PHASE 2 : IDENTIFICATION. Veuillez renseigner votre Prénom, Nom et Téléphone.",
+            scrollToId: 'home', // Keep at Top
+            scrollBlock: 'start'
         },
         {
-            // PHASE 3: Simulator Chain
-            id: 'tour-simulator-card', // Highlighting the Card Container
+            id: 'tour-simulator-card',
             focusChain: ['sim-departure', 'sim-destination'],
-            text: "PHASE 3 : NAVIGATION. Saisissez votre départ et arrivée pour calculer la trajectoire."
+            text: "PHASE 3 : NAVIGATION. Saisissez votre départ et arrivée pour calculer la trajectoire.",
+            scrollBlock: 'center'
         },
         {
-            id: 'pilot-container', // Precise video container target
-            text: "PHASE 4 : LE PILOTE. Découvrez qui est aux commandes."
+            id: 'about', // Target Section directly
+            text: "PHASE 4 : LE PILOTE. Découvrez qui est aux commandes.",
+            scrollBlock: 'start', // Top of section
+            noHighlight: true // Don't ring the whole section, just show it
         },
         {
-            id: 'gallery-grid', // Precise grid target
+            id: 'archives',
             text: "PHASE 5 : ARCHIVES. Parcourez les missions visuelles précédentes.",
-            // filterDemo: ['all', 'festival', 'gastronomie', 'memoire', 'tourisme', 'immobilier', 'festival'] // DISABLED for Professionalism
+            scrollBlock: 'start',
+            noHighlight: true
         },
         {
-            id: 'deals-grid', // Precise deals grid target
+            id: 'deals',
             text: "PHASE 6 : OFFRES. Sélectionnez une opportunité temporelle.",
-            // dealsDemo: true // DISABLED for Professionalism
+            scrollBlock: 'start',
+            noHighlight: true
         },
         {
-            id: 'res-pickup-datetime', // Highlight Date/Time as requested
-            text: "PHASE 7 : VÉRIFICATION. Contrôlez l'ensemble de vos informations. Une fois prêt, sélectionnez votre DATE DE DÉPART pour valider."
+            id: 'reservation',
+            text: "PHASE 7 : MISSION. Configurez les détails de votre transport.",
+            scrollBlock: 'start',
+            noHighlight: true
         },
         {
-            id: 'btn-start-camera', // Targeted highlight: 'Initialiser Scan' button
-            text: "PHASE 8 : SÉCURITÉ. Effectuez le scan biométrique facial. Souriez !"
+            id: 'camera-container', // Inside Reservation
+            text: "PHASE 8 : SÉCURITÉ. Effectuez le scan biométrique facial. Souriez !",
+            scrollBlock: 'center',
+            highlightId: 'camera-container'
         },
         {
             id: 'res-notes',
-            text: "PHASE 9 : SPÉCIFICATIONS. Ajoutez une note spéciale si nécessaire."
+            text: "PHASE 9 : SPÉCIFICATIONS. Ajoutez une note spéciale si nécessaire. Veuillez ensuite bien spécifier la date et l'heure de départ. L'arrivée est optionnelle si c'est le même jour.",
+            scrollBlock: 'center'
         },
         {
             id: 'btn-res-build',
-            text: "PHASE 10 : GÉNÉRATION. Créez votre ordre de mission."
+            text: "PHASE 10 : GÉNÉRATION. Créez votre ordre de mission.",
+            scrollBlock: 'center'
         },
         {
             id: 'contact',
-            text: "TERMINÉ. Transmettez le document ou contactez le QG. À bientôt."
+            text: "TERMINÉ. À bientôt dans le futur.",
+            scrollBlock: 'center',
+            finalStep: true
         }
     ];
 
-    // Helper: Highlight
-    // Helper: Highlight (Original Design Restored)
-    const highlight = (el, stepId) => {
+    // Helper: Highlight (Mobile & Scroll Optimized)
+    const highlight = (el, step) => {
         if (!el) return;
 
-        const section = el.closest('section');
         const isDesktop = window.innerWidth >= 768;
 
-        // SCROLL LOGIC (Restored)
-        // Center inputs, otherwise use smart section top alignment for desktop
-        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            el.classList.add('scale-105', 'z-50'); // Pop Effect for Inputs
-        } else if (section && isDesktop) {
-            const offset = 80;
-            const sectionTop = section.getBoundingClientRect().top + window.pageYOffset;
-            window.scrollTo({ top: sectionTop - offset, behavior: 'smooth' });
-        } else {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // SCROLL LOGIC
+        // Priority: step.scrollToId -> step.id
+        let scrollTarget = el;
+        if (step.scrollToId) {
+            scrollTarget = document.getElementById(step.scrollToId);
         }
 
-        // ILLUMINATION (Restored: Ring + Shadow + Pulse)
-        el.classList.add(
+        if (scrollTarget) {
+            scrollTarget.scrollIntoView({
+                behavior: 'smooth',
+                block: step.scrollBlock || 'center',
+                inline: 'nearest'
+            });
+        }
+
+        if (step.noHighlight) return; // Skip visual ring
+
+        // ILLUMINATION
+        const classes = [
             'ring-4',
             'ring-neon-green',
             'relative',
             'z-40',
             'animate-subtle-green-pulse',
-            'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
-            'bg-black/80' // Darken background to make highlight pop
-        );
+            // REMOVED masking classes (shadow, bg-black) as per user request
+            // 'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
+            // 'bg-black/80'
+        ];
+
+        if (isDesktop && !step.noZoom) {
+            classes.push('scale-105');
+        }
+
+        el.classList.add(...classes);
     };
 
     const removeHighlight = (el) => {
@@ -4987,21 +5887,22 @@ window.startGuidedTour = async function () {
             'animate-subtle-green-pulse',
             'ring-neon-blue',
             'shadow-[0_0_50px_rgba(0,212,255,0.5)]',
-            'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
+            // 'shadow-[0_0_60px_rgba(184,255,0,0.6)]',
             'animate-neon-pulse',
             'scale-105',
-            'bg-black/80'
+            // 'bg-black/80'
         );
     };
 
-    const waitForValidation = (signal) => {
+    const waitForValidation = (signal, isFinal) => {
         return new Promise((resolve, reject) => {
             if (signal.aborted) return reject(new Error("Tour Aborted"));
 
             const btn = document.createElement('button');
-            // ORIGINAL BUTTON DESIGN
-            btn.innerHTML = `<span class="animate-pulse">▶</span> VALIDER & CONTINUER`;
-            btn.className = "fixed bottom-8 right-8 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-xs tracking-widest border border-black/20 flex items-center gap-2";
+            const label = isFinal ? "TERMINER LA VISITE" : "VALIDER & CONTINUER ▶";
+            btn.innerHTML = `<span class="animate-pulse">${isFinal ? '★' : '▶'}</span> ${label}`;
+            // POSITION: Mobile = Center Bottom | Desktop = Bottom Right
+            btn.className = "fixed bottom-10 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 z-[100] bg-neon-green text-black font-future font-bold py-3 px-6 rounded shadow-[0_0_20px_#b8ff00] hover:scale-105 transition-all text-xs tracking-widest border border-black/20 flex items-center gap-2";
             btn.id = "tour-validation-btn";
 
             document.body.appendChild(btn);
@@ -5039,44 +5940,69 @@ window.startGuidedTour = async function () {
 
             // 1. Find Element
             let el = document.getElementById(step.id);
-            if (!el && step.mobileFallback) {
+
+            // Check visibility
+            const isHidden = (element) => {
+                if (!element) return true;
+                return (element.offsetParent === null || window.getComputedStyle(element).display === 'none');
+            };
+
+            if (isHidden(el) && step.mobileFallback) {
+                console.log(`[TOUR] Target ${step.id} hidden, using fallback ${step.mobileFallback}`);
                 el = document.getElementById(step.mobileFallback);
             }
 
-            // 2. Highlight (if found)
+            // 2. Highlight
             if (el) {
-                highlight(el, step.id);
+                highlight(el, step);
             }
 
-            // 3. Chain Focus (Simulator/Identity special case)
+            // 3. Chain Focus
             if (step.focusChain) {
-                // Focus first input
                 const firstEl = document.getElementById(step.focusChain[0]);
-                if (firstEl) {
-                    firstEl.focus();
-                    if (step.focusChain.length > 1) {
-                        // Setup chain logic if needed (simplified here)
-                    }
+                if (firstEl) firstEl.focus();
+            }
+
+            // 3.5. Special Case: Prepare Pilot Video (Before Speaking)
+            let pilotVideo = null;
+            if (step.id === 'about') {
+                pilotVideo = document.getElementById('pilot-video');
+                if (pilotVideo) {
+                    // Reset to first frame (frozen) - creates anticipation
+                    pilotVideo.currentTime = 0;
+                    pilotVideo.pause(); // Ensure it's paused
+                    console.log("[TOUR] Pilot video prepared on first frame");
                 }
             }
 
-            // 4. Speak & Wait
+            // 4. Speak
             await speak(step.text);
 
-            // 5. Special Case: Pilot Video Autoplay
-            if (step.id === 'pilot-container') {
-                const pilotVideo = document.getElementById('pilot-video');
-                if (pilotVideo) {
-                    pilotVideo.muted = false;
-                    pilotVideo.play().catch(e => console.log("Video play error", e));
+            // 5. Special Case: Play Pilot Video (After Speaking)
+            if (step.id === 'about' && pilotVideo) {
+                // Now play the video for surprise effect
+                pilotVideo.muted = false;
+                pilotVideo.play().catch(e => console.log("Video play error", e));
+                console.log("[TOUR] Pilot video playing after vocalization");
+            }
+
+            // 6. Wait
+            await waitForValidation(signal, step.finalStep);
+
+            // 6.5 SPECIAL AUTO-ACTION: Trigger Hero Animation after Phase 2 (Identity)
+            if (step.id === 'tour-identity') {
+                const heroBtn = document.getElementById('btn-hero-access');
+                if (heroBtn) {
+                    console.log("[TOUR] Triggering Hero Button...");
+                    heroBtn.click();
+                    // Wait for Slogan Animation + Vocalization + Scroll (approx 9s)
+                    // Increased to 9s per user request (avoid cut-off)
+                    await new Promise(r => setTimeout(r, 9000));
                 }
             }
 
-            // 6. Wait for Validation
-            await waitForValidation(signal);
-
             // 7. Cleanup
-            if (el) removeHighlight(el);
+            if (el && !step.noHighlight) removeHighlight(el);
             if (step.focusChain) {
                 step.focusChain.forEach(id => {
                     const cEl = document.getElementById(id);
@@ -5368,3 +6294,423 @@ function initStarlinkAnimation() {
     // Initial Launch
     setTimeout(spawnSatellite, 3000); // Start 3s after load
 }
+
+/* =========================================
+   REAL-TIME COACH IMPLEMENTATION
+   ========================================= */
+
+function initRealTimeCoach() {
+    const depInput = document.getElementById('sim-departure');
+    const destInput = document.getElementById('sim-destination');
+
+    if (depInput) monitorInputAutocomplete(depInput, 'dep');
+    if (destInput) monitorInputAutocomplete(destInput, 'dest');
+}
+
+// Debounce Utility (Limit API calls)
+function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// Monitor Logic
+function monitorInput(inputElement, type) {
+    const feedbackId = type === 'dep' ? 'sim-feedback-dep' : 'sim-feedback-dest';
+    const feedbackEl = document.getElementById(feedbackId);
+
+    // DEBOUNCED VALIDATION (800ms pause)
+    const validate = debounce(async () => {
+        const val = inputElement.value.trim();
+        if (val.length < 3) {
+            hideFeedback(feedbackEl);
+            return;
+        }
+
+        // Silent Geocode check
+        const coords = await getCoordinates(val);
+
+        if (!coords) {
+            // Optional: Don't show red error while typing, it can be annoying. 
+            // Just hide previous positive feedback.
+            hideFeedback(feedbackEl);
+            return;
+        }
+
+        // Analyze Type
+        const generalTypes = ['city', 'town', 'village', 'municipality', 'administrative'];
+
+        let precision = 'high'; // default
+        if (generalTypes.includes(coords.type)) precision = 'low'; // It's just a city/village
+        else if (coords.type === 'road' || coords.type === 'residential') precision = 'medium'; // It's a street key
+
+        // Update UI & Helper Voice
+        // Helper to format name: "6 Rue..." instead of just "6"
+        const parts = coords.display_name.split(',');
+        let displayName = parts[0];
+        if (parts.length > 1 && parts[0].length < 5) { // If "6", append "Rue de..."
+            displayName = parts[0] + ' ' + parts[1];
+        }
+
+        if (precision === 'low') {
+            showFeedback(feedbackEl, `🟡 Ville identifiée (${displayName}). Précisez la rue.`, 'text-yellow-400', 'border-yellow-400');
+        } else if (precision === 'medium') {
+            showFeedback(feedbackEl, `🟢 Rue identifiée. Ajoutez le numéro.`, 'text-neon-green', 'border-neon-green');
+        } else {
+            showFeedback(feedbackEl, `✅ Adresse précise : ${displayName}`, 'text-neon-green', 'border-neon-green');
+        }
+
+    }, 800);
+
+    inputElement.addEventListener('input', () => {
+        validate();
+    });
+}
+
+function showFeedback(el, text, colorClass, borderClass) {
+    if (!el) return;
+    el.innerHTML = text;
+    el.className = `mt-1 text-[10px] font-mono pl-2 border-l-2 transition-all block ${colorClass} ${borderClass}`;
+    el.classList.remove('hidden');
+}
+
+function hideFeedback(el) {
+    if (!el) return;
+    el.classList.add('hidden');
+    el.innerHTML = '';
+}
+
+// NEW AUTOCOMPLETE MONITOR (Bypassing old function)
+function monitorInputAutocomplete(inputElement, type) {
+    const feedbackId = type === 'dep' ? 'sim-feedback-dep' : 'sim-feedback-dest';
+    const feedbackEl = document.getElementById(feedbackId);
+
+    // DEBOUNCED AUTOCOMPLETE (400ms)
+    const validate = debounce(async () => {
+        const val = inputElement.value.trim();
+        if (val.length < 3) {
+            hideFeedback(feedbackEl);
+            return;
+        }
+
+        // 1. Fetch Suggestions (Limit 3)
+        try {
+            // RESTRICT TO ALSACE/BADEN (Approx Box)
+            // viewbox=6.0,47.3,8.5,49.0 (West, South, East, North)
+            // bounded=1 (Strict restriction)
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=3&addressdetails=1&viewbox=6.0,47.3,8.5,49.0&bounded=1`;
+            const resp = await fetch(url);
+            const data = await resp.json();
+
+            if (!data || data.length === 0) {
+                return;
+            }
+
+            // 2. Build Suggestion UI
+            const suggestions = data.map((item) => {
+                // Format Name (Smart Construction)
+                // Use address object if available for better formatting
+                let prettyName = parts[0];
+                const addr = item.address || {};
+                const house = addr.house_number || '';
+                const road = addr.road || addr.pedestrian || addr.street || parts[0].split(',')[0];
+                const city = addr.city || addr.town || addr.village || addr.municipality || parts[1];
+
+                // Construct: "6 Rue du Château, Colmar"
+                if (city && road && !road.includes(city)) {
+                    prettyName = `${house ? house + ' ' : ''}${road}, ${city}`;
+                } else {
+                    // Fallback to simple split if address object is missing or ambiguous
+                    if (parts.length > 1) prettyName = parts[0] + ', ' + parts[1];
+                }
+
+                // Remove trailing/leading spaces/commas
+                prettyName = prettyName.replace(/^,/, '').trim();
+
+                const desc = parts.slice(1).join(', ');
+
+                return `
+                <button type="button" class="suggestion-item text-left w-full px-2 py-1 bg-white/5 hover:bg-neon-blue/20 border border-white/10 rounded group transition-all mb-1 last:mb-0"
+                    data-display="${item.display_name}"
+                    data-lat="${item.lat}"
+                    data-lon="${item.lon}"
+                    data-pretty="${prettyName}"
+                    data-type="${item.type || ''}">
+                    <div class="text-neon-blue font-bold text-[10px] group-hover:text-white pointer-events-none">📍 ${prettyName}</div>
+                    <div class="text-[9px] text-gray-400 pointer-events-none truncate">${desc}</div>
+                </button>
+                `;
+            }).join('');
+
+            feedbackEl.innerHTML = `<div class="flex flex-col mt-1">${suggestions}</div>`;
+            feedbackEl.classList.remove('hidden');
+
+            // 3. Attach Click Listeners
+            const btns = feedbackEl.querySelectorAll('.suggestion-item');
+            btns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // A. Fill Input
+                    inputElement.value = btn.dataset.pretty;
+
+                    // B. Update Cache
+                    if (typeof COORD_CACHE !== 'undefined') {
+                        COORD_CACHE[btn.dataset.pretty.toLowerCase()] = {
+                            lat: parseFloat(btn.dataset.lat),
+                            lon: parseFloat(btn.dataset.lon),
+                            display_name: btn.dataset.display,
+                            pretty_name: btn.dataset.pretty,
+                            address: {},
+                            type: btn.dataset.type
+                        };
+                        // Update global cache with current input value as key as well
+                        COORD_CACHE[inputElement.value.toLowerCase().trim()] = COORD_CACHE[btn.dataset.pretty.toLowerCase()];
+                    }
+
+                    // C. Lock UI (Show Success)
+                    feedbackEl.innerHTML = `
+                   <div class="mt-1 text-[10px] font-mono pl-2 border-l-2 border-neon-green text-neon-green">
+                       ✅ Adresse validée
+                   </div>`;
+                });
+            });
+
+        } catch (e) {
+            console.error("Autocomplete Error", e);
+        }
+
+    }, 400);
+
+    inputElement.addEventListener('input', () => {
+        validate();
+    });
+}
+
+// --- HERO ANIMATIONS & LOGIC ---
+window.initHeroAnimations = function () {
+    const sloganContainer = document.getElementById('hero-slogan-container');
+    const el1 = document.getElementById('typewriter-line-1');
+    const el2 = document.getElementById('typewriter-line-2');
+
+    // Text Configuration
+    const line1Text = "L'art de vous transporter vers l'Avenir";
+    const line2Text = "L'expérience VTC et reportage photo en Alsace";
+
+    // Sound
+    let processingSound = null;
+    try {
+        processingSound = new Audio('assets/sounds/processing.mp3');
+        processingSound.volume = 0.2;
+    } catch (e) { console.warn("Sound init failed", e); }
+
+    // Show container with focus-in effect
+    if (sloganContainer) {
+        sloganContainer.classList.remove('opacity-0');
+        sloganContainer.classList.remove('hidden');
+
+        // Play sound
+        if (processingSound) processingSound.play().catch(() => { });
+
+        // GLITCH/SCAN EFFECT
+        let glitchCount = 0;
+        const maxGlitches = 8;
+
+        const glitchChars = '█▓▒░01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz@#$%&*';
+
+        const randomText = (length) => {
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+            }
+            return result;
+        };
+
+        const glitchInterval = setInterval(() => {
+            // Random glitch text
+            el1.textContent = randomText(line1Text.length);
+            el2.textContent = randomText(line2Text.length);
+
+            // Add random color shift (Keep centered with -50%)
+            const shift = Math.random() * 4 - 2;
+            sloganContainer.style.transform = `translateX(calc(-50% + ${shift}px))`;
+
+            glitchCount++;
+
+            if (glitchCount >= maxGlitches) {
+                clearInterval(glitchInterval);
+
+                // STABILIZATION - Show real text
+                setTimeout(() => {
+                    el1.textContent = line1Text;
+                    el2.textContent = line2Text;
+                    // FIX: Restore centering
+                    sloganContainer.style.transform = 'translateX(-50%)';
+
+                    // Remove blur
+                    sloganContainer.style.filter = 'blur(0px)';
+
+                    // Stop sound
+                    if (processingSound) {
+                        processingSound.pause();
+                        processingSound.currentTime = 0;
+                    }
+
+                    // Highlight keywords after stabilization
+                    setTimeout(() => {
+                        const keywords1 = ['ART', 'AVENIR'];
+                        const keywords2 = ['VTC', 'PHOTO', 'ALSACE'];
+
+                        let html1 = line1Text;
+                        keywords1.forEach(word => {
+                            const regex = new RegExp(`(${word})`, 'gi');
+                            html1 = html1.replace(regex, '<span class="text-limit-red font-bold drop-shadow-[0_0_12px_rgba(255,0,0,0.9)] animate-pulse">$1</span>');
+                        });
+                        el1.innerHTML = html1;
+
+                        let html2 = line2Text;
+                        keywords2.forEach(word => {
+                            const regex = new RegExp(`(${word})`, 'gi');
+                            html2 = html2.replace(regex, '<span class="text-limit-red font-bold drop-shadow-[0_0_12px_rgba(255,0,0,0.9)] animate-pulse">$1</span>');
+                        });
+                        el2.innerHTML = html2;
+
+                        // Beep
+                        const beep = new Audio('assets/sounds/voice_beep.mp3');
+                        if (beep) { beep.volume = 0.3; beep.play().catch(() => { }); }
+                    }, 300);
+                }, 100);
+            }
+        }, 80); // Glitch every 80ms
+    }
+}
+
+function initHeroValidation() {
+    // Identity Validation (Button Glow)
+    const inputs = ['hero-prenom', 'hero-nom', 'hero-phone', 'hero-email'];
+    const btn = document.getElementById('btn-hero-access');
+    const nameDisplay = document.getElementById('hero-display-name');
+    const nameContainer = document.getElementById('hero-name-display');
+
+    let hasWelcomed = false;
+
+    const checkInputs = () => {
+        const allFilled = inputs.every(id => {
+            const input = document.getElementById(id);
+            return input && input.value.trim().length > 0;
+        });
+
+        if (btn) {
+            if (allFilled) {
+                btn.setAttribute('data-ready', 'true');
+            } else {
+                btn.setAttribute('data-ready', 'false');
+            }
+        }
+    };
+
+    // Real-time name display and voice welcome
+    const prenomInput = document.getElementById('hero-prenom');
+    const nomInput = document.getElementById('hero-nom');
+
+    if (prenomInput && nomInput && nameDisplay && nameContainer) {
+        const updateNameDisplay = () => {
+            const prenom = prenomInput.value.trim().toUpperCase();
+            const nom = nomInput.value.trim().toUpperCase();
+
+            if (prenom.length > 0) {
+                nameDisplay.textContent = prenom;
+                nameContainer.classList.remove('opacity-0');
+
+                // Vocalize welcome when BOTH prenom AND nom are filled (3+ chars each)
+                if (prenom.length >= 3 && nom.length >= 1 && !hasWelcomed) {
+                    hasWelcomed = true;
+                    setTimeout(() => {
+                        const initial = nom.charAt(0);
+                        if (window.speak) {
+                            window.speak(`Bienvenue ${prenom} ${initial}`);
+                        }
+                    }, 500);
+                }
+            } else {
+                nameDisplay.textContent = '';
+                nameContainer.classList.add('opacity-0');
+                hasWelcomed = false;
+            }
+
+            checkInputs();
+        };
+
+        prenomInput.addEventListener('input', updateNameDisplay);
+        nomInput.addEventListener('input', updateNameDisplay);
+    }
+
+    inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input && id !== 'hero-prenom' && id !== 'hero-nom') {
+            input.addEventListener('input', checkInputs);
+        }
+    });
+
+    // Trigger slogan animation on button click, then navigate
+    if (btn) {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Check if button is ready
+            if (btn.getAttribute('data-ready') === 'true') {
+                // Start slogan animation
+                if (window.initHeroAnimations) {
+                    window.initHeroAnimations();
+                }
+
+                // Vocal guidance: Read slogan after animation stabilizes
+                setTimeout(() => {
+                    if (window.speak) {
+                        const prenomInput = document.getElementById('hero-prenom');
+                        // const nomInput = document.getElementById('hero-nom'); // User requested to NOT say the Last Name
+                        let identity = "";
+
+                        if (prenomInput && prenomInput.value.trim() !== "") {
+                            identity += prenomInput.value.trim();
+                        }
+                        // Skipped Last Name per request
+
+                        let textToSpeak = "";
+                        if (identity !== "") {
+                            textToSpeak = `${identity}. Voici IA K VENIR. L'expérience VTC et reportage photo en Alsace. L'art de vous transporter vers l'Avenir.`;
+                        } else {
+                            textToSpeak = "Bienvenue dans le futur. Voici IA K VENIR. L'expérience VTC et reportage photo en Alsace. L'art de vous transporter vers l'Avenir.";
+                        }
+
+                        window.speak(textToSpeak);
+                    }
+                }, 2000);
+
+                // Navigate to simulator after slogan reading (8 seconds total)
+                setTimeout(() => {
+                    // Set flag to keep video muted when arriving from hero
+                    window.fromHeroNavigation = true;
+
+                    window.location.hash = '#simulator';
+                    // Scroll to simulator
+                    const simulator = document.getElementById('simulator');
+                    if (simulator) {
+                        simulator.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 8000);
+            }
+        });
+    }
+}
+
+// Auto-init on page load (but don't start animation automatically)
+document.addEventListener('DOMContentLoaded', () => {
+    initHeroValidation();
+    // Animation will only start when user clicks "DESTINATION FUTUR"
+});
+
+
