@@ -2564,7 +2564,9 @@ async function getCoordinates(query) {
     const cleanQuery = query.replace(/\s*\(.*?\)/g, '').trim();
 
     try {
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&limit=1&addressdetails=1`;
+        // Use viewbox to bias results towards Alsace (approx coordinates)
+        const viewbox = "6.8,49.1,8.3,47.3"; // Longitude/Latitude bounds for Alsace
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&viewbox=${viewbox}&bounded=0&limit=1&addressdetails=1`;
         const resp = await fetch(url);
         const data = await resp.json();
         if (data && data.length > 0) {
@@ -2583,6 +2585,8 @@ async function getCoordinates(query) {
                 address: data[0].address,
                 type: data[0].addresstype || data[0].class
             };
+        } else {
+            console.warn(`[GPS] No geocoding results for: "${cleanQuery}"`);
         }
     } catch (e) {
         console.error("Geocoding Error", e);
@@ -2678,6 +2682,10 @@ async function calculateTrajectory() {
     const mapOverlay = document.getElementById('map-overlay');
 
     if (!departureInput || !destinationInput) return;
+
+    let tripDist = 0;
+    let duration = 0;
+    let isSuccess = false;
 
     try {
         let startLoc = departureInput.value.trim();
