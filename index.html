@@ -951,10 +951,10 @@
         class="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/5 transition-transform duration-500 ease-in-out">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <!-- Logo -->
-            <a href="#" class="block group relative">
-                <img src="assets/images/logo_iakvenir.png" alt="iA_k_venir" class="h-10 w-auto object-contain">
+            <a href="#" class="block group relative z-50">
+                <img src="assets/images/logo_iakvenir.png" alt="iA_k_venir" class="h-8 md:h-10 w-auto object-contain">
 
-                <!-- CONSTELLATION BADGE (Alsace Grid) -->
+                <!-- CONSTELLATION BADGE (Alsace Grid) - Desktop only -->
                 <div id="alsace-constellation" class="absolute -top-3 -right-24 w-20 h-20 opacity-80 hidden md:block">
                     <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_5px_rgba(0,212,255,0.8)]">
                         <!-- Route des Vins (Line) -->
@@ -1094,8 +1094,9 @@
                     class="bg-neon-green/10 text-neon-green font-bold px-4 py-1 rounded hover:scale-110 transition-all shadow-[0_0_10px_rgba(184,255,0,0.3)] border border-neon-green">AIDE</button>
             </div>
             <!-- Mobile Menu Button -->
-            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none z-50 relative">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="mobile-menu-btn"
+                class="md:hidden text-white focus:outline-none z-50 relative p-2 hover:bg-white/10 rounded transition-colors">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
                     </path>
                 </svg>
