@@ -477,6 +477,9 @@ function connectRadioSource(playerElement) {
             gainNode = audioContext.createGain();
             gainNode.connect(audioContext.destination);
             console.log("[AUDIO] AudioContext Initialized");
+
+            // Sync with current slider position immediately
+            if (window.syncGainWithSlider) window.syncGainWithSlider();
         } catch (e) {
             console.error("[AUDIO] Failed to init AudioContext:", e);
         }
@@ -502,41 +505,48 @@ function connectRadioSource(playerElement) {
 
 // Volume Slider Listener
 document.addEventListener('DOMContentLoaded', () => {
-    const volSlider = document.getElementById('vol-control'); // Correct ID
-    const volSliderMobile = document.getElementById('vol-control-mobile'); // Mobile slider
+    const volSlider = document.getElementById('vol-control');
+    const volSliderMobile = document.getElementById('vol-control-mobile');
 
     const updateVolume = (val) => {
-        console.log(`[AUDIO] Volume slider changed to: ${val}`);
+        const numericVal = parseFloat(val);
+        const gainVal = numericVal / 100;
+
+        console.log(`[AUDIO] Unified volume update: ${numericVal}% (${gainVal})`);
+
         if (gainNode) {
-            gainNode.gain.setTargetAtTime(val, audioContext.currentTime, 0.1);
-            console.log(`[AUDIO] GainNode updated to: ${val}`);
-        } else {
-            if (audioPlayer) audioPlayer.volume = val;
-            console.log(`[AUDIO] Fallback: audioPlayer.volume set to: ${val}`);
+            // Smooth transition to avoid pops
+            gainNode.gain.setTargetAtTime(gainVal, audioContext.currentTime, 0.05);
+        } else if (audioPlayer) {
+            audioPlayer.volume = gainVal;
         }
     };
 
+    const handleInput = (e) => {
+        const val = e.target.value;
+        updateVolume(val);
+
+        // Keep sliders in sync
+        if (volSlider) volSlider.value = val;
+        if (volSliderMobile) volSliderMobile.value = val;
+    };
+
     if (volSlider) {
-        volSlider.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value) / 100;
-            updateVolume(val);
-            if (volSliderMobile) volSliderMobile.value = e.target.value; // Sync mobile
-        });
-        console.log('[AUDIO] Desktop volume slider listener attached');
+        volSlider.addEventListener('input', handleInput);
+        console.log('[AUDIO] Desktop volume slider connected');
     }
 
     if (volSliderMobile) {
-        volSliderMobile.addEventListener('input', (e) => {
-            const val = parseFloat(e.target.value) / 100;
-            updateVolume(val);
-            if (volSlider) volSlider.value = e.target.value; // Sync desktop
-        });
-        console.log('[AUDIO] Mobile volume slider listener attached');
+        volSliderMobile.addEventListener('input', handleInput);
+        console.log('[AUDIO] Mobile volume slider connected');
     }
 
-    if (!volSlider && !volSliderMobile) {
-        console.warn('[AUDIO] No volume sliders found in DOM');
-    }
+    // EXPOSE GLOBAL INIT: This ensures gainNode picks up current slider value on creation
+    window.syncGainWithSlider = () => {
+        const currentVal = (volSlider ? volSlider.value : (volSliderMobile ? volSliderMobile.value : 30));
+        updateVolume(currentVal);
+        console.log(`[AUDIO] GainNode synced with slider: ${currentVal}%`);
+    };
 });
 
 /* =========================================
