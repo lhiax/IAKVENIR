@@ -792,8 +792,21 @@ window.speak = function (text) {
                 return;
             }
 
-            // Cancel previous
-            window.speechSynthesis.cancel();
+            // Check if speech is currently active
+            const isSpeaking = window.speechSynthesis.speaking;
+
+            if (isSpeaking) {
+                console.log('[SPEECH] Already speaking, queuing message...');
+                // Queue this message to play after current one finishes
+                setTimeout(() => {
+                    console.log('[SPEECH] Retrying queued message...');
+                    window.speak(text).then(resolve);
+                }, 500);
+                return;
+            }
+
+            // If not speaking, proceed immediately
+            console.log('[SPEECH] Starting speech...');
 
             // DUCK AUDIO (Radio & Video)
             if (typeof pauseRadio === 'function') pauseRadio();
@@ -896,6 +909,65 @@ window.fetchBothWeatherForecasts = async function () {
         const [depWeather, destWeather] = await Promise.all([
             fetchWeatherForLocation(departure, pickupDateTime),
             fetchWeatherForLocation(destination, pickupDateTime)
+        ]);
+
+        if (depWeather && destWeather) {
+            // Store for PDF
+            reservationWeatherData = {
+                departure: depWeather,
+                destination: destWeather
+            };
+
+            // Display
+            displayDualWeatherSummary(depWeather, destWeather);
+
+            // VOCALIZE - SMART FLUID SUMMARY
+            let voiceMsg = `Météo pour votre trajet le ${depWeather.dateTime}. `;
+
+            // Compare conditions
+            const tempDiff = Math.abs(depWeather.temp - destWeather.temp);
+            const isWeatherSimilar = depWeather.weatherDesc === destWeather.weatherDesc;
+            const avgTemp = Math.round((depWeather.temp + destWeather.temp) / 2);
+
+            if (tempDiff <= 3 && isWeatherSimilar) {
+                // UNIFORM
+                voiceMsg += `Temps homogène sur tout le parcours. ${depWeather.weatherDesc} avec une moyenne de ${avgTemp} degrés. `;
+            } else {
+                // CONTHAST
+                voiceMsg += `Au départ de ${depWeather.destination}, ${depWeather.weatherDesc} et ${depWeather.temp} degrés. `;
+                voiceMsg += `À l'arrivée à ${destWeather.destination}, ${destWeather.weatherDesc} et ${destWeather.temp} degrés. `;
+            }
+
+            // Single Suggestion (Based on Destination or Coldest point)
+            const suggestion = getClothingSuggestion(destWeather.temp).replace('💡 Suggestion: ', '').replace('💡 ', '');
+            voiceMsg += `Conseil confort : ${suggestion}`;
+
+            if (window.speak) {
+                speak(voiceMsg);
+            }
+        }
+    } catch (error) {
+        console.error('[WEATHER] Error fetching dual forecasts:', error);
+    }
+};
+
+// Main function to fetch weather for both points
+window.fetchBothWeatherForecasts = async function () {
+    console.log('[WEATHER] Fetching dual forecasts...');
+    const departure = document.getElementById('res-pickup')?.value;
+    const destination = document.getElementById('res-drop')?.value;
+    const dateTime = document.getElementById('res-pickup-datetime')?.value;
+
+    if (!departure || !destination || !dateTime) {
+        console.warn('[WEATHER] Missing fields for dual forecast');
+        return;
+    }
+
+    try {
+        // Fetch both in parallel
+        const [depWeather, destWeather] = await Promise.all([
+            fetchWeatherForLocation(departure, dateTime),
+            fetchWeatherForLocation(destination, dateTime)
         ]);
 
         if (depWeather && destWeather) {
@@ -2680,6 +2752,31 @@ function populateDataList() {
 
 // 1. Geocoding (Address -> Lat/Lon) via Nominatim
 async function getCoordinates(query) {
+    // SPECIAL CASES: Europa-Park and Rulantica (Rust, Germany)
+    const lowerQuery = query.toLowerCase();
+    if (lowerQuery.includes('europa-park') || lowerQuery.includes('europapark')) {
+        console.log('[GPS] Using hardcoded coordinates for Europa-Park');
+        return {
+            lat: 48.2687,
+            lon: 7.7214,
+            display_name: 'Europa-Park Haupteingang, Europa-Park-Straße 2, Rust, Baden-Württemberg, Deutschland',
+            pretty_name: 'Europa-Park',
+            address: { city: 'Rust', country: 'Germany' },
+            type: 'tourism'
+        };
+    }
+    if (lowerQuery.includes('rulantica')) {
+        console.log('[GPS] Using hardcoded coordinates for Rulantica');
+        return {
+            lat: 48.2606,
+            lon: 7.7275,
+            display_name: 'Rulantica, Roland-Mack-Ring 1, Rust, Baden-Württemberg, Deutschland',
+            pretty_name: 'Rulantica',
+            address: { city: 'Rust', country: 'Germany' },
+            type: 'tourism'
+        };
+    }
+
     // START FIX: Clean query of suffixes like (QG) or (Rust, DE) etc.
     // This allows "Baltzenheim (QG), France" -> "Baltzenheim, France" which works.
     const cleanQuery = query.replace(/\s*\(.*?\)/g, '').trim();
@@ -2791,13 +2888,47 @@ async function getRoadDistanceWithStep(startCoords, stepCoords, endCoords) {
     return null;
 }
 
+// UI HELPERS FOR SWAP & STOPOVER
+function swapLocations() {
+    const departureInput = document.getElementById('sim-departure');
+    const destinationInput = document.getElementById('sim-destination');
+
+    if (departureInput && destinationInput) {
+        const temp = departureInput.value;
+        departureInput.value = destinationInput.value;
+        destinationInput.value = temp;
+
+        // Re-calculate
+        calculateTrajectory();
+
+        // Vocal confirmation
+        speak("Trajet permuté.");
+    }
+}
+
+function showStopoverField() {
+    const divStopover = document.getElementById('div-stopover');
+    const btnAddStop = document.getElementById('btn-sim-add-stop');
+
+    if (divStopover) {
+        divStopover.classList.remove('hidden');
+        if (btnAddStop) btnAddStop.classList.add('hidden');
+
+        // Scroll to it
+        divStopover.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        speak("Etape ajoutée au formulaire.");
+    }
+}
+
 // UI HELPERS FOR STOPOVER
 function addStopover(name) {
     const divStopover = document.getElementById('div-stopover');
     const inputStopover = document.getElementById('sim-stopover');
+    const btnAddStop = document.getElementById('btn-sim-add-stop');
 
     if (divStopover && inputStopover) {
         divStopover.classList.remove('hidden');
+        if (btnAddStop) btnAddStop.classList.add('hidden');
         inputStopover.value = name;
         // Trigger calculation
         calculateTrajectory();
@@ -2810,9 +2941,13 @@ function addStopover(name) {
 function removeStopover() {
     const divStopover = document.getElementById('div-stopover');
     const inputStopover = document.getElementById('sim-stopover');
+    const btnAddStop = document.getElementById('btn-sim-add-stop');
 
     if (divStopover && inputStopover) {
         divStopover.classList.add('hidden');
+        if (btnAddStop && document.getElementById('sim-result') && !document.getElementById('sim-result').classList.contains('hidden')) {
+            btnAddStop.classList.remove('hidden');
+        }
         inputStopover.value = "";
         calculateTrajectory();
     }
@@ -2948,6 +3083,24 @@ async function calculateTrajectory() {
             return; // STOP execution
         }
 
+        // --- REGULATORY CHECK (Departure MUST be in France) ---
+        // We check address.country_code or display_name for "France"
+        const isStartInFrance = (startCoords.address && (startCoords.address.country_code === 'fr' || startCoords.address.country === 'France')) ||
+            startCoords.display_name.toLowerCase().includes('france');
+
+        if (!isStartInFrance) {
+            console.warn("[REGULATION] Departure outside France blocked:", startCoords.display_name);
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `
+                <div class="text-neon-red font-bold animate-pulse">⚠️ DÉPART HORS FRANCE INTERDIT</div>
+                <div class="text-xs text-slate-300 mt-1">Conformément à la réglementation française, le point de départ doit être situé en France.</div>
+            `;
+            }
+            if (outputScreen) outputScreen.classList.remove('hidden');
+            speak("Désolé, conformément à la réglementation, le point de départ doit impérativement être situé en France. Veuillez modifier votre lieu de départ.");
+            return; // STOP execution
+        }
+
         // --- SMART VOCAL COACH & PRECISION FEEDBACK ---
         // Analyze precision of the found location (City center vs Exact Address)
 
@@ -3057,20 +3210,52 @@ async function calculateTrajectory() {
         }
 
         // --- UPDATE MAP DISPLAY ---
+        // Use GPS coordinates instead of place names for Europa-Park and Rulantica to avoid wrong labels
+        let mapStartParam = proxyStart;
+        let mapEndParam = proxyEnd;
+
+        // Check if start or end is Europa-Park or Rulantica and use coordinates
+        if (proxyStart.toLowerCase().includes('europa-park') || proxyStart.toLowerCase().includes('europapark')) {
+            mapStartParam = '48.2687,7.7214'; // Europa-Park entrance GPS (exact entrance)
+        }
+        if (proxyEnd.toLowerCase().includes('europa-park') || proxyEnd.toLowerCase().includes('europapark')) {
+            mapEndParam = '48.2687,7.7214'; // Europa-Park entrance GPS (exact entrance)
+        }
+        if (proxyStart.toLowerCase().includes('rulantica')) {
+            mapStartParam = '48.2606,7.7275'; // Rulantica GPS (exact entrance)
+        }
+        if (proxyEnd.toLowerCase().includes('rulantica')) {
+            mapEndParam = '48.2606,7.7275'; // Rulantica GPS (exact entrance)
+        }
+
         let mapsEmbedUrl = "";
         if (stopoverInput && !stopoverInput.parentElement.classList.contains('hidden') && stopoverInput.value.trim() !== "") {
             const proxyStep = cleanForProxy(stopoverInput.value.trim());
             // ADVANCED SYNC: use "saddr", "daddr" and "+to:" to force the visual route through the waypoint.
             // This ensures the visual line matches the backend calculation.
-            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(proxyStart)}&daddr=${encodeURIComponent(proxyEnd)}+to:${encodeURIComponent(proxyStep)}&hl=fr&output=embed`;
+            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(mapStartParam)}&daddr=${encodeURIComponent(mapEndParam)}+to:${encodeURIComponent(proxyStep)}&hl=fr&output=embed`;
         } else {
-            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(proxyStart)}&daddr=${encodeURIComponent(proxyEnd)}&hl=fr&output=embed`;
+            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(mapStartParam)}&daddr=${encodeURIComponent(mapEndParam)}&hl=fr&output=embed`;
         }
 
         if (mapFrame) {
             mapFrame.src = mapsEmbedUrl;
             mapFrame.onload = () => { if (mapOverlay) mapOverlay.classList.add('hidden'); };
         }
+
+        // --- SHOW QUICK ACTIONS (Swap & Stopover) ---
+        const quickActions = document.getElementById('sim-quick-actions');
+        const btnAddStop = document.getElementById('btn-sim-add-stop');
+        if (quickActions) {
+            quickActions.classList.remove('hidden');
+            // Show "Add Stop" only if field is hidden
+            if (btnAddStop && stopoverInput && stopoverInput.parentElement.classList.contains('hidden')) {
+                btnAddStop.classList.remove('hidden');
+            } else if (btnAddStop) {
+                btnAddStop.classList.add('hidden');
+            }
+        }
+
 
         if (routeData) {
             tripDist = routeData.distKm;
@@ -3781,7 +3966,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 1. Fetch Request/Reservation Logic
                 if (typeof window.fetchBothWeatherForecasts === 'function') {
+                    console.log('[WEATHER] Calling fetchBothWeatherForecasts()...');
                     window.fetchBothWeatherForecasts();
+                } else {
+                    console.error('[WEATHER] fetchBothWeatherForecasts is NOT a function');
                 }
 
                 // 2. Update Main Dashboard (Visual Sync)
@@ -4986,14 +5174,19 @@ function initFlatpickr() {
         disableMobile: "true", // Force custom theme on mobile
         theme: "dark",
         onChange: function (selectedDates, dateStr, instance) {
-            // If this is the pickup datetime field, SHOW BUTTON instead of auto-fetch
+            // If this is the pickup datetime field, AUTO-FETCH weather
             if (instance.element.id === 'res-pickup-datetime' && selectedDates.length > 0) {
                 console.log('[FLATPICKR] Pickup date/time selected:', dateStr);
 
-                const btnContainer = document.getElementById('container-validate-datetime');
-                if (btnContainer) {
-                    btnContainer.classList.remove('hidden');
-                    speak("Horaire enregistré. Veuillez valider pour synchroniser la météo.");
+                // Brief confirmation (will queue if speech is active)
+                speak("Horaire enregistré.");
+
+                // Auto-trigger weather check
+                if (typeof window.checkAndTriggerWeather === 'function') {
+                    console.log('[FLATPICKR] Calling checkAndTriggerWeather()');
+                    window.checkAndTriggerWeather();
+                } else {
+                    console.error('[FLATPICKR] checkAndTriggerWeather not available');
                 }
             }
         }
@@ -5009,6 +5202,7 @@ function initWeatherValidation() {
     if (!btn || !input) return;
 
     btn.addEventListener('click', () => {
+        console.log('[WEATHER] Button clicked');
         // 1. Hide Button immediately
         if (container) container.classList.add('hidden');
 
@@ -5016,7 +5210,7 @@ function initWeatherValidation() {
         speak("Synchronisation météo en cours...");
 
         // 3. Trigger Original Logic (dispatch change event)
-        // This leverages the existing logic that was previously auto-triggered
+        console.log('[WEATHER] Dispatching change event on input');
         input.dispatchEvent(new Event('change'));
     });
 }
@@ -6843,3 +7037,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
+// Initialisation des nouveaux boutons du simulateur
+document.addEventListener('DOMContentLoaded', () => {
+    const btnSwap = document.getElementById('btn-sim-swap');
+    if (btnSwap) btnSwap.addEventListener('click', swapLocations);
+
+    const btnAddStop = document.getElementById('btn-sim-add-stop');
+    if (btnAddStop) btnAddStop.addEventListener('click', showStopoverField);
+});

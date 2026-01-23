@@ -6,14 +6,14 @@ const API_CONFIG = {
     // Créer clé sur: https://console.cloud.google.com/apis/credentials
     googleVision: {
         enabled: false, // Désactivé - utilisation des légendes manuelles
-        apiKey: 'AIzaSyBDuGjWRmqWD57lsjp9uziWKuY0MuXTRgs',
+        apiKey: 'YOUR_GOOGLE_VISION_API_KEY',
         endpoint: 'https://vision.googleapis.com/v1/images:annotate'
     },
 
     // YouTube Data API v3 (pour recherche de musique)
     // Créer clé sur: https://console.cloud.google.com/apis/credentials
     youtube: {
-        apiKey: 'AIzaSyBDuGjWRmqWD57lsjp9uziWKuY0MuXTRgs',
+        apiKey: 'YOUR_YOUTUBE_API_KEY',
         searchEndpoint: 'https://www.googleapis.com/youtube/v3/search'
     }
 };

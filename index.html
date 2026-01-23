@@ -1576,6 +1576,19 @@
                             </div>
                         </div>
 
+                        <!-- ACTIONS (SWAP & STOPOVER) - Visible after first calculation -->
+                        <div id="sim-quick-actions"
+                            class="hidden col-span-full flex flex-wrap justify-center gap-4 mt-2 mb-2">
+                            <button id="btn-sim-swap" type="button"
+                                class="flex items-center gap-2 px-6 py-2 bg-black/40 border border-neon-blue rounded text-neon-blue font-future text-[10px] tracking-widest hover:bg-neon-blue hover:text-black transition-all shadow-[0_0_10px_rgba(0,212,255,0.2)]">
+                                🔁 PERMUTER
+                            </button>
+                            <button id="btn-sim-add-stop" type="button"
+                                class="flex items-center gap-2 px-6 py-2 bg-black/40 border border-neon-green rounded text-neon-green font-future text-[10px] tracking-widest hover:bg-neon-green hover:text-black transition-all shadow-[0_0_10px_rgba(184,255,0,0.2)]">
+                                ➕ AJOUTER ÉTAPE
+                            </button>
+                        </div>
+
                         <!-- STOPOVER (HIDDEN BY DEFAULT) -->
                         <div id="div-stopover" class="hidden space-y-2 animate-fade-in-up">
                             <label
@@ -1860,13 +1873,7 @@
                             </div>
                         </div>
 
-                        <!-- WEATHER VALIDATION BUTTON (Hidden by default) -->
-                        <div id="container-validate-datetime" class="hidden col-span-full mt-4 flex justify-center">
-                            <button id="btn-validate-datetime" type="button"
-                                class="px-6 py-2 bg-black/60 border border-neon-blue rounded text-neon-blue font-future text-xs tracking-widest hover:bg-neon-blue hover:text-black transition-all shadow-[0_0_15px_rgba(0,212,255,0.3)] animate-pulse">
-                                ACTIVER LES CAPTEURS MÉTÉO
-                            </button>
-                        </div>
+
 
                         <!-- WEATHER SUMMARY (Hidden by default, shown when date selected) -->
                         <div id="res-weather-summary"
@@ -2543,7 +2550,7 @@
 
     <!-- Scripts -->
     <!-- API Config -->
-    <script src="config.js"></script>
+    <script src="config.local.js"></script>
 
     <!-- YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
