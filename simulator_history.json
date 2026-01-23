@@ -1,0 +1,12 @@
+{
+  "routes": {
+    "Baltzenheim|Marckolsheim": {
+      "dist_km": 6,
+      "duration_min": 10,
+      "date": "2026-01-22T23:05:00.000Z"
+    }
+  },
+  "quota": {
+    "2026-01": 40
+  }
+}

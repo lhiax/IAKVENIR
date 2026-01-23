@@ -2,7 +2,6 @@
 /**
  * iA_k_venir - MAIN SCRIPT (Clean Build)
  */
-
 /* =========================================
    DATA SECTION
    ========================================= */
@@ -114,7 +113,7 @@ const DEALS = [
         validity: "TOUTE L'ANNÉE",
         color: "#ff9d00", // Gold
         url: "https://www.etoiles-alsace.com/nos-formules/",
-        kitt_script: "Attention aux miettes, Michael. Ces établissements sont prestigieux."
+        kitt_script: "Ces établissements sont prestigieux. Profitez bien de cette expérience gastronomique."
     },
     {
         id: "PAUSE-COLMAR",
@@ -144,7 +143,7 @@ const DEALS = [
         validity: "EXCLUSIF",
         color: "#000000", // Black
         url: "https://cadeauxbarriere.com/products/menu-gourmand-et-casino-ribeauville",
-        kitt_script: "Accès accrédité niveau Omega. Faites vos jeux, Michael.",
+        kitt_script: "Accès accrédité niveau Omega. Faites vos jeux.",
         admin: true,
         blocked: true
     },
@@ -239,7 +238,7 @@ const TRANSLATIONS = {
     fr: {
         flag: "🇫🇷",
         label: "FR",
-        welcome: "Bonjour Michael. Je suis prêt.",
+        welcome: "Bonjour. Je suis prêt.",
         sim_title: "SIMULATEUR DE MISSION",
         dept_placeholder: "Ex: 1 Rue Principale, Artzenheim",
         dest_placeholder: "Ex: Gare de Colmar",
@@ -248,12 +247,24 @@ const TRANSLATIONS = {
         price_label: "ESTIMATION DU COÛT",
         dist_label: "DISTANCE",
         dur_label: "DURÉE",
-        voice_intro: "Systèmes en ligne. Je suis prêt à vous conduire."
+        voice_intro: "Systèmes en ligne. Je suis prêt à vous conduire.",
+        recap_generated: "_ORDRE DE MISSION GÉNÉRÉ.",
+        contact: "[CONTACT]",
+        mission: "[MISSION]",
+        config: "[CONFIG]",
+        finance: "[FINANCE]",
+        doc_ready: "_DOCUMENT CERTIFIÉ PRÊT.",
+        recap_vocal: "Dossier complet pour {prenom}. Le Bon de Réservation a été édité avec photo et détails légaux. Envoyez ce document au QG immédiatement. Terminé.",
+        pdf_title: "BON DE RÉSERVATION",
+        pdf_page: "Page",
+        pdf_auto_gen: "Document généré automatiquement via Neural Link",
+        pdf_weather_vocal: "Conditions météo pour votre trajet. Au départ: {depTemp} degrés. À l'arrivée: {destTemp} degrés.",
+        quota_warning: "Attention. Votre quota quotidien de calculs précis est atteint. J'utilise un protocole d'estimation secondaire, moins précis. Veuillez patienter."
     },
     de: {
         flag: "🇩🇪",
         label: "DE",
-        welcome: "Hallo Michael. Systeme bereit.",
+        welcome: "Hallo. Systeme bereit.",
         sim_title: "MISSION SIMULATOR",
         dept_placeholder: "Bsp: 1 Rue Principale, Artzenheim",
         dest_placeholder: "Bsp: Bahnhof Colmar",
@@ -262,12 +273,24 @@ const TRANSLATIONS = {
         price_label: "KOSTENVORANSCHLAG",
         dist_label: "ENTFERNUNG",
         dur_label: "DAUER",
-        voice_intro: "Alle Systeme online. Ich bin bereit."
+        voice_intro: "Alle Systeme online. Ich bin bereit.",
+        recap_generated: "_MISSIONSBEFEHL GENERIERT.",
+        contact: "[KONTAKT]",
+        mission: "[MISSION]",
+        config: "[KONFIG]",
+        finance: "[FINANZEN]",
+        doc_ready: "_DOKUMENT ZERTIFIZIERT UND BEREIT.",
+        recap_vocal: "Akte vollständig für {prenom}. Die Reservierungsbestätigung wurde mit Foto und rechtlichen Details erstellt. Senden Sie dieses Dokument sofort an das Hauptquartier. Ende.",
+        pdf_title: "RESERVIERUNGSBESTÄTIGUNG",
+        pdf_page: "Seite",
+        pdf_auto_gen: "Dokument automatisch generiert via Neural Link",
+        pdf_weather_vocal: "Wetterbedingungen für Ihre Reise. Am Start: {depTemp} Grad. Bei der Ankunft: {destTemp} Grad.",
+        quota_warning: "Handlung erforderlich. Ihr tägliches Kontingent für präzise Berechnungen ist erreicht. Ich verwende ein sekundäres Schätzprotokoll, das weniger genau ist."
     },
     en: {
         flag: "🇬🇧",
         label: "EN",
-        welcome: "Hello Michael. I am ready.",
+        welcome: "Hello. I am ready.",
         sim_title: "MISSION SIMULATOR",
         dept_placeholder: "Ex: 1 Rue Principale, Artzenheim",
         dest_placeholder: "Ex: Colmar Station",
@@ -276,7 +299,19 @@ const TRANSLATIONS = {
         price_label: "ESTIMATED COST",
         dist_label: "DISTANCE",
         dur_label: "DURATION",
-        voice_intro: "Systems online. I am ready to drive."
+        voice_intro: "Systems online. I am ready to drive.",
+        recap_generated: "_MISSION ORDER GENERATED.",
+        contact: "[CONTACT]",
+        mission: "[MISSION]",
+        config: "[CONFIG]",
+        finance: "[FINANCE]",
+        doc_ready: "_DOCUMENT CERTIFIED READY.",
+        recap_vocal: "File complete for {prenom}. The Reservation Voucher has been edited with photo and legal details. Send this document to HQ immediately. Over.",
+        pdf_title: "RESERVATION VOUCHER",
+        pdf_page: "Page",
+        pdf_auto_gen: "Document automatically generated via Neural Link",
+        pdf_weather_vocal: "Weather conditions for your trip. At departure: {depTemp} degrees. On arrival: {destTemp} degrees.",
+        quota_warning: "Attention. Your daily quota for precise calculations has been reached. I am switching to a secondary estimation protocol, which is less accurate."
     }
 };
 
@@ -307,10 +342,47 @@ window.setLanguage = (lang) => {
     // Note: To do this properly, we need to add 'data-i18n' to HTML elements.
     // But for now, let's just confirm the switch triggers and KITT speaks.
 
-    // Vocal Confirmation
+    // Vocal Confirmation with personalized name
     let greeting = TRANSLATIONS[lang].welcome;
+    const userName = getUserName();
+    if (userName) {
+        // Personalize greeting with user's name
+        if (lang === 'fr') greeting = `Bonjour ${userName}. Je suis prêt.`;
+        else if (lang === 'de') greeting = `Hallo ${userName}. Systeme bereit.`;
+        else if (lang === 'en') greeting = `Hello ${userName}. I am ready.`;
+    }
     speak(greeting, true); // Force speak
 };
+
+/* =========================================
+   USER NAME MANAGEMENT
+   ========================================= */
+function getUserName() {
+    // Try to get name from hero form first
+    const heroPrenom = document.getElementById('hero-prenom');
+    if (heroPrenom && heroPrenom.value.trim()) {
+        return heroPrenom.value.trim();
+    }
+
+    // Try reservation form
+    const resPrenom = document.getElementById('res-prenom');
+    if (resPrenom && resPrenom.value.trim()) {
+        return resPrenom.value.trim();
+    }
+
+    // No name found
+    return null;
+}
+
+function getUserEmail() {
+    const heroEmail = document.getElementById('hero-email');
+    if (heroEmail && heroEmail.value.trim()) return heroEmail.value.trim();
+
+    const resEmail = document.getElementById('res-email');
+    if (resEmail && resEmail.value.trim()) return resEmail.value.trim();
+
+    return 'anonymous';
+}
 
 // Initialize Language on Load
 document.addEventListener('DOMContentLoaded', () => {
@@ -470,15 +542,21 @@ function playRadio(ambianceKey) {
 
 function pauseRadio() {
     isDucked = true;
-    if (audioPlayer) audioPlayer.pause();
+    // Pause completely for clearer voice
+    if (audioPlayer && !audioPlayer.paused) {
+        audioPlayer.pause();
+        console.log('[AUDIO] Radio paused for voice');
+    }
     if (audioTimeout) clearTimeout(audioTimeout);
 }
 
 function resumeRadio() {
     isDucked = false;
-    if (isRadioActive && audioPlayer.src) {
-        // Resume playback
-        audioPlayer.play().catch(e => console.log("Resume prevented:", e));
+    // Resume playback if radio was active
+    if (isRadioActive && audioPlayer.src && audioPlayer.paused) {
+        audioPlayer.play()
+            .then(() => console.log('[AUDIO] Radio resumed after voice'))
+            .catch(e => console.log('[AUDIO] Resume prevented:', e));
     }
 }
 
@@ -570,6 +648,23 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`[AUDIO] GainNode synced with slider: ${currentVal}%`);
     };
 });
+
+window.playSound = function (id, loop = false) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.loop = loop;
+        el.currentTime = 0;
+        el.play().catch(e => console.warn(`[SOUND] Playback failed for ${id}:`, e));
+    }
+};
+
+window.stopSound = function (id) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.pause();
+        el.currentTime = 0;
+    }
+};
 
 /* =========================================
    VOICE ENGINE
@@ -2219,11 +2314,6 @@ function resolveLocation(inputName) {
         .replace(/-/g, " ").replace(/'/g, " ");
 
     const aliases = {
-        "baltzenheim": "neuf-brisach",
-        "artzenheim": "neuf-brisach",
-        "kunheim": "neuf-brisach",
-        "biesheim": "neuf-brisach",
-        "marckolsheim": "neuf-brisach",
         "gare de colmar": "colmar",
         "aerodrome de colmar": "colmar",
         "gare de selestat": "selestat",
@@ -2232,14 +2322,12 @@ function resolveLocation(inputName) {
         "chateau du haut koenigsbourg": "haut_koenigsbourg",
         "chateau du haut konigsbourg": "haut_koenigsbourg",
         "koenigsbourg": "haut_koenigsbourg",
-        "kintzheim": "kintzheim",
         "gare de strasbourg": "strasbourg",
         "aeroport strasbourg": "strasbourg",
-        "obernai": "strasbourg",
-        "mont sainte odile": "strasbourg",
-        "ungersheim": "mulhouse",
-        "vœgtlinshoffen": "voegtlinshoffen",
-        "voegtlinshoffen": "voegtlinshoffen"
+        "aeroport entzheim": "strasbourg",
+        "euroairport": "euroairport",
+        "diners insolites": "visit-alsace",
+        "etoiles d alsace": "etoiles-alsace"
     };
 
     // 1. Check Alias
@@ -2554,6 +2642,7 @@ function suggestPOIs(destination, tripDate = null, distKm = null) {
 
 // GLOBAL COORDINATE CACHE (To ensure 100% calculation accuracy)
 const COORD_CACHE = {};
+const HQ_COORDS = { lat: 48.0937, lon: 7.5537, name: "Baltzenheim (QG)" };
 
 function initPricing() {
     const departureInput = document.getElementById('sim-departure');
@@ -2596,9 +2685,10 @@ async function getCoordinates(query) {
     const cleanQuery = query.replace(/\s*\(.*?\)/g, '').trim();
 
     try {
-        // Use viewbox to bias results towards Alsace (approx coordinates)
-        const viewbox = "6.8,49.1,8.3,47.3"; // Longitude/Latitude bounds for Alsace
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&viewbox=${viewbox}&bounded=0&limit=1&addressdetails=1`;
+        // Bias towards Alsace only for short queries. If query looks like a major city/country, use global search.
+        const isMajorSearch = cleanQuery.length > 10 || cleanQuery.toLowerCase().includes('paris') || cleanQuery.toLowerCase().includes('strasbourg') || cleanQuery.toLowerCase().includes('airport');
+        const viewbox = "6.8,49.1,8.3,47.3";
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&viewbox=${isMajorSearch ? '' : viewbox}&bounded=0&limit=1&addressdetails=1`;
         const resp = await fetch(url);
         const data = await resp.json();
         if (data && data.length > 0) {
@@ -2627,11 +2717,15 @@ async function getCoordinates(query) {
 }
 
 // 2. Routing (Lat/Lon -> Real Road Dist) via OSRM
-// 2-POINT ROUTING
 async function getRoadDistance(startCoords, endCoords) {
     try {
-        // OSRM Public Server (Demo)
-        const url = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${endCoords.lon},${endCoords.lat}?overview=false`;
+        // Fallback to coordinates if labels are passed (should be objects with lat/lon)
+        const sLat = startCoords.lat;
+        const sLon = startCoords.lon;
+        const eLat = endCoords.lat;
+        const eLon = endCoords.lon;
+
+        const url = `https://router.project-osrm.org/route/v1/driving/${sLon},${sLat};${eLon},${eLat}?overview=false`;
         const resp = await fetch(url);
         const data = await resp.json();
 
@@ -2639,14 +2733,12 @@ async function getRoadDistance(startCoords, endCoords) {
             const distMeters = data.routes[0].distance;
             const durationSeconds = data.routes[0].duration;
             return {
-                distKm: Math.ceil(distMeters / 1000), // Ceil for profitability
+                distKm: Math.ceil(distMeters / 1000),
                 durationMin: Math.round(durationSeconds / 60)
             };
-        } else {
-            console.warn("OSRM Response Not OK:", data);
         }
     } catch (e) {
-        console.error("Routing Error (OSRM)", e);
+        console.error("OSRM Routing Error", e);
     }
     return null;
 }
@@ -2654,16 +2746,42 @@ async function getRoadDistance(startCoords, endCoords) {
 // 3-POINT ROUTING (Start -> Step -> End)
 async function getRoadDistanceWithStep(startCoords, stepCoords, endCoords) {
     try {
-        const url = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${stepCoords.lon},${stepCoords.lat};${endCoords.lon},${endCoords.lat}?overview=false`;
-        const resp = await fetch(url);
-        const data = await resp.json();
+        // 1. Try our Server Proxy (Google Maps)
+        // We'll pass points as semicolon separated lat,lon
+        const points = `${startCoords.lat},${startCoords.lon};${stepCoords.lat},${stepCoords.lon};${endCoords.lat},${endCoords.lon}`;
+        const userIdentifier = getUserEmail();
 
-        if (data && data.code === 'Ok' && data.routes && data.routes.length > 0) {
-            const distMeters = data.routes[0].distance;
-            const durationSeconds = data.routes[0].duration;
-            // 3-Point Route
+        const resp = await fetch(`/api/route?points=${encodeURIComponent(points)}&user=${encodeURIComponent(userIdentifier)}`);
+
+        if (resp.ok) {
+            const data = await resp.json();
             return {
-                distKm: Math.ceil(distMeters / 1000), // Ceil for profitability
+                distKm: data.distKm,
+                durationMin: data.durationMin
+            };
+        }
+
+        if (resp.status === 429) {
+            const data = await resp.json();
+            if (data.error === 'User Quota Reached') {
+                const lang = currentLanguage || 'fr';
+                const t = TRANSLATIONS[lang] || TRANSLATIONS.fr;
+                if (window.speak) speak(t.quota_warning);
+            }
+        }
+
+        console.warn("[ROUTE-3] Proxy failed, trying OSRM...");
+
+        // 2. Fallback to OSRM
+        const url = `https://router.project-osrm.org/route/v1/driving/${startCoords.lon},${startCoords.lat};${stepCoords.lon},${stepCoords.lat};${endCoords.lon},${endCoords.lat}?overview=false`;
+        const osrmResp = await fetch(url);
+        const osrmData = await osrmResp.json();
+
+        if (osrmData && osrmData.code === 'Ok' && osrmData.routes && osrmData.routes.length > 0) {
+            const distMeters = osrmData.routes[0].distance;
+            const durationSeconds = osrmData.routes[0].duration;
+            return {
+                distKm: Math.ceil(distMeters / 1000),
                 durationMin: Math.round(durationSeconds / 60)
             };
         }
@@ -2757,6 +2875,12 @@ async function calculateTrajectory() {
         if (!finalEnd.toLowerCase().includes('france') && !finalEnd.toLowerCase().includes('germany') && !finalEnd.toLowerCase().includes('suisse')) {
             finalEnd += ", France";
         }
+
+        // --- NEW: CLEAN STRINGS FOR PROXY ---
+        // We clean the text for Google Maps but keep the full one for display logic if needed.
+        const cleanForProxy = (str) => str.replace(/\(.*\)/, '').trim();
+        const proxyStart = cleanForProxy(finalStart);
+        const proxyEnd = cleanForProxy(finalEnd);
 
         // INTELLIGENT ZIP CODE INJECTION (Fix for "4 Eguisheim" -> "4 Eguisheim, 68420, France")
         // If we resolved a key (e.g. 'eguisheim') and we have data for it, let's look up its ZIP.
@@ -2880,7 +3004,7 @@ async function calculateTrajectory() {
 
         // KITT SCANNER SOUND & VISUALS
         playSound('audio-scanner');
-        playSound('audio-processing', true);
+        // playSound('audio-processing', true);
 
         // VOCAL FEEDBACK (The Coach)
         // Only speak the "Coach" advice if it's low precision, OR if it's high precision confirming it.
@@ -2909,293 +3033,143 @@ async function calculateTrajectory() {
 
 
 
-        if (startCoords && endCoords) {
-            // CHECK FOR STOPOVER
-            const stopoverInput = document.getElementById('sim-stopover');
-            let stopoverCoords = null;
-            if (stopoverInput && !stopoverInput.parentElement.classList.contains('hidden') && stopoverInput.value.trim() !== "") {
-                stopoverCoords = await getCoordinates(stopoverInput.value.trim());
-                console.log("GPS: Step detected ->", stopoverCoords);
-            }
+        // NEW: Use Text-Based Routing for perfect synchronization with Google Maps Iframe
+        const stopoverInput = document.getElementById('sim-stopover');
+        let routeData = null;
+        let approachData = null;
 
-            // Attempt OSRM
-            let routeData = null;
-            if (stopoverCoords) {
-                // 3-Point Route
-                routeData = await getRoadDistanceWithStep(startCoords, stopoverCoords, endCoords);
+        // 1. Calculate Approach from HQ to Pickup
+        approachData = await getRoadDistance(HQ_COORDS, startCoords);
+        const approachDist = approachData ? approachData.distKm : 0;
+
+        // 2. Calculate Main Trip
+        if (stopoverInput && !stopoverInput.parentElement.classList.contains('hidden') && stopoverInput.value.trim() !== "") {
+            const proxyStep = cleanForProxy(stopoverInput.value.trim());
+            // Need coords for stopover for OSRM
+            const stepCoords = await getCoordinates(proxyStep);
+            if (stepCoords) {
+                routeData = await getRoadDistanceWithStep(startCoords, stepCoords, endCoords);
             } else {
-                // Classic 2-Point Route
                 routeData = await getRoadDistance(startCoords, endCoords);
             }
-
-            if (routeData) {
-                tripDist = routeData.distKm;
-                duration = routeData.durationMin;
-                isSuccess = true;
-            } else {
-                // FALLBACK: Haversine
-                console.warn("Routing Failed - Using Haversine Fallback");
-                const R = 6371; // Earth Mean Radius in km
-                const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
-                const dLon = (endCoords.lon - startCoords.lon) * Math.PI / 180;
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-                tripDist = Math.round((R * c) * 1.3); // +30% for road approximation
-                duration = Math.round(tripDist * 1.2); // ~50km/h avg speed
-                isSuccess = true;
-
-                if (detailDisplay) {
-                    // Append warning, don't overwrite address display
-                    const oldHTML = detailDisplay.innerHTML;
-                    detailDisplay.innerHTML = oldHTML + `<div class="text-[10px] text-neon-blue mt-2 animate-pulse">⚠️ ROUTAGE SATELLITE HORS LIGNE. ESTIMATION VOL D'OISEAU.</div>`;
-                }
-            }
+        } else {
+            routeData = await getRoadDistance(startCoords, endCoords);
         }
 
-        // Fallback if APIs fail (e.g. rate limit): Use Heuristic
-        if (!isSuccess) {
-            console.warn("API Fail - Using Fallback");
-
-            // Helper: Find known location in string (Fuzzy Match with Normalization)
-            const normalizeStr = (str) => {
-                return str.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
-                    .replace(/[^a-z0-9]/g, ""); // Keep only alphanumeric
-            };
-
-            const findKnownLocation = (inputStr) => {
-                if (!inputStr) return null;
-                const cleanInput = normalizeStr(inputStr);
-
-                // 1. Try exact match (cleaned)
-                for (const [name, data] of Object.entries(LOCATION_DATA)) {
-                    if (cleanInput === normalizeStr(name)) return data;
-                    // Also check against ID
-                    if (cleanInput === normalizeStr(data.id)) return data;
-                }
-
-                // 2. Try partial match (contains city name)
-                const knownNames = Object.keys(LOCATION_DATA).sort((a, b) => b.length - a.length);
-                for (const name of knownNames) {
-                    const cleanName = normalizeStr(name);
-                    if (cleanInput.includes(cleanName)) {
-                        return LOCATION_DATA[name];
-                    }
-                    // Also check specific replacements like "ecomusee" manually if needed
-                    if (normalizeStr(LOCATION_DATA[name].name).includes(cleanInput)) return LOCATION_DATA[name];
-                }
-                return null;
-            };
-
-            const depData = findKnownLocation(startLoc) || findKnownLocation(departureInput.value);
-            const destData = findKnownLocation(endLoc) || findKnownLocation(destinationInput.value);
-
-            if (depData && destData) {
-                // STRICT RULE: Only use hardcoded distances if starting or ending at HQ (Baltzenheim)
-                // Lateral trips (e.g. Sélestat -> Guebwiller) MUST use OSRM/Satellite to be accurate.
-                if (depData.id === 'baltzenheim') {
-                    tripDist = destData.dist;
-                    isSuccess = true;
-                } else if (destData.id === 'baltzenheim') {
-                    tripDist = depData.dist;
-                    isSuccess = true;
-                } else {
-                    // Lateral Trip (e.g. Ribeauvillé -> Eguisheim)
-                    // OSRM should have already calculated this above.
-                    // If OSRM failed, Haversine fallback was used.
-                    // If both failed, isSuccess is still false and we'll show an error below.
-                    console.log("Lateral trip - relying on OSRM/Haversine calculation above");
-                }
-
-                // Only show city-based estimate message if we used hardcoded data
-                if ((depData.id === 'baltzenheim' || destData.id === 'baltzenheim') && detailDisplay) {
-                    detailDisplay.innerHTML = `<div class="text-neon-blue animate-pulse">NOTE: ADRESSE EXACTE NON TROUVÉE VIA SATELLITE.<br>ESTIMATION BASÉE SUR LA VILLE : ${destData.name || depData.name}</div>`;
-                }
-
-                duration = Math.round(tripDist * 1.0);
-            }
+        // --- UPDATE MAP DISPLAY ---
+        let mapsEmbedUrl = "";
+        if (stopoverInput && !stopoverInput.parentElement.classList.contains('hidden') && stopoverInput.value.trim() !== "") {
+            const proxyStep = cleanForProxy(stopoverInput.value.trim());
+            // ADVANCED SYNC: use "saddr", "daddr" and "+to:" to force the visual route through the waypoint.
+            // This ensures the visual line matches the backend calculation.
+            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(proxyStart)}&daddr=${encodeURIComponent(proxyEnd)}+to:${encodeURIComponent(proxyStep)}&hl=fr&output=embed`;
+        } else {
+            mapsEmbedUrl = `https://maps.google.com/maps?saddr=${encodeURIComponent(proxyStart)}&daddr=${encodeURIComponent(proxyEnd)}&hl=fr&output=embed`;
         }
-
-        // If still no success, show error
-        if (!isSuccess || tripDist === 0) {
-            if (priceDisplay) priceDisplay.textContent = "Erreur";
-            if (distDisplay) distDisplay.textContent = "N/A";
-            if (durDisplay) durDisplay.textContent = "N/A";
-            if (detailDisplay) {
-                detailDisplay.innerHTML = `<div class="text-limit-red animate-pulse">⚠️ IMPOSSIBLE DE CALCULER L'ITINÉRAIRE.<br>Vérifiez les adresses ou réessayez.</div>`;
-            }
-            speak("Impossible de calculer l'itinéraire. Vérifiez les adresses saisies.");
-            return;
-        }
-
-        // Calculate Price
-        let nbPax = 1;
-        if (paxSelect && paxSelect.value) nbPax = parseInt(paxSelect.value, 10);
-
-        let finalPrice = 0;
-        const approachDist = Math.max(0, 0 - FREE_KM_LIMIT); // Essentially 0 now
-        // For now, assume Approach is 0 for simplicity unless we calc Baltzenheim -> Start.
-        // Let's keep Approach logic simple: If Start != Baltzenheim, we assume standard approach logic or ignored.
-        // Re-implementing basic approach fee if Start is far? 
-        // User asked "Simple calculation: KM * 2". Let's stick to that strictly as requested.
-
-        const totalDist = tripDist;
-        // Strict Formula: Distance * 2
-        // We calculate base here first to use in finalPrice logic below
-        let baseCalc = (totalDist > 0) ? (totalDist * 2) : 0;
-        finalPrice = baseCalc;
-
-        let dealText = "";
-
-        // Map Embed Update
-        const cleanForMaps = (str) => {
-            let clean = str.replace(/\(.*\)/, '').trim();
-            // Removed "Alsace, France" enforcement for 800km radius
-            if (clean.toLowerCase().includes('europa-park') || clean.toLowerCase().includes('rulantica')) return clean + ", Germany";
-            return clean;
-        };
-        // Update Map Embed
-        // STRATEGY:
-        // 1. Embed URL: Use legacy 'maps.google.com' which is often more permissive for non-API embeds than 'www.google.com'.
-        // 2. Link URL: Full "Satellite + Driving" mode for the external button (Always works).
-        const sAddr = encodeURIComponent(cleanForMaps(startLoc));
-        const dAddr = encodeURIComponent(cleanForMaps(endLoc));
-
-        // Legacy URL for Iframe (Higher success rate without Key)
-        // Added 'hl=fr' for French UI
-        let coachVisualFeedback = "";
-        // Use coachMsg from earlier scope
-        if (typeof coachMsg !== 'undefined' && coachMsg) {
-            console.log(`[PrecisionCoach] Speaking: "${coachMsg}"`);
-            // speak(coachMsg); // Already spoken earlier? Check if we want to repeat or just log.
-            // Earlier we did speak(coachMsg). So here we just generate visual.
-
-            // VISUAL DEBUG FEEDBACK
-            coachVisualFeedback = `
-            <div class="mt-2 mb-2 p-2 bg-blue-900/30 border border-blue-500/50 rounded text-[10px] text-cyan-200 font-mono flex items-start gap-2">
-                <span class="text-lg">🤖</span>
-                <span>${coachMsg}</span>
-            </div>
-        `;
-        }
-
-        const mapsEmbedUrl = `https://maps.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&hl=fr&output=embed`;
-
-        // Full URL for External Button (Standard Map + Driving)
-        const mapsLinkUrl = `https://www.google.com/maps?saddr=${sAddr}&daddr=${dAddr}&t=m&dirflg=d`;
 
         if (mapFrame) {
-            if (mapFrame.src !== mapsEmbedUrl) {
-                mapFrame.src = mapsEmbedUrl;
-                mapFrame.onload = () => {
-                    if (mapOverlay) mapOverlay.classList.add('hidden');
-                };
-            }
+            mapFrame.src = mapsEmbedUrl;
+            mapFrame.onload = () => { if (mapOverlay) mapOverlay.classList.add('hidden'); };
         }
 
-        // Deal Logic
-        if (currentDeal) {
-            if (currentDeal.id === "GASTRO-STAR") {
-                const supp = supplementInput && supplementInput.value ? parseFloat(supplementInput.value) : 0;
-                finalPrice += (supp * nbPax);
-                dealText = `<div class="text-neon-blue font-bold mt-2">✨ OPTION GASTRO : +${supp * nbPax}€</div>`;
-            } else if (currentDeal.id === "DEAL-KITT") {
-                finalPrice += (20 * nbPax);
-                dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : ACTIVÉ</div>`;
-            } else {
-                finalPrice += (20 * nbPax);
-                dealText = `<div class="text-neon-blue font-bold mt-2">⚡ PACK ${currentDeal.title} : +${20 * nbPax}€</div>`;
-            }
+        if (routeData) {
+            tripDist = routeData.distKm;
+            duration = routeData.durationMin;
+            isSuccess = true;
+        } else if (startCoords && endCoords) {
+            // FALLBACK: Haversine
+            console.warn("Routing Failed - Using Haversine Fallback");
+            const R = 6371;
+            const dLat = (endCoords.lat - startCoords.lat) * Math.PI / 180;
+            const dLon = (endCoords.lon - startCoords.lon) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(startCoords.lat * Math.PI / 180) * Math.cos(endCoords.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            tripDist = Math.round((R * c) * 1.35); // 1.35 for real road winding simulation
+            duration = Math.round(tripDist * 1.5); // Slower rural roads
+            isSuccess = true;
+            console.log(`[GPS] Haversine Fallback Triggered: ${tripDist}km (estimated)`);
         }
-
-        // STOP PROCESSING SOUND
-        stopSound('audio-processing');
 
         if (isSuccess) {
+            // --- PROFITABLE PRICING MODEL ---
+            // 1. Trip Distance: 2€ / km
+            const distFee = tripDist * 2;
+
+            // 2. Trip Duration: 0.50€ / min AFTER 40 min (ONLY if distFee < 40€)
+            const timeFee = (duration > 40 && distFee < 40) ? (duration - 40) * 0.5 : 0;
+
+            // 3. Approach Fee: 0.50€ / km (FREE within 8km of HQ)
+            const approachFee = approachDist > 8 ? (approachDist - 8) * 0.5 : 0;
+
+            // Total with Minimum of 20€
+            let finalPrice = Math.max(20, distFee + timeFee + approachFee);
+            finalPrice = Math.round(finalPrice); // Clean integer for display
+
+            let nbPax = paxSelect ? parseInt(paxSelect.value, 10) : 1;
+
             if (priceDisplay) priceDisplay.innerText = finalPrice;
-            if (detailDisplay) {
-                detailDisplay.innerHTML = `
-                <div class="flex justify-between border-b border-white/10 pb-1 mb-1 font-mono text-[10px]">
-                    <span>DE: ${startLoc}</span>
-                    <span>À: ${endLoc}</span>
-                </div>
-                <!-- OFFICIAL RECOGNITION (HIDDEN) -->
-                
-                ${coachVisualFeedback}
 
-                <div class="font-mono text-xs space-y-1">
-                    <div>DIST. RÉELLE : ${tripDist} KM (${nbPax} pers.)</div>
-                ${dealText}
-            `;
+            // Sync to Reservation Form
+            const resPickup = document.getElementById('res-pickup');
+            const resDrop = document.getElementById('res-drop');
+            const resPax = document.getElementById('res-pax');
+            const resDuration = document.getElementById('res-duration');
+            const resPriceEst = document.getElementById('res-price-est');
+            const resNotes = document.getElementById('res-notes');
 
-                // --- SYNC TO RESERVATION FORM ---
-                const resPickup = document.getElementById('res-pickup');
-                const resDrop = document.getElementById('res-drop');
-                const resPax = document.getElementById('res-pax');
-                const resDuration = document.getElementById('res-duration');
-                const resPriceEst = document.getElementById('res-price-est');
-                const resNotes = document.getElementById('res-notes');
+            if (resPickup) resPickup.value = startLoc;
+            if (resDrop) resDrop.value = endLoc;
+            if (resPax) resPax.value = nbPax;
+            if (resDuration) resDuration.value = `${duration} min`;
+            if (resPriceEst) resPriceEst.value = `${finalPrice} €`;
 
-                // Calculate Base Price (Sans Options)
-                // Strict "Google Maps * 2" Rule (User Request: "multiper les kilometres par 2")
-                const basePrice = (tripDist > 0) ? (tripDist * 2) : 0;
-
-                if (resPickup) resPickup.value = startLoc;
-                if (resDrop) resDrop.value = endLoc;
-                if (resPax) resPax.value = nbPax;
-                if (resDuration) resDuration.value = `${duration} min`;
-                if (resPriceEst) resPriceEst.value = `${basePrice} €`;
-
-                if (resNotes) {
-                    // Keep the final price in notes as it includes deals/options which is important for the estimate
-                    resNotes.value = `Estimation Trajet:\n- Distance: ${tripDist} km\n- Durée: ${duration} min\n- Prix Base: ${basePrice} €\n- Prix Final (avec options): ${finalPrice} €\n- Passagers: ${nbPax}\n\n(Données transmises par le simulateur)`;
-                }
-
-                // VOCALIZE FULL SUMMARY (Time, Distance, Price)
-                const vocalMsg = `Trajet de ${tripDist} kilomètres. Durée estimée à ${duration} minutes. Le coût est de ${finalPrice} euros.`;
-                speak(vocalMsg);
-
-                // Also update visual detail to be explicit
-                if (detailDisplay) {
-                    detailDisplay.innerHTML = `
-                        <div class="flex flex-col gap-1 p-2 border border-white/20 rounded bg-black/60 font-mono text-xs">
-                             <div class="text-neon-blue font-bold tracking-widest border-b border-white/20 pb-1 mb-1">RÉCAPITULATIF</div>
-                             <div class="flex justify-between"><span>DISTANCE:</span> <span class="text-white">${tripDist} km</span></div>
-                             <div class="flex justify-between"><span>DURÉE:</span> <span class="text-white">${duration} min</span></div>
-                             <div class="flex justify-between"><span>TARIF:</span> <span class="text-neon-green font-bold text-sm">${finalPrice} €</span></div>
-                        </div>
-                     `;
-                }
-
-                // TRIGGER SUGGESTIONS
-                // 5. Trigger Suggestions (POIs) - WITH DATE
-                const tripDate = document.getElementById('sim-date') ? document.getElementById('sim-date').value : null;
-                suggestPOIs(endLoc, tripDate, tripDist);
+            if (resNotes) {
+                resNotes.value = `Estimation Mission:\n- Distance: ${tripDist} km\n- Durée: ${duration} min\n- Approche: ${approachDist} km\n- Tarif: ${finalPrice} €\n- Passagers: ${nbPax}`;
             }
-        } else {
+
+            // VOCALIZE SUMMARY
+            const vocalMsg = `Mission confirmée. Distance : ${tripDist} kilomètres. Temps de parcours estimé : ${duration} minutes. Le tarif total incluant l'approche est de ${finalPrice} euros.`;
+            speak(vocalMsg);
+
+            // Update Details Panel (Right side)
             if (detailDisplay) {
                 detailDisplay.innerHTML = `
-                <div class="text-limit-red font-bold text-xs border border-limit-red/30 p-2 rounded">
-                    ⚠️ ERREUR DE KALCUL <br/>
-                    Impossible de déterminer la route exacte. Veuillez nous contacter.
-                </div>
-            `;
+                    <div class="flex flex-col gap-1 p-2 border border-neon-blue/30 rounded bg-black/60 font-mono text-xs">
+                        <div class="text-neon-blue font-bold tracking-widest border-b border-neon-blue/20 pb-1 mb-1">RÉCAPITULATIF SATELLITE</div>
+                        <div class="flex justify-between"><span>COURSE (${tripDist}km):</span> <span class="text-white">${tripDist * 2} €</span></div>
+                        <div class="flex justify-between"><span>APPROCHE (${approachDist}km):</span> <span class="text-white">${Math.round(approachFee)} €</span></div>
+                        ${timeFee > 0 ? `<div class="flex justify-between"><span>SUPPLÉMENT TEMPS:</span> <span class="text-white">${Math.round(timeFee)} €</span></div>` : ''}
+                        <div class="flex justify-between border-t border-white/10 mt-1 pt-1">
+                            <span class="text-neon-blue">TARIF TOTAL:</span> 
+                            <span class="text-neon-green font-bold text-sm">${finalPrice} €</span>
+                        </div>
+                        ${finalPrice <= 20 ? `<div class="text-[9px] text-gray-400 italic mt-1 text-center">(Tarif Minimum Appliqué)</div>` : ''}
+                    </div>
+                `;
+            }
+
+            // Trigger Suggestions
+            const tripDate = document.getElementById('sim-date') ? document.getElementById('sim-date').value : null;
+            suggestPOIs(endLoc, tripDate, tripDist);
+        } else {
+            console.error("Calculation failed.");
+            if (detailDisplay) {
+                detailDisplay.innerHTML = `<div class="text-limit-red font-bold p-2 border border-limit-red/30 rounded">⚠️ ÉCHEC DU CALCUL. Vérifiez la connexion satellite.</div>`;
             }
         }
-
     } catch (err) {
-        console.error("FATAL ERROR IN CALCULATION:", err);
-        if (typeof detailDisplay !== 'undefined' && detailDisplay) detailDisplay.innerHTML = `<div class="text-neon-red font-bold">⚠️ ERREUR CRITIQUE: ${err.message}</div>`;
-        speak("Une erreur critique est survenue.");
+        console.error("Simulation Error", err);
+        if (detailDisplay) detailDisplay.innerHTML = `<div class="text-neon-red font-bold">⚠️ ERREUR CRITIQUE.</div>`;
+        speak("Une erreur de calcul est survenue.");
+    } finally {
+        // ALWAYS STOP PROCESSING SOUND
+        // stopSound('audio-processing');
     }
 }
 
 
-/* =========================================
 /* =========================================
    RESERVATION & LEGAL
    ========================================= */
@@ -3210,7 +3184,7 @@ const AMBIANCE_PROTOCOLS = {
         label: "Silence (Furtif)"
     },
     "relax": {
-        response: "SomaFM Groove Salad sélectionnée. La référence du Downtempo depuis San Francisco. Détendez-vous, Michael, je gère la route.",
+        response: "SomaFM Groove Salad sélectionnée. La référence du Downtempo depuis San Francisco. Détendez-vous, je gère la route.",
         label: "SomaFM Groove (Lounge)"
     },
     "futuriste": {
@@ -3524,8 +3498,18 @@ class RhythmEngine {
         this.updateVisuals();
 
         // JS Pulse (Trigger Loop for other sharp elements if any)
+        // Clear any existing interval to avoid overlapping loops
+        // Reset beat counter before starting interval
+        this.beatCount = 0;
+        this.maxBeats = 0; // Set to 0 for infinite, or assign a positive number elsewhere to limit
+
         this.intervalId = setInterval(() => {
             this.triggerBeat(type);
+            // Optional: stop after a certain number of beats (e.g., 32) to prevent endless looping
+            if (this.maxBeats && ++this.beatCount >= this.maxBeats) {
+                this.stop();
+                console.log('[RHYTHM] Max beats reached, stopping rhythm');
+            }
         }, interval);
     }
 
@@ -3555,39 +3539,42 @@ const rhythmEngine = new RhythmEngine();
 
 
 function generateMissionRecap() {
-
-    let distanceText = "--";
+    const data = buildData();
     const detailsEl = document.getElementById('sim-details');
-    if (detailsEl && detailsEl.innerText.includes('DIST. RÉELLE')) {
-        const match = detailsEl.innerText.match(/DIST\. RÉELLE : (\d+)/);
+    let distanceText = "--";
+
+    if (detailsEl) {
+        const match = detailsEl.innerText.match(/DISTANCE.*: (\d+)/i);
         if (match) distanceText = match[1];
     }
 
-    const ambianceLabel = AMBIANCE_PROTOCOLS[sAmbianceVal] ? AMBIANCE_PROTOCOLS[sAmbianceVal].label : "Standard";
+    const priceEstEl = document.getElementById('res-price-est');
+    const priceText = priceEstEl ? priceEstEl.value.replace('€', '').trim() : "0";
 
-    // 1. CONCISE SUMMARY (Console)
+    const lang = currentLanguage || 'fr';
+    const t = TRANSLATIONS[lang] || TRANSLATIONS.fr;
+
     const recapText = `
-_ORDRE DE MISSION GÉNÉRÉ.
+${t.recap_generated}
 
-[CONTACT]
-ID: ${sNom} ${sPrenom}
-TEL: ${sPhone}
-PAX: ${sPax}
+${t.contact}
+ID: ${data.nom} ${data.prenom}
+TEL: ${data.phone}
+PAX: ${data.pax}
 
-[MISSION]
-DATE: ${sDateTime}
-TRAJET: ${sPickup} >> ${sDrop}
+${t.mission}
+DATE: ${data.date}
+TRAJET: ${data.pickup} >> ${data.drop}
 DIST: ${distanceText} km
 
-[CONFIG]
-AMBIANCE: ${ambianceLabel}
-OPTION: ${sOption}
-NOTES: ${sNotes}
+${t.config}
+AMBIANCE: ${data.opt}
+NOTES: ${data.notes}
 
-[FINANCE]
+${t.finance}
 ESTIMATION: ${priceText} €
 
-_DOCUMENT CERTIFIÉ PRÊT.
+${t.doc_ready}
     `.trim();
 
     const consoleOut = document.getElementById('res-summary');
@@ -3597,7 +3584,7 @@ _DOCUMENT CERTIFIÉ PRÊT.
     }
 
     // 2. CONCISE VOCAL
-    const voiceMsg = `Dossier complet pour ${sPrenom}. Le Bon de Réservation a été édité avec photo et détails légaux. Envoyez ce document au QG immédiatement. Terminé.`;
+    const voiceMsg = t.recap_vocal.replace('{prenom}', data.prenom);
     speak(voiceMsg);
 
     // 3. FETCH WEATHER THEN GENERATE PDF
@@ -3735,7 +3722,7 @@ async function fetchDestinationWeather() {
 
         // 7. Vocalize
         const clothingSuggestion = getClothingSuggestion(temp);
-        const voiceMsg = `Météo prévue à ${reservationWeatherData.destination} le ${reservationWeatherData.dateTime}: ${temp} degrés, ${weatherDesc}. ${clothingSuggestion.replace('💡 Suggestion: ', '')}`;
+        const voiceMsg = `Météo prévue à ${reservationWeatherData.destination} le ${reservationWeatherData.dateTime}: ${temp} degrés, ${weatherDesc}. ${clothingSuggestion.replace('💡 Suggestion: ', '')} `;
         if (window.speak) {
             speak(voiceMsg);
         }
@@ -3763,7 +3750,7 @@ function displayWeatherSummary(data) {
     // Populate
     iconDiv.innerHTML = weatherIcon;
     detailsDiv.innerHTML = `
-        <p><strong>📍 ${data.destination}</strong></p>
+        < p > <strong>📍 ${data.destination}</strong></p >
         <p>🌡️ Température: <strong>${data.temp}°C</strong></p>
         <p>☁️ Conditions: ${data.weatherDesc}</p>
         <p>💨 Vent: ${data.windSpeed} km/h | ☔ Pluie: ${data.precipProb}%</p>
@@ -3871,9 +3858,14 @@ window.generateRecapPDF = async function () {
     const comfortMsg = document.getElementById('res-temp-comfort')?.textContent;
     const idImg = document.getElementById('webcam-result');
 
+    const lang = currentLanguage || 'fr';
+    const t = TRANSLATIONS[lang] || TRANSLATIONS.fr;
+
     // --- VOCALIZATION ---
     if (reservationWeatherData && reservationWeatherData.departure && reservationWeatherData.destination) {
-        const voiceMsg = `Conditions météo pour votre trajet. Au départ: ${reservationWeatherData.departure.temp} degrés. À l'arrivée: ${reservationWeatherData.destination.temp} degrés.`;
+        const voiceMsg = t.pdf_weather_vocal
+            .replace('{depTemp}', reservationWeatherData.departure.temp)
+            .replace('{destTemp}', reservationWeatherData.destination.temp);
         if (window.speak) speak(voiceMsg);
     }
 
@@ -3909,7 +3901,7 @@ window.generateRecapPDF = async function () {
             doc.text("iA_k_venir", 15, 17);
             doc.setTextColor(COLORS.ACCENT);
             doc.setFontSize(14);
-            doc.text("BON DE RÉSERVATION", 195, 17, { align: "right" });
+            doc.text(t.pdf_title, 195, 17, { align: "right" });
 
             // FOOTER
             const footerY = 280;
@@ -3919,7 +3911,7 @@ window.generateRecapPDF = async function () {
             doc.setFontSize(8);
             doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
             doc.setTextColor(COLORS.SUB);
-            doc.text(`Page ${pageCount} - Document généré automatiquement via Neural Link`, 105, footerY + 11, { align: "center" });
+            doc.text(`${t.pdf_page} ${pageCount} - ${t.pdf_auto_gen}`, 105, footerY + 11, { align: "center" });
         },
 
         // Draw Section Title
@@ -4608,22 +4600,22 @@ function buildData() {
 
 
     return {
-        prenom: (sPrenom.value || 'INCONNU').trim(),
-        nom: (sNom.value || 'INCONNU').trim().toUpperCase(),
-        email: (sEmail && sEmail.value) ? sEmail.value.trim() : 'NON RENSEIGNÉ', // Added Email
-        phone: (sPhone && sPhone.value) ? sPhone.value.trim() : 'NON RENSEIGNÉ',
-        pickup: (sPickup.value || 'NON RENSEIGNÉ').trim(),
-        drop: (sDrop.value || 'NON RENSEIGNÉ').trim(),
-        pax: (sPax && sPax.value) ? sPax.value : '1', // Pax
+        prenom: (sPrenom?.value || 'INCONNU').trim(),
+        nom: (sNom?.value || 'INCONNU').trim().toUpperCase(),
+        email: (sEmail?.value) ? sEmail.value.trim() : 'NON RENSEIGNÉ',
+        phone: (sPhone?.value) ? sPhone.value.trim() : 'NON RENSEIGNÉ',
+        pickup: (sPickup?.value || 'NON RENSEIGNÉ').trim(),
+        drop: (sDrop?.value || 'NON RENSEIGNÉ').trim(),
+        pax: (sPax?.value) ? sPax.value : '1',
 
         // Use New Datetime Fields
-        date: (sPickupDateTime && sPickupDateTime.value) ? sPickupDateTime.value : '—', // Stores "DD/MM/YYYY HH:mm"
-        time: (sArrivalDateTime && sArrivalDateTime.value) ? sArrivalDateTime.value : 'NON DÉFINIE', // Arrival Request
+        date: (sPickupDateTime?.value) ? sPickupDateTime.value : '—',
+        time: (sArrivalDateTime?.value) ? sArrivalDateTime.value : 'NON DÉFINIE',
 
-        opt: sOpt.options[sOpt.selectedIndex].text,
-        notes: (sNotes.value || 'AUCUNE').trim(),
+        opt: sOpt?.options[sOpt.selectedIndex]?.text || 'Standard',
+        notes: (sNotes?.value || 'AUCUNE').trim(),
         created: new Date().toLocaleString('fr-FR'),
-        price: "SUR DEVIS (>100€) ou TAXIMÈTRE" // Simplification for demo
+        price: document.getElementById('res-price-est')?.value || "SUR DEVIS (>100€) ou TAXIMÈTRE"
     };
 }
 
@@ -5226,7 +5218,7 @@ function initWebcam() {
 
         // KITT Humor Database
         const KITT_JOKES = [
-            "Attention Michael, vos cheveux sont... intéressants.",
+            "Attention, vos cheveux sont... intéressants.",
             "Ne bougez pas, je scanne votre rétine... et votre âme.",
             "J'espère que vous n'êtes pas recherché par la police galactique.",
             "Sourire activé. Flash nucléaire dans 3, 2, 1...",
@@ -5683,7 +5675,7 @@ function initWebcamNew() {
 
         // KITT Humor Database
         const KITT_JOKES = [
-            "Attention Michael, vos cheveux sont... intéressants.",
+            "Attention, vos cheveux sont... intéressants.",
             "Ne bougez pas, je scanne votre rétine... et votre âme.",
             "J'espère que vous n'êtes pas recherché par la police galactique.",
             "Sourire activé. Flash nucléaire dans quelques secondes...",
@@ -6715,8 +6707,13 @@ function initHeroValidation() {
                     hasWelcomed = true;
                     setTimeout(() => {
                         const initial = nom.charAt(0);
+                        const lang = currentLanguage || 'fr';
+                        let welcomeMsg;
+                        if (lang === 'fr') welcomeMsg = `Bienvenue ${prenom} ${initial}. Ravi de vous connaître.`;
+                        else if (lang === 'de') welcomeMsg = `Willkommen ${prenom} ${initial}. Schön Sie kennenzulernen.`;
+                        else if (lang === 'en') welcomeMsg = `Welcome ${prenom} ${initial}. Nice to meet you.`;
                         if (window.speak) {
-                            window.speak(`Bienvenue ${prenom} ${initial}`);
+                            window.speak(welcomeMsg);
                         }
                     }, 500);
                 }

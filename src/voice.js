@@ -1,8 +1,8 @@
 const KITT_QUOTES = [
-    "Trajet calculé. J'espère que vous n'avez pas prévu de course-poursuite aujourd'hui, Michael.",
+    "Trajet calculé. J'espère que vous n'avez pas prévu de course-poursuite aujourd'hui.",
     "Bande passante audio activée. Le tarif est affiché. Dois-je préparer le mode Turbo Boost ?",
     "Analyse terminée. C'est une destination très pittoresque. Je garderai mes scanners en alerte.",
-    "Voici l'estimation, Michael. N'oubliez pas que je ne peux pas sauter par-dessus les bouchons... enfin, pas légalement.",
+    "Voici l'estimation. N'oubliez pas que je ne peux pas sauter par-dessus les bouchons... enfin, pas légalement.",
     "Les capteurs indiquent une route dégagée. Estimation du coût affichée. Prêt à partir quand vous l'êtes.",
     "J'ai calculé l'itinéraire optimal. Je me suis permis d'éviter les chemins de terre, pour mes suspensions.",
     "Destination verrouillée. Le tarif semble raisonnable pour une technologie de ma classe.",

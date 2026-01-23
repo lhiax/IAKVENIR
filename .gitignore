@@ -1,19 +1,6 @@
-# API Configuration (contains sensitive keys)
-config.js
-
-# Node modules
-node_modules/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Logs
+node_modules
+.env
+data.db
 *.log
-npm-debug.log*
+.DS_Store
+._*
