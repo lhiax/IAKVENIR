@@ -36,7 +36,9 @@
 }
 
 .neon-text-red {
-    text-shadow: 0 0 10px #ff3333, 0 0 20px #ff3333;
+    color: #ff3333;
+    text-shadow: 0 0 10px rgba(255, 51, 51, 0.8), 0 0 20px rgba(255, 51, 51, 0.4);
+    font-weight: 700;
 }
 
 .neon-text-holo-red {
@@ -46,6 +48,15 @@
         0 0 10px #ff3333,
         0 0 20px #ff3333,
         0 0 40px #ff0000;
+    font-weight: 900;
+}
+
+/* Enhanced Alert Red for Readability */
+.red-alert-text {
+    color: #ff3333;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 1), 0 0 8px rgba(255, 51, 51, 0.5);
+    font-weight: 800;
+    letter-spacing: 0.5px;
 }
 
 /* Scanline Effect */
@@ -751,7 +762,8 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
 /* Temp */
 .temp-hot {
     color: #ff3333;
-    text-shadow: 0 0 10px rgba(255, 51, 51, 0.4);
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 51, 51, 0.6);
+    font-weight: 800;
 }
 
 .temp-warm {
@@ -774,6 +786,8 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
 /* Wind */
 .wind-danger {
     color: #ff3333;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 51, 51, 0.6);
+    font-weight: 800;
 }
 
 .wind-strong {

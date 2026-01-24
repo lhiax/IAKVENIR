@@ -2413,6 +2413,8 @@ function resolveLocation(inputName) {
     for (const key of Object.keys(POI_DATA)) {
         const normalizedKey = key.replace(/-/g, " ");
         if (cleanDest.includes(normalizedKey)) return key;
+        // Prefix Match (Auto-Complete) - User Request
+        if (normalizedKey.startsWith(cleanDest) && cleanDest.length >= 3) return key;
         if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) return key;
     }
 
@@ -2720,12 +2722,38 @@ function initPricing() {
     const departureInput = document.getElementById('sim-departure');
     const destinationInput = document.getElementById('sim-destination');
     const calcBtn = document.getElementById('btn-calculate');
+    const recalcBtn = document.getElementById('btn-sim-recalc');
 
     if (!departureInput || !destinationInput || !calcBtn) return;
 
     populateDataList();
     initRealTimeCoach(); // <--- NEW: Real-time monitoring
     calcBtn.addEventListener('click', calculateTrajectory);
+    if (recalcBtn) {
+        recalcBtn.addEventListener('click', () => {
+            calculateTrajectory();
+            // User Request: Green Fixed once calculated
+            recalcBtn.classList.remove('animate-pulse', 'bg-limit-red/20', 'border-limit-red', 'text-limit-red', 'font-bold', 'drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]');
+            recalcBtn.classList.add('bg-neon-green/10', 'border-neon-green', 'text-neon-green');
+        });
+    }
+
+    // LISTENER FOR INPUT CHANGES -> BLINK RECALCULATE
+    const inputs = [departureInput, destinationInput, document.getElementById('sim-stopover')];
+    inputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => {
+                // If main button is hidden, it means we are in "Update Mode"
+                if (calcBtn.classList.contains('hidden') && recalcBtn) {
+                    // User Request: Red Blinking
+                    recalcBtn.classList.remove('bg-black/40', 'bg-neon-green/10', 'border-neon-green', 'text-neon-green', 'border-neon-blue', 'text-neon-blue');
+                    // Improved Readability: Bold + Drop Shadow
+                    recalcBtn.classList.add('animate-pulse', 'bg-limit-red/20', 'border-limit-red', 'text-limit-red', 'font-bold', 'drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]');
+                }
+            });
+        }
+    });
+
 }
 
 function populateDataList() {
@@ -2997,6 +3025,16 @@ async function calculateTrajectory() {
             // Only optimize to City Center if input wasn't already a specific address
             finalEnd = resolvedEnd.charAt(0).toUpperCase() + resolvedEnd.slice(1);
             console.log(`GPS: Optimizing destination "${destinationInput.value}" -> "${finalEnd}"`);
+
+            // AUTO-CORRECTION VOCAL FEEDBACK (User Request)
+            if (endLoc.length < 5 && finalEnd.length > endLoc.length && !endLoc.toLowerCase().includes(finalEnd.toLowerCase())) {
+                const correctionMsg = `Je devine que vous voulez dire ${finalEnd}. Calcul en cours pour cette destination.`;
+                speak(correctionMsg);
+                destinationInput.value = finalEnd; // Update UI
+                // Flash input to show correction
+                destinationInput.classList.add('bg-neon-green/20');
+                setTimeout(() => destinationInput.classList.remove('bg-neon-green/20'), 1500);
+            }
         }
 
         if (finalStart === "" || finalEnd === "") return;
@@ -3248,15 +3286,23 @@ async function calculateTrajectory() {
         const btnAddStop = document.getElementById('btn-sim-add-stop');
         if (quickActions) {
             quickActions.classList.remove('hidden');
+
+            // Hide "Lancer le calcul" (Main Button)
+            const mainCalcBtn = document.getElementById('btn-calculate');
+            if (mainCalcBtn) mainCalcBtn.classList.add('hidden');
+
             // Show "Add Stop" only if field is hidden
+            // DISABLE STOPOVER BUTTON PER USER REQUEST (2026-01-24)
+            /*
             if (btnAddStop && stopoverInput && stopoverInput.parentElement.classList.contains('hidden')) {
                 btnAddStop.classList.remove('hidden');
             } else if (btnAddStop) {
                 btnAddStop.classList.add('hidden');
             }
+            */
+            // Ensure it stays hidden
+            if (btnAddStop) btnAddStop.classList.add('hidden');
         }
-
-
         if (routeData) {
             tripDist = routeData.distKm;
             duration = routeData.durationMin;
