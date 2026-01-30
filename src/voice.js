@@ -36,8 +36,8 @@ export const speakSummary = (data) => {
     }
 
     // Attempt to make it sound a bit more like KITT (lower pitch, slightly faster)
-    utterance.pitch = 0.85;
-    utterance.rate = 1.05;
+    utterance.pitch = 0.9;
+    utterance.rate = 1.4;
     utterance.volume = 1.0;
 
     window.speechSynthesis.speak(utterance);

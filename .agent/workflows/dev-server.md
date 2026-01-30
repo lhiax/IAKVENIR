@@ -4,7 +4,7 @@ description: Démarrer le serveur de développement local
 
 # Serveur de Développement
 
-Ce workflow démarre un serveur HTTP local pour tester le site.
+Ce workflow démarre le serveur Node.js/Express local pour tester le site avec toutes ses fonctionnalités (API, base de données).
 
 // turbo-all
 
@@ -12,19 +12,19 @@ Ce workflow démarre un serveur HTTP local pour tester le site.
 
 ### 1. Vérifier si un serveur tourne déjà
 ```bash
-lsof -i :8000
+lsof -i :3000
 ```
 
-### 2. Démarrer le serveur Python sur le port 8000
+### 2. Démarrer le serveur local
 ```bash
-python3 -m http.server 8000
+npm start
 ```
 
 ### 3. Accéder au site
-Ouvrir le navigateur à l'adresse : http://localhost:8000
+Ouvrir le navigateur à l'adresse : http://localhost:3000
 
 ## Notes
 
-- Le serveur tournera sur le port 8000
+- Le serveur tournera sur le port 3000 (défini dans le fichier .env)
 - Pour arrêter le serveur : Ctrl+C
-- Les fichiers sont servis depuis le répertoire courant
+- Ce mode permet de tester les fonctionnalités backend (réservations, calculs d'itinéraires, etc.) contrairement à une ouverture directe du fichier index.html.

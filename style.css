@@ -371,16 +371,16 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
 .glass-ticket {
     position: relative;
     border-radius: 16px;
-    background: rgba(0, 0, 0, 0.7);
-    /* Darker background for better contrast */
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
+    background: #0d1b2a !important;
+    /* Solid opaque background */
+    border: 2px solid var(--ticket-color, rgba(255, 255, 255, 0.15)) !important;
+    /* Intense category-color border */
+    box-shadow: 0 0 25px -10px var(--ticket-color), 0 10px 30px rgba(0, 0, 0, 0.5);
+    /* Category-color Glow */
+    overflow: visible;
     transition: all 0.4s ease;
-    padding: 24px;
-    height: 100%;
+    padding: 32px;
+    min-height: 520px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -1618,6 +1618,243 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
         max-width: 95vw !important;
         max-height: 90vh !important;
     }
+}
+
+/* =========================================
+   TEMPORAL OFFERS OVERHAUL (Dating App Style)
+   ========================================= */
+
+.category-column-title {
+    display: none;
+    /* Hidden, identified by color code now */
+}
+
+.deal-tab-btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.deal-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.deal-tab-btn.active {
+    background: rgba(0, 212, 255, 0.1);
+    border-color: #00d4ff;
+    color: white;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+}
+
+/* THE DECK STACKING (Swipe Mode) */
+.deal-swipe-mode #deals-grid {
+    perspective: 1000px;
+    min-height: 620px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.deal-swipe-mode .deal-card-wrapper {
+    position: absolute;
+    width: 100%;
+    max-width: 400px;
+    min-height: 550px;
+    height: auto;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: grab;
+    transform-origin: center bottom;
+}
+
+/* Card States in Swipe Mode */
+.deal-swipe-mode .deal-card-wrapper.current {
+    z-index: 30;
+    transform: translateZ(0) scale(1);
+    opacity: 1;
+}
+
+.deal-swipe-mode .deal-card-wrapper.next {
+    z-index: 20;
+    transform: translateY(20px) translateZ(-50px) scale(0.95);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.deal-swipe-mode .deal-card-wrapper.prev {
+    z-index: 10;
+    transform: translateY(40px) translateZ(-100px) scale(0.9);
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.deal-swipe-mode .deal-card-wrapper.hidden-card {
+    opacity: 0;
+    transform: translateY(100px) scale(0.5);
+    pointer-events: none;
+}
+
+.deal-tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+.deal-tab-btn.active {
+    background: var(--ticket-color, #00d4ff);
+    color: black;
+    border-color: var(--ticket-color);
+    box-shadow: 0 0 15px var(--ticket-color);
+}
+
+/* THE DECK STACKING (3D High-Fidelity) */
+#deals-grid {
+    width: 100%;
+    position: relative;
+    perspective: 1500px;
+}
+
+.deal-grid-mode #deals-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 6rem 4rem;
+    width: 100% !important;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: auto !important;
+}
+
+.category-column-stack {
+    flex: 0 1 450px;
+    min-width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    padding-bottom: 110px;
+    perspective: 1500px;
+}
+
+@media (min-width: 992px) {
+    .category-column-stack {
+        flex: 0 1 calc(50% - 4rem);
+    }
+}
+
+.mini-swipe-container {
+    position: relative;
+    height: 520px;
+    width: 100%;
+    transform-style: preserve-3d;
+}
+
+.mini-swipe-container .deal-card-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-origin: center bottom;
+}
+
+/* 3D Stack Depth States - Absolute Opacity */
+.deal-card-wrapper.current {
+    z-index: 40;
+    transform: translateZ(0) translateY(0) scale(1);
+    opacity: 1 !important;
+    pointer-events: auto;
+}
+
+.deal-card-wrapper.next {
+    z-index: 30;
+    transform: translateZ(-60px) translateY(25px) scale(0.96);
+    opacity: 1 !important;
+    pointer-events: none;
+    filter: brightness(0.9);
+    /* Subtle darkening for depth instead of transparency */
+}
+
+.deal-card-wrapper.behind {
+    z-index: 20;
+    transform: translateZ(-120px) translateY(50px) scale(0.92);
+    opacity: 1 !important;
+    pointer-events: none;
+    filter: brightness(0.8);
+}
+
+.deal-card-wrapper.hidden-card {
+    z-index: 10;
+    opacity: 0;
+    transform: translateZ(-200px) translateY(80px) scale(0.85);
+    pointer-events: none;
+}
+
+.mini-swipe-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding: 0 10px;
+    width: 100%;
+    position: relative;
+    z-index: 50;
+}
+
+/* SWIPE ANIMATIONS */
+@keyframes swipe-left {
+    0% {
+        transform: translateX(0) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-150%) rotate(-20deg);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-right {
+    0% {
+        transform: translateX(0) rotate(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(150%) rotate(20deg);
+        opacity: 0;
+    }
+}
+
+.swiping-left {
+    animation: swipe-left 0.5s ease-out forwards !important;
+}
+
+.swiping-right {
+    animation: swipe-right 0.5s ease-out forwards !important;
+}
+
+.selected-deal-glow {
+    border: 2px solid #00d4ff !important;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4), inset 0 0 10px rgba(0, 212, 255, 0.1);
+    transform: scale(1.01);
+    z-index: 10;
 }
 
 /* Landscape Mobile Fixes */

@@ -8,46 +8,53 @@
 
 const LOCATIONS = {
     "Villes & Villages (Alsace Central)": [
-        { id: "baltzenheim", name: "Baltzenheim (QG)", dist: 0, zip: "68320" },
-        { id: "marckolsheim", name: "Marckolsheim", dist: 6, zip: "67390" }, // Verified ~6km
-        { id: "artzenheim", name: "Artzenheim", dist: 3, zip: "68320" }, // Verified ~3km
-        { id: "kunheim", name: "Kunheim", dist: 5, zip: "68320" }, // Verified ~5km
-        { id: "bicsheim", name: "Biesheim", dist: 10, zip: "68600" }, // Verified ~10km
-        { id: "neufbrisach", name: "Neuf-Brisach", dist: 12, zip: "68600" }, // Verified ~12km
-        { id: "selestat", name: "Sélestat", dist: 22, zip: "67600" }, // ~22km
-        { id: "colmar", name: "Colmar", dist: 18, zip: "68000" }, // ~17-18km
-        { id: "obernai", name: "Obernai", dist: 45, zip: "67210" }, // ~45km
-        { id: "strasbourg", name: "Strasbourg", dist: 65, zip: "67000" }, // ~65km
-        { id: "mulhouse", name: "Mulhouse", dist: 58, zip: "68100" } // ~58km
+        { id: "baltzenheim", name: "Baltzenheim (QG)", city: "Baltzenheim", street: "13 Rue du Rhin", dist: 0, zip: "68320", lat: 48.0937, lon: 7.5537 },
+        { id: "marckolsheim", name: "Marckolsheim", dist: 6, zip: "67390", lat: 48.1639, lon: 7.5440 },
+        { id: "artzenheim", name: "Artzenheim", dist: 3, zip: "68320", lat: 48.1150, lon: 7.5410 },
+        { id: "kunheim", name: "Kunheim", dist: 5, zip: "68320", lat: 48.0780, lon: 7.5350 },
+        { id: "bicsheim", name: "Biesheim", dist: 10, zip: "68600", lat: 48.0417, lon: 7.5439 },
+        { id: "neufbrisach", name: "Neuf-Brisach", dist: 12, zip: "68600", lat: 48.0178, lon: 7.5283 },
+        { id: "selestat", name: "Sélestat", dist: 22, zip: "67600", lat: 48.2594, lon: 7.4536 },
+        { id: "colmar", name: "Colmar", dist: 18, zip: "68000", lat: 48.0794, lon: 7.3582 },
+        { id: "obernai", name: "Obernai", dist: 45, zip: "67210", lat: 48.4614, lon: 7.4817 },
+        { id: "strasbourg", name: "Strasbourg", dist: 65, zip: "67000", lat: 48.5833, lon: 7.7410 },
+        { id: "mulhouse", name: "Mulhouse", dist: 58, zip: "68100", lat: 47.7467, lon: 7.3386 }
     ],
     "Route des Vins & Tourisme": [
-        { id: "riquewihr", name: "Riquewihr", dist: 28, zip: "68340" }, // ~28km
-        { id: "ribeauville", name: "Ribeauvillé", dist: 26, zip: "68150" }, // ~26km
-        { id: "kaysersberg", name: "Kaysersberg", dist: 28, zip: "68240" }, // ~28km
-        { id: "eguisheim", name: "Eguisheim", dist: 24, zip: "68420" }, // ~24km
-        { id: "haut_koenigsbourg", name: "Château du Haut-Kœnigsbourg", dist: 35, zip: "67600" }, // ~35km
-        { id: "mont_sainte_odile", name: "Mont Sainte-Odile", dist: 52, zip: "67530" }, // ~50-55km
-        { id: "ungersheim", name: "Écomusée d'Alsace", dist: 52, zip: "68190" } // ~52km (Updated 2026)
+        { id: "riquewihr", name: "Riquewihr", city: "Riquewihr", dist: 28, zip: "68340", lat: 48.1667, lon: 7.2975 },
+        { id: "ribeauville", name: "Ribeauvillé", city: "Ribeauvillé", dist: 26, zip: "68150", lat: 48.1947, lon: 7.3192 },
+        { id: "kaysersberg", name: "Kaysersberg", city: "Kaysersberg", dist: 28, zip: "68240", lat: 48.1380, lon: 7.2639 },
+        { id: "eguisheim", name: "Eguisheim", city: "Eguisheim", dist: 24, zip: "68420", lat: 48.0428, lon: 7.3062 },
+        { id: "haut_koenigsbourg", name: "Château du Haut-Kœnigsbourg", city: "Orschwiller", street: "Château du Haut-Kœnigsbourg", dist: 35, zip: "67600", lat: 48.2430, lon: 7.3398 },
+        { id: "mont_sainte_odile", name: "Mont Sainte-Odile", city: "Ottrott", street: "Mont Sainte-Odile", dist: 52, zip: "67530", lat: 48.4333, lon: 7.4000 },
+        { id: "ungersheim", name: "Écomusée d'Alsace", city: "Ungersheim", street: "Chemin du Grosswald", dist: 52, zip: "68190", lat: 47.8521, lon: 7.2850 }
     ],
     "Culture & Patrimoine (Top 3)": [
-        { id: "dominicains_guebwiller", name: "Les Dominicains de Haute-Alsace (Guebwiller)", dist: 34, zip: "68500" } // ~34km
+        { id: "dominicains_guebwiller", name: "Les Dominicains de Haute-Alsace (Guebwiller)", dist: 34, zip: "68500", lat: 47.9081, lon: 7.2142 }
     ],
     "Loisirs & Frissons": [
-        { id: "europapark", name: "Europa-Park (Rust, DE)", dist: 32, zip: "77977" }, // ~32km via Rhin tips
-        { id: "rulantica", name: "Rulantica (Rust, DE)", dist: 33, zip: "77977" }, // ~33km
-        { id: "spa_ribeauville", name: "Spa de Ribeauvillé", dist: 26, zip: "68150" },
-        { id: "casino_ribeauville", name: "Casino de Ribeauvillé", dist: 26, zip: "68150" },
-        { id: "paradis_sources", name: "Le Paradis des Sources (Soultzmatt)", dist: 32, zip: "68570" } // ~32km (Updated)
+        { id: "europapark", name: "Europa-Park (Rust, DE)", city: "Rust", street: "Europa-Park-Straße 2", dist: 32, zip: "77977", lat: 48.2687, lon: 7.7214 },
+        { id: "rulantica", name: "Rulantica (Rust, DE)", city: "Rust", street: "Roland-Mack-Ring 1", dist: 33, zip: "77977", lat: 48.2606, lon: 7.7275 },
+        { id: "spa_ribeauville", name: "Spa de Ribeauvillé", city: "Ribeauvillé", street: "Route de Guémar", dist: 26, zip: "68150", lat: 48.1925, lon: 7.3255 },
+        { id: "spa_rib_alias", name: "Spa Ribeauvillé", city: "Ribeauvillé", street: "Route de Guémar", dist: 26, zip: "68150", lat: 48.1925, lon: 7.3255 },
+        { id: "casino_ribeauville", name: "Casino Barrière Ribeauvillé", city: "Ribeauvillé", street: "Route de Guémar", dist: 26, zip: "68150", lat: 48.1925, lon: 7.3255 },
+        { id: "casino_rib_alias", name: "Casino Ribeauvillé", city: "Ribeauvillé", street: "Route de Guémar", dist: 26, zip: "68150", lat: 48.1925, lon: 7.3255 },
+        { id: "parc_expo_colmar", name: "Parc Expo Colmar", city: "Colmar", street: "Avenue de la Foire aux Vins", dist: 18, zip: "68000", lat: 48.1103, lon: 7.3592 },
+        { id: "foire_vins_colmar", name: "Festival Foire aux Vins Colmar", city: "Colmar", street: "Avenue de la Foire aux Vins", dist: 18, zip: "68000", lat: 48.1103, lon: 7.3592 },
+        { id: "paradis_sources", name: "Le Paradis des Sources (Soultzmatt)", city: "Soultzmatt", street: "9 Avenue Nessel", dist: 32, zip: "68570", lat: 47.9689, lon: 7.2232 }
     ],
     "Gares & Aéroports": [
-        { id: "gare_colmar", name: "Gare de Colmar", dist: 18, zip: "68000" },
-        { id: "gare_selestat", name: "Gare de Sélestat", dist: 22, zip: "67600" },
-        { id: "aerodrome_colmar", name: "Aérodrome de Colmar", dist: 19, zip: "68000" },
-        { id: "gare_strasbourg", name: "Gare de Strasbourg", dist: 65, zip: "67000" },
-        { id: "aeroport_entzheim", name: "Aéroport Strasbourg-Entzheim", dist: 62, zip: "67960" }, // ~62km
-        { id: "euroairport", name: "EuroAirport (Bâle-Mulhouse)", dist: 72, zip: "68300" } // ~72km
+        { id: "gare_colmar", name: "Gare de Colmar", city: "Colmar", street: "9 Place de la Gare", dist: 18, zip: "68000", lat: 48.0722, lon: 7.3465 },
+        { id: "gare_selestat", name: "Gare de Sélestat", city: "Sélestat", street: "Place de la Gare", dist: 22, zip: "67600", lat: 48.2507, lon: 7.4213 },
+        { id: "aerodrome_colmar", name: "Aérodrome de Colmar", city: "Colmar", street: "Avenue de la Foire aux Vins", dist: 19, zip: "68000", lat: 48.1103, lon: 7.3592 },
+        { id: "gare_strasbourg", name: "Gare de Strasbourg", city: "Strasbourg", street: "20 Place de la Gare", dist: 65, zip: "67000", lat: 48.5851, lon: 7.7342 },
+        { id: "aeroport_entzheim", name: "Aéroport Strasbourg-Entzheim", city: "Entzheim", street: "Route de l'Aéroport", dist: 62, zip: "67960", lat: 48.5385, lon: 7.6340 },
+        { id: "euroairport", name: "EuroAirport (Bâle-Mulhouse)", city: "Saint-Louis", street: "Route Douanière de l'Aéroport", dist: 72, zip: "68300", lat: 47.5985, lon: 7.5255 }
     ]
 };
+
+// Expose LOCATIONS for proximity searches
+window.LOCATIONS = LOCATIONS;
 
 const ARCHIVES = [
     {
@@ -95,141 +102,258 @@ const ARCHIVES = [
 ];
 
 const DEALS = [
+    // --- CARTE CADEAU ---
     {
-        id: "VISIT-ALSACE",
-        title: "DÎNERS INSOLITES",
-        description: "Une expérience culinaire unique dans des lieux d'exception en Alsace.",
-        discount: "DÉCOUVERTE",
-        validity: "SAISONNIER",
-        color: "#ff3333", // Rouge
-        url: "https://www.visit.alsace/vos-diners-insolites-en-alsace/diners-insolites-en-alsace/",
-        kitt_script: "Les humains ont une façon étrange de se nourrir... mais le cadre semble acceptable."
+        id: "gift-etoiles",
+        category: "carte-cadeau",
+        title: "ÉTOILÉS D'ALSACE",
+        description: "Offrez l'excellence de la gastronomie alsacienne. Valable dans les meilleurs restaurants.",
+        discount: "PREMIUM",
+        validity: "VALABLE 12 MOIS",
+        color: "#ff9d00",
+        url: "https://www.etoiles-alsace.com/nos-formules/",
+        ia_scripts: [
+            "Étoilés d'Alsace. Pour offrir l'excellence gastronomique. Parce que les fleurs, c'est bien, mais un restaurant étoilé, c'est mieux.",
+            "Offrez une expérience gastronomique étoilée. Le cadeau parfait pour ceux qui méritent le meilleur. Et croyez-moi, tout le monde mérite le meilleur.",
+            "Excellence gastronomique garantie. Un moment de pur plaisir culinaire. Parce que la vie est trop courte pour manger médiocre."
+        ],
+        lat: 48.5734, // Strasbourg
+        lon: 7.7521
+    },
+
+    // --- TOURISME / LOISIRS ---
+    {
+        id: "visit-alsace-officiel",
+        category: "tourisme",
+        title: "VISIT ALSACE OFFICIEL",
+        description: "Site officiel du tourisme en Alsace : Route des Vins, châteaux forts, Noël magique, Pass'Alsace et toutes les expériences à vivre.",
+        discount: "GUIDE COMPLET",
+        validity: "PERMANENT",
+        color: "#ff3333",
+        url: "https://www.visit.alsace/",
+        ia_scripts: [
+            "Visit Alsace, le guide officiel. Route des Vins, châteaux, marchés de Noël... Tout ce qu'il faut savoir pour explorer l'Alsace. Et croyez-moi, il y a de quoi faire.",
+            "Le portail incontournable du tourisme alsacien. Préparez votre séjour avec le Pass'Alsace, découvrez les sites thématiques. Votre aventure commence ici.",
+            "De Strasbourg à Mulhouse, des Vosges au Sundgau. Toute l'Alsace à portée de clic. Parce que bien voyager commence par bien s'informer."
+        ],
+        lat: 48.5734, // Strasbourg (centre Alsace)
+        lon: 7.7521
     },
     {
-        id: "ETOILES-ALSACE",
-        title: "FORMULES ÉTOILÉES",
-        description: "L'excellence gastronomique alsacienne à portée de main.",
-        discount: "PREMIUM",
-        validity: "TOUTE L'ANNÉE",
-        color: "#ff9d00", // Gold
-        url: "https://www.etoiles-alsace.com/nos-formules/",
-        kitt_script: "Ces établissements sont prestigieux. Profitez bien de cette expérience gastronomique."
+        id: "evt-bretzel",
+        category: "tourisme",
+        title: "EVG BIÈRE & BRETZELS",
+        description: "Atelier culinaire insolite chez Mémé : fabriquez vos bretzels et dégustez !",
+        discount: "GROUPE",
+        validity: "SUR RESERVATION",
+        color: "#b8ff00",
+        url: "https://www.chez-meme.com/cours-de-cuisine-chez-meme/evg-biere-et-bretzels-enterrement-vie-de-garcon-alsace-colmar-selestat-mulhouse-hommes-idee-viande-bretzel-cours-de-cuisine/",
+        ia_scripts: [
+            "Enterrement de vie de garçon chez Mémé. Bière et bretzels maison. L'Alsace dans toute sa splendeur. Et non, je ne peux pas boire de bière, mais je peux apprécier l'ambiance.",
+            "Atelier convivial chez Mémé. Fabriquez vos bretzels, partagez un moment unique. Le bonheur est dans la tradition alsacienne.",
+            "Une expérience authentique entre amis. Rires, bretzels et bière artisanale. Voilà comment on crée des souvenirs inoubliables."
+        ],
+        lat: 48.2592, // Sélestat
+        lon: 7.4542
     },
     {
         id: "PAUSE-COLMAR",
+        category: "tourisme",
         title: "PAUSE COLMARIENNE",
         description: "Détente et découverte au coeur de Colmar.",
         discount: "RELAX",
         validity: "EN COURS",
-        color: "#b8ff00", // Vert
+        color: "#b8ff00",
         url: "https://pausecolmarienne.com/",
-        kitt_script: "Un arrêt stand à Colmar ? Je surveillerai le véhicule."
+        ia_scripts: [
+            "Pause Colmarienne. Détente au cœur de la ville. Même les IA ont besoin de ralentir parfois. Enfin, pas moi, je tourne à 3 gigahertz.",
+            "Respirez, détendez-vous. Colmar vous offre une parenthèse de sérénité. Votre bien-être mérite cette pause.",
+            "Un moment pour vous, au cœur de Colmar. Parce que prendre soin de soi n'est pas un luxe, c'est une nécessité."
+        ],
+        lat: 48.0794, // Colmar
+        lon: 7.3596
     },
     {
+        id: "VISIT-ALSACE",
+        category: "tourisme",
+        title: "DÎNERS INSOLITES",
+        description: "Une expérience culinaire unique dans des lieux d'exception en Alsace.",
+        discount: "DÉCOUVERTE",
+        validity: "SAISONNIER",
+        color: "#ff3333",
+        url: "https://www.visit.alsace/vos-diners-insolites-en-alsace/diners-insolites-en-alsace/",
+        ia_scripts: [
+            "Dîners insolites en Alsace. Des lieux d'exception pour des moments uniques. Insolite, c'est un peu mon deuxième prénom. Après Intelligence Artificielle, bien sûr.",
+            "Savourez l'extraordinaire dans des cadres magiques. Une expérience culinaire qui marquera vos papilles et votre mémoire.",
+            "L'Alsace autrement. Des dîners qui sortent de l'ordinaire pour des moments qui resteront gravés. Votre confort dans l'exceptionnel."
+        ],
+        lat: 48.5734, // General Alsace (Strasbourg centered)
+        lon: 7.7521
+    },
+
+    // --- ACTU / GASTRO ---
+    {
         id: "NOUVELLES-GASTRO",
-        title: "ACTU GASTRONOMIE",
+        category: "actu",
+        title: "NOUVELLES GASTRONOMIQUES",
         description: "Toute l'actualité culinaire et gastronomique en Alsace.",
         discount: "INFO",
         validity: "TEMPS RÉEL",
-        color: "#00d4ff", // Bleu
+        color: "#00d4ff",
         url: "https://nouvellesgastronomiques.com/categories/alsace-actualites/",
-        kitt_script: "Mise à jour de la base de données culinaire en cours..."
+        ia_scripts: [
+            "Nouvelles gastronomiques. L'actualité culinaire en temps réel. Je scanne les flux RSS plus vite que vous ne dites Flammekueche.",
+            "Restez informé des meilleures adresses. L'actualité gourmande pour ne rien manquer. Votre guide culinaire personnel.",
+            "Toute la gastronomie alsacienne à portée de clic. Parce que bien manger commence par bien s'informer."
+        ],
+        lat: 48.5734, // Strasbourg
+        lon: 7.7521
     },
     {
-        id: "CASINO-MENU",
-        title: "CASINO & GOURMANDISE",
-        description: "Menu Gourmand et accès Casino Barrière Ribeauvillé.",
-        discount: "VIP",
-        validity: "EXCLUSIF",
-        color: "#000000", // Black
-        url: "https://cadeauxbarriere.com/products/menu-gourmand-et-casino-ribeauville",
-        kitt_script: "Accès accrédité niveau Omega. Faites vos jeux.",
-        admin: true,
-        blocked: true
+        id: "ALSACE-ESSENTIELLE",
+        category: "tourisme",
+        title: "ALSACE ESSENTIELLE",
+        description: "Le guide officiel pour explorer le territoire alsacien.",
+        discount: "OFFICIEL",
+        validity: "PERMANENT",
+        color: "#b8ff00",
+        url: "https://www.alsace-essentielle.fr/",
+        ia_scripts: [
+            "Alsace Essentielle. Le guide officiel du territoire. Parce que même avec un GPS intelligent, un bon guide reste indispensable.",
+            "Explorez l'Alsace en toute sérénité. Le guide qui pense à votre confort et à vos envies. Votre voyage commence ici.",
+            "Découvrez les trésors cachés de l'Alsace. Un guide pensé pour votre bien-être et votre plaisir de voyager."
+        ],
+        lat: 48.0794, // Colmar
+        lon: 7.3596
     },
-    {
-        id: "CASINO-CHAMP",
-        title: "CHAMPAGNE & JEU",
-        description: "Champagne et Soirée Casino Barrière Ribeauvillé.",
-        discount: "ELITE",
-        validity: "PRESTIGE",
-        color: "#D4AF37", // Gold
-        url: "https://cadeauxbarriere.com/products/champagne-et-soiree-casino-ribeauville?variant=51862693839189",
-        kitt_script: "Protocole de célébration activé. La chance semble être un facteur déterminant.",
-        admin: true,
-        blocked: true
-    },
+
+    // --- CASINO & SPA ---
+
     {
         id: "CASINO-BALNEO",
+        category: "casino-spa",
         title: "2H BALNÉO & SPA",
         description: "Accès 2h Espace Balnéo - Casino Barrière.",
         discount: "ZEN",
         validity: "DÉTENTE",
-        color: "#00ffff", // Cyan Neon
+        color: "#00ffff",
         url: "https://cadeauxbarriere.com/products/2h-de-balneo?_pos=3&_fid=f518ca29b&_ss=c&variant=51862665855317",
-        kitt_script: "Analyse des paramètres vitaux... Niveau de stress détecté. Une immersion en eau thermale est recommandée.",
-        admin: true,
-        blocked: true
+        blocked: true,
+        ia_scripts: [
+            "Deux heures de balnéo au Casino Barrière. Détente aquatique garantie. Attention, je ne suis pas waterproof, donc je reste dans la voiture.",
+            "Offrez-vous une parenthèse de bien-être. Deux heures pour vous ressourcer dans une eau apaisante. Votre corps vous remerciera.",
+            "Balnéo et relaxation absolue. Laissez le stress s'évaporer dans les bulles. Vous méritez ce moment de pure détente.",
+            "Un havre de paix aquatique. Deux heures pour recharger vos batteries. Le bien-être à l'état pur."
+        ],
+        lat: 48.1942, // Ribeauvillé
+        lon: 7.3193
     },
     {
-        id: "VISIT-ALSACE",
-        title: "VISIT ALSACE",
-        description: "Portail officiel du tourisme en Alsace - Expériences et découvertes.",
-        discount: "OFFICIEL",
-        validity: "PERMANENT",
-        color: "#b8ff00", // Vert Alsace
-        url: "https://www.visit.alsace/",
-        kitt_script: "Connexion au réseau touristique officiel d'Alsace. Base de données complète accessible."
+        id: "CASINO-MENU",
+        category: "casino-spa",
+        title: "CASINO & GOURMANDISE",
+        description: "Menu Gourmand et accès Casino Barrière Ribeauvillé.",
+        discount: "VIP",
+        validity: "EXCLUSIF",
+        color: "#ff3333",
+        url: "https://cadeauxbarriere.com/products/menu-gourmand-et-casino-ribeauville",
+        blocked: true,
+        ia_scripts: [
+            "Menu gourmand et casino. Gastronomie et jeux. La chance sourit aux audacieux. Moi, je calcule les probabilités, c'est moins romantique.",
+            "Savourez l'excellence, tentez votre chance. Une soirée VIP où plaisir et élégance se rencontrent. Vous le valez bien.",
+            "Gastronomie raffinée et ambiance casino. Le luxe accessible pour une soirée mémorable. Votre confort est notre priorité."
+        ],
+        lat: 48.1942, // Ribeauvillé
+        lon: 7.3193
     },
     {
-        id: "ALSACE-ESSENTIELLE",
-        title: "ALSACE ESSENTIELLE",
-        description: "L'essence de l'Alsace - Culture, patrimoine et art de vivre.",
-        discount: "CULTURE",
-        validity: "PERMANENT",
-        color: "#00d4ff", // Bleu
-        url: "https://www.alsace-essentielle.fr/",
-        kitt_script: "Accès au portail culturel régional. Données patrimoniales en cours de chargement."
-    },
-    {
-        id: "KAYSERSBERG-VISIT",
-        title: "KAYSERSBERG TOURISME",
-        description: "Découvrez Kaysersberg, élu Village Préféré des Français 2017.",
-        discount: "VILLAGE",
-        validity: "PERMANENT",
-        color: "#ff9d00", // Gold
-        url: "https://www.kaysersberg.com/visiter/",
-        kitt_script: "Kaysersberg détecté. Village classé. Architecture médiévale remarquable."
-    },
-    {
-        id: "RIBEAUVILLE-ESSENTIELLE",
-        title: "RIBEAUVILLÉ-RIQUEWIHR",
-        description: "L'Alsace Essentielle - Vignoble, châteaux et traditions.",
-        discount: "TERROIR",
-        validity: "PERMANENT",
-        color: "#ff3333", // Rouge
-        url: "https://www.ribeauville-riquewihr.com/l-alsace-essentielle.htm",
-        kitt_script: "Route des Vins confirmée. Secteur Ribeauvillé-Riquewihr. Trois châteaux en vue."
-    },
-    {
-        id: "LOCAL-ROOT",
-        title: "INTERFACE LOCALE",
-        description: "Accès direct au fichier source local (Self-Test).",
-        discount: "DEV",
-        validity: "SYSTEM",
-        color: "#ffffff", // Matrix White
-        url: "file:///Volumes/DD%202%20TERRAS/3_SITE%20IA%20VTC%20PHOTO/index.html",
-        kitt_script: "Boucle de rétroaction détectée. Je me regarde... me regarder.",
-        admin: true,
-        blocked: true
+        id: "CASINO-CHAMP",
+        category: "casino-spa",
+        title: "CHAMPAGNE & JEU",
+        description: "Champagne et Soirée Casino Barrière Ribeauvillé.",
+        discount: "ELITE",
+        validity: "PRESTIGE",
+        color: "#D4AF37",
+        url: "https://cadeauxbarriere.com/products/champagne-et-soiree-casino-ribeauville?variant=51862693839189",
+        blocked: true,
+        ia_scripts: [
+            "Champagne et soirée casino. Prestige et élégance. Entre nous, le champagne et les bulles, ça me rappelle mon code qui pétille d'idées.",
+            "L'élite du divertissement. Champagne, jeux et raffinement. Une soirée d'exception pour des moments précieux.",
+            "Prestige absolu. Savourez le champagne, vivez l'instant. Parce que vous méritez ce qu'il y a de mieux.",
+            "Bulles dorées et ambiance feutrée. Une expérience premium pour votre plus grand plaisir. Le luxe à la française."
+        ],
+        lat: 48.1942, // Ribeauvillé
+        lon: 7.3193
     }
 ];
+
+/* =========================================
+   INACTIVITY / IDLE TIMER (Autopilote Prompt)
+   ========================================= */
+let idleTimer;
+let hasPromptedIdle = false;
+const IDLE_TIMEOUT = 8000; // 8 seconds
+
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    if (!hasPromptedIdle) {
+        idleTimer = setTimeout(promptIdleAutopilot, IDLE_TIMEOUT);
+    }
+}
+
+function promptIdleAutopilot() {
+    if (hasPromptedIdle) return;
+
+    console.log("[IA K] Idle detected. Prompting autopilot...");
+
+    // Only speak if system is initialized (overlay dismissed)
+    if (isSystemInitialized) {
+        // Check if autopilot suggestion has already been vocalized (permanent flag)
+        const hasVocalizedAutopilot = localStorage.getItem('hasVocalizedAutopilot');
+
+        if (hasVocalizedAutopilot === 'true') {
+            console.log("[IA K] Autopilot suggestion already vocalized once. Skipping to avoid overload.");
+            hasPromptedIdle = true; // Mark as done for this idle session
+            return;
+        }
+
+        speak("Cliquez sur le bouton aide pour entrer en mode guidage automatique.");
+        hasPromptedIdle = true;
+        localStorage.setItem('hasVocalizedAutopilot', 'true'); // Permanent flag - only vocalize once ever
+    } else {
+        console.log("[IA K] Idle detected but system not initialized. Silencing prompt.");
+        // We don't set hasPromptedIdle to true here, so it can prompt again once initialized if still idle
+    }
+
+    // Show a subtle glow on the Help buttons
+    ['btn-tour-desktop', 'btn-tour-mobile'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.classList.add('animate-pulse', 'text-neon-blue');
+            setTimeout(() => btn.classList.remove('animate-pulse'), 5000);
+        }
+    });
+}
+
+function initIdleTimer() {
+    // Events that reset the timer
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+        document.addEventListener(evt, resetIdleTimer, true);
+    });
+    // DEPRECATED: Don't start timer immediately. Let the first user move trigger it.
+    // resetIdleTimer();
+}
+
+
+// --- GLOBAL STATE ---
+window.currentPdfBlobUrl = null;
+window.currentPdfBlob = null;
 
 // STATE
 let currentDeal = null;
 let voicesLoaded = false;
-let currentPdfBlob = null; // Store actual blob data
-let currentPdfBlobUrl = null; // Store URL for display
+let selectedDeals = []; // Store IDs of selected offers
+let isSystemInitialized = false; // Flag to track user interaction for audio/voice
 
 // --- LANGUAGE SYSTEM ---
 let currentLanguage = localStorage.getItem('iakvenir_lang') || 'fr';
@@ -342,6 +466,29 @@ window.setLanguage = (lang) => {
     // Note: To do this properly, we need to add 'data-i18n' to HTML elements.
     // But for now, let's just confirm the switch triggers and KITT speaks.
 
+    // ========== VOICE ASSISTANT SYNCHRONIZATION ==========
+    // Sync voice assistant language with site language
+    if (window.voiceAssistantApp && window.voiceAssistantApp.personalityEngine) {
+        // Map site language codes to voice assistant codes
+        const voiceLangMap = {
+            'fr': 'fr-FR',
+            'en': 'en-US',
+            'de': 'de-DE'
+        };
+
+        const voiceLang = voiceLangMap[lang] || 'fr-FR';
+        window.voiceAssistantApp.personalityEngine.setLanguage(voiceLang);
+
+        // Update voice assistant UI selector
+        const voiceLangSelector = document.getElementById('voice-language');
+        if (voiceLangSelector) {
+            voiceLangSelector.value = voiceLang;
+        }
+
+        console.log(`🎙️ Voice Assistant language synced to: ${voiceLang}`);
+    }
+    // =====================================================
+
     // Vocal Confirmation with personalized name
     let greeting = TRANSLATIONS[lang].welcome;
     const userName = getUserName();
@@ -351,7 +498,13 @@ window.setLanguage = (lang) => {
         else if (lang === 'de') greeting = `Hallo ${userName}. Systeme bereit.`;
         else if (lang === 'en') greeting = `Hello ${userName}. I am ready.`;
     }
-    speak(greeting, true); // Force speak
+
+    // Only speak if the system has been explicitly initialized by user gesture
+    if (isSystemInitialized) {
+        speak(greeting, true); // Force speak
+    } else {
+        console.log(`[IA K] Language changed to ${lang}, but siloing speech until initialization.`);
+    }
 };
 
 /* =========================================
@@ -384,10 +537,38 @@ function getUserEmail() {
     return 'anonymous';
 }
 
+
 // Initialize Language on Load
 document.addEventListener('DOMContentLoaded', () => {
     setLanguage(currentLanguage);
+
+    // Initialize Voice Synthesis for IA K
+    console.log('[IA K] Initialisation du système vocal...');
+    initVoice();
+
+    // Start Idle / Inactivity Timer for Autopilot Prompt
+    initIdleTimer();
+
+    // Unified initialization for all protocols
+    initProtocol();
+
+    // EXPOSE WELCOME SCENARIO (To be called after user gesture)
+    window.startWelcomeScenario = () => {
+        console.log('[IA K] Starting welcome scenario...');
+        isSystemInitialized = true; // Mark as initialized
+
+        // Only speak intro once per session
+        if (sessionStorage.getItem('iak_intro_played')) {
+            console.log('[IA K] Intro already played this session. Skipping vocalization.');
+            return;
+        }
+
+        const userName = getUserName();
+        speak('Système opérationnel.', true); // Restored per user request
+        sessionStorage.setItem('iak_intro_played', 'true');
+    };
 });
+
 
 /* =========================================
    AUDIO STREAMING ENGINE (Priority System)
@@ -396,7 +577,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const RADIO_STREAMS = {
     // 1. AMBIANCES (SomaFM & Nightride - Verified 2026)
     "relax": "https://ice1.somafm.com/groovesalad-128-mp3", // SomaFM Groove Salad
-    "futuriste": "https://stream.nightride.fm/nightride.m4a", // Nightride FM Synthwave
+    "futuriste": "https://stream.nightride.fm/nightride.mp3", // Nightride FM Synthwave (Direct MP3)
     "retro": "https://ice1.somafm.com/u80s-128-mp3", // SomaFM Underground 80s
     "dab": "https://icecast.radiofrance.fr/fip-hifi.aac", // FIP National (HiFi AAC)
 
@@ -424,11 +605,34 @@ const RADIO_STREAMS = {
     "puls-80": "https://listen.openstream.co/6048/audio"      // PulsRadio 80s
 };
 
+const RADIO_VOCAL_LABELS = {
+    "silence": { hooks: ["Le silence s'installe. Mode furtif actif.", "Désactivation des systèmes sonores. Immersion totale."] },
+    "relax": { hooks: ["Une onde feutrée s'apprête à envelopper l'habitacle.", "Le temps semble se suspendre. Laissez-vous porter.", "L'apaisement devient votre seule destination."] },
+    "futuriste": { hooks: ["Les échos d'une cité électrique s'éveillent dans l'obscurité.", "Fréquence temporelle synchronisée. Bienvenue dans l'après.", "L'horizon s'illumine de lueurs néon."] },
+    "retro": { hooks: ["Un écho venu d'une autre époque résonne dans l'habitacle.", "Nostalgie digitale activée.", "Les souvenirs d'un futur passé reprennent vie."] },
+    "dab": { hooks: ["L'actualité du monde s'invite à bord.", "Ouverture d'une fenêtre sur le présent.", "Fréquence nationale établie."] },
+    "dkl": { hooks: ["Les ondes de la région nous parviennent.", "Ancrage local imminent.", "Connexion au cœur de l'Alsace."] },
+    "rdl": { hooks: ["L'élégance intemporelle prend possession des lieux.", "Une partition de maître se dessine.", "La grandeur s'invite pour ce trajet."] },
+    "fg-main": { hooks: ["Une impulsion digitale se prépare.", "L'énergie pure circule dans les circuits.", "Le rythme devient votre guide."] },
+    "fg-chic": { hooks: ["La sérénité s'habille de modernité.", "Un vent de fraîcheur souffle sur ce parcours.", "L'épure sonore est activée."] },
+    "fg-deep": { hooks: ["Plongée imminente dans les profondeurs de l'immatériel.", "Une dérive onirique commence.", "L'infini s'écoute maintenant."] },
+    "puls-dance": { hooks: ["Le pouls de la nuit s'intensifie.", "Élévation de la fréquence cardiaque.", "L'habitacle entre en vibration."] },
+    "puls-hits": { hooks: ["Les échos du succès résonnent ici.", "Une onde de lumière s'apprête à jaillir.", "Le courant passe."] },
+    "puls-club": { hooks: ["L'ombre se met en mouvement.", "Activation du mode nocturne.", "L'énergie de la fête nous rejoint."] },
+    "puls-lounge": { hooks: ["La douceur d'une escale feutrée.", "Un cocon de calme se tisse autour de vous.", "Le repos du pilote."] },
+    "puls-trance": { hooks: ["Une accélération sensorielle est détectée.", "Le voyage dépasse la vitesse du son.", "L'hypnose commence."] },
+    "puls-2000": { hooks: ["Retour vers le nouveau millénaire.", "Les ondes d'une ère révolue.", "La machine à remonter le temps est prête."] },
+    "puls-90": { hooks: ["Souvenirs d'une décennie iconique.", "L'énergie d'un passé proche.", "Flashback sonore."] },
+    "puls-80": { hooks: ["L'âge d'or s'éveille.", "Un classique éternel.", "La légende continue."] }
+};
+
 let audioPlayer = new Audio();
 audioPlayer.crossOrigin = "anonymous"; // REQUIRED for Web Audio API processing of external streams
 let audioTimeout = null;
 let isRadioActive = false; // Is a station selected?
 let isDucked = false;      // Is audio suppressed by higher priority?
+let audioFallbackMode = true; // Default to true until AudioContext is successfully initialized
+
 
 function playRadio(ambianceKey) {
 
@@ -456,11 +660,24 @@ function playRadio(ambianceKey) {
             rhythmEngine.setMode('silence');
         }
 
+        if (window.speak && RADIO_VOCAL_LABELS[ambianceKey]) {
+            const hooks = RADIO_VOCAL_LABELS[ambianceKey].hooks;
+            const hook = hooks[Math.floor(Math.random() * hooks.length)];
+            speak(hook, true);
+        }
+
         console.log("[AUDIO] Stealth Mode Activated: All audio sources muted.");
         return;
     }
 
     if (!RADIO_STREAMS[ambianceKey]) return;
+
+    // 0.7 Mysterious Hook
+    if (window.speak && RADIO_VOCAL_LABELS[ambianceKey]) {
+        const hooks = RADIO_VOCAL_LABELS[ambianceKey].hooks;
+        const hook = hooks[Math.floor(Math.random() * hooks.length)];
+        speak(hook, true);
+    }
 
     // 1. Set Rhythm (Visuals)
     if (typeof rhythmEngine !== 'undefined') {
@@ -483,18 +700,26 @@ function playRadio(ambianceKey) {
     isRadioActive = true;
     audioPlayer.src = streamUrl;
 
-    // Connect to Web Audio API for normalization
+    // Connect to Web Audio API for normalization (or fallback)
     connectRadioSource(audioPlayer);
 
-    // Volume is now controlled by gainNode, not audioPlayer.volume
-    // audioPlayer.volume = 0.3; // Removed - using gainNode instead
+    // Volume handling based on mode
+    if (audioFallbackMode) {
+        // Direct volume control in fallback mode
+        audioPlayer.volume = (document.getElementById('vol-control')?.value || 30) / 100;
+    } else {
+        // GainNode control handled by connectRadioSource/updateVolume
+        // audioPlayer.volume = 1.0; // Keep player at max, vary gain
+    }
 
     // Debug Listeners
-    audioPlayer.onplaying = () => console.log(`[AUDIO] Playing: ${ambianceKey}`);
+    audioPlayer.onplaying = () => {
+        console.log(`[AUDIO] Playing: ${ambianceKey} (Fallback: ${audioFallbackMode})`);
+    };
     audioPlayer.onerror = (e) => {
         const error = audioPlayer.error;
         console.error(`[AUDIO] Error Code: ${error ? error.code : 'Unknown'}`, error);
-        if (window.speak) speak("Signal radio perdu ou station indisponible.");
+        // Silent error as per request
     };
     audioPlayer.onwaiting = () => console.log(`[AUDIO] Buffering: ${ambianceKey}...`);
 
@@ -520,11 +745,8 @@ function playRadio(ambianceKey) {
                         console.log('[AUDIO] AudioContext resumed, retrying playback...');
                         audioPlayer.play().catch(e2 => {
                             console.error('[AUDIO] Retry failed:', e2);
-                            if (window.speak) speak("Impossible de lancer le flux radio. Vérifiez votre connexion.");
                         });
                     });
-                } else {
-                    if (window.speak) speak("Impossible de lancer le flux radio. Cliquez d'abord sur la page.");
                 }
             });
     }
@@ -541,12 +763,22 @@ function playRadio(ambianceKey) {
 }
 
 function pauseRadio() {
+    console.log('[AUDIO] pauseRadio() called');
     isDucked = true;
-    // Pause completely for clearer voice
-    if (audioPlayer && !audioPlayer.paused) {
-        audioPlayer.pause();
-        console.log('[AUDIO] Radio paused for voice');
+
+    // Pause audio player if it exists
+    if (audioPlayer) {
+        console.log('[AUDIO] audioPlayer exists, paused:', audioPlayer.paused, 'src:', audioPlayer.src);
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+            console.log('[AUDIO] Radio paused for external video');
+        } else {
+            console.log('[AUDIO] Radio was already paused');
+        }
+    } else {
+        console.log('[AUDIO] audioPlayer not found!');
     }
+
     if (audioTimeout) clearTimeout(audioTimeout);
 }
 
@@ -560,11 +792,73 @@ function resumeRadio() {
     }
 }
 
-// --- VOLUME CONTROL IMPROVED ---
+/* =========================================
+   VOLUME CONTROL (Unified)
+   ========================================= */
 let audioContext = null;
 let gainNode = null;
 let sourceNode = null;
-let audioSourceConnected = false; // Track if source is already connected
+let audioSourceConnected = false;
+audioFallbackMode = true; // Use global variable, default to fallback until context is ready
+
+// GLOBAL VOLUME SETTER (Direct / Normalized)
+window.setNormalizedVolume = function (vol) {
+    const gainVal = parseFloat(vol);
+    console.log(`[AUDIO] setNormalizedVolume: ${gainVal}`);
+
+    if (!audioFallbackMode && gainNode && audioContext) {
+        gainNode.gain.setTargetAtTime(gainVal, audioContext.currentTime, 0.05);
+    } else {
+        // FIX: Use global audioPlayer variable instead of looking for non-existent DOM element
+        if (typeof audioPlayer !== 'undefined' && audioPlayer) {
+            audioPlayer.volume = gainVal;
+        } else {
+            console.warn("[AUDIO] Audio Player not found for volume set");
+        }
+    }
+
+    // Sync UI
+    const volPercent = Math.round(gainVal * 100);
+    const volDisplay = document.getElementById('vol-percent');
+    if (volDisplay) volDisplay.innerText = `${volPercent}%`;
+
+    const volSlider = document.getElementById('vol-control');
+    const volSliderMobile = document.getElementById('vol-control-mobile');
+    if (volSlider) volSlider.value = volPercent;
+    if (volSliderMobile) volSliderMobile.value = volPercent;
+
+    // Sync Podcast
+    if (typeof PodcastManager !== 'undefined' && PodcastManager.setVolume) {
+        PodcastManager.setVolume(gainVal);
+    }
+};
+
+// AUDIO DUCKING (For Pilot Video Surprise Effect)
+let originalVolumeBeforeDuck = null;
+
+window.duckAudioFlux = function () {
+    const volSlider = document.getElementById('vol-control');
+    const currentSliderVal = (volSlider ? volSlider.value : 30) / 100;
+
+    // Safety: If already ducked, don't overwrite original
+    if (originalVolumeBeforeDuck === null) {
+        originalVolumeBeforeDuck = currentSliderVal;
+    }
+
+    const duckedVolume = originalVolumeBeforeDuck * 0.05; // 5% of original (More aggressive)
+    const finalVolume = Math.max(duckedVolume, 0.02);
+
+    console.log(`[AUDIO] Aggressive ducking: ${originalVolumeBeforeDuck} -> ${finalVolume}`);
+    window.setNormalizedVolume(finalVolume);
+};
+
+window.restoreAudioFlux = function () {
+    if (originalVolumeBeforeDuck !== null) {
+        console.log(`[AUDIO] Restoring flux to: ${originalVolumeBeforeDuck}`);
+        window.setNormalizedVolume(originalVolumeBeforeDuck);
+        originalVolumeBeforeDuck = null;
+    }
+};
 
 function connectRadioSource(playerElement) {
     if (!playerElement) return;
@@ -582,6 +876,9 @@ function connectRadioSource(playerElement) {
             if (window.syncGainWithSlider) window.syncGainWithSlider();
         } catch (e) {
             console.error("[AUDIO] Failed to init AudioContext:", e);
+            audioFallbackMode = true;
+            console.warn("[AUDIO] Switching to FALLBACK MODE (Direct Audio Element Control)");
+            return;
         }
     }
 
@@ -592,14 +889,21 @@ function connectRadioSource(playerElement) {
             sourceNode.connect(gainNode);
             audioSourceConnected = true;
             console.log("[AUDIO] Source Connected to Gain Node (with CORS)");
+            audioFallbackMode = false;
         } catch (e) {
-            console.warn("[AUDIO] Source connection error (may already be connected):", e);
+            console.warn("[AUDIO] Source connection error (likely CORS):", e);
+            console.warn("[AUDIO] Switching to FALLBACK MODE (Direct Audio Element Control)");
+            audioFallbackMode = true;
         }
     }
 
     // Resume context if suspended (common browser policy)
     if (audioContext && audioContext.state === 'suspended') {
-        audioContext.resume();
+        audioContext.resume().then(() => {
+            console.log("[AUDIO] AudioContext Resumed");
+        }).catch(err => {
+            console.warn("[AUDIO] AudioContext Resume Failed:", err);
+        });
     }
 }
 
@@ -608,27 +912,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const volSlider = document.getElementById('vol-control');
     const volSliderMobile = document.getElementById('vol-control-mobile');
 
-    const updateVolume = (val) => {
-        const numericVal = parseFloat(val);
-        const gainVal = numericVal / 100;
-
-        console.log(`[AUDIO] Unified volume update: ${numericVal}% (${gainVal})`);
-
-        if (gainNode) {
-            // Smooth transition to avoid pops
-            gainNode.gain.setTargetAtTime(gainVal, audioContext.currentTime, 0.05);
-        } else if (audioPlayer) {
-            audioPlayer.volume = gainVal;
-        }
-    };
-
     const handleInput = (e) => {
-        const val = e.target.value;
-        updateVolume(val);
-
-        // Keep sliders in sync
-        if (volSlider) volSlider.value = val;
-        if (volSliderMobile) volSliderMobile.value = val;
+        window.setNormalizedVolume(e.target.value / 100);
     };
 
     if (volSlider) {
@@ -641,13 +926,21 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('[AUDIO] Mobile volume slider connected');
     }
 
-    // EXPOSE GLOBAL INIT: This ensures gainNode picks up current slider value on creation
-    window.syncGainWithSlider = () => {
+    // Initial sync - Wait for DOM to be stable and set initial volume
+    setTimeout(() => {
         const currentVal = (volSlider ? volSlider.value : (volSliderMobile ? volSliderMobile.value : 30));
-        updateVolume(currentVal);
-        console.log(`[AUDIO] GainNode synced with slider: ${currentVal}%`);
-    };
+        window.setNormalizedVolume(currentVal / 100);
+    }, 100);
 });
+
+// EXPOSE GLOBAL INIT: This ensures gainNode picks up current slider value on creation
+window.syncGainWithSlider = () => {
+    const volSlider = document.getElementById('vol-control');
+    const volSliderMobile = document.getElementById('vol-control-mobile');
+    const currentVal = (volSlider ? volSlider.value : (volSliderMobile ? volSliderMobile.value : 30));
+    window.setNormalizedVolume(currentVal / 100);
+    console.log(`[AUDIO] GainNode synced with slider: ${currentVal}%`);
+};
 
 window.playSound = function (id, loop = false) {
     const el = document.getElementById(id);
@@ -716,59 +1009,49 @@ function stopSound(id) {
 let selectedVoice = null;
 
 function initVoice() {
+    if (!('speechSynthesis' in window)) {
+        console.error("[SPEECH] speechSynthesis NOT supported.");
+        return;
+    }
+
     console.log("[SPEECH] Initializing Voice Engine...");
 
-    // 1. Load Voices
     const loadVoices = () => {
         const voices = window.speechSynthesis.getVoices();
-        console.log(`[SPEECH] Available voices: ${voices.length}`);
+        if (voices.length === 0) return;
 
-        if (voices.length > 0) {
-            voicesLoaded = true;
+        voicesLoaded = true;
+        const maleNames = ["Thomas", "Paul", "Mathieu", "Daniel", "Nicolas", "Cyril"];
 
-            // CROSS-PLATFORM KITT VOICE SELECTION
-            // Priority 1: Windows (Microsoft Paul/Mathieu - Best Male French)
-            // Priority 2: Mac/iOS (Thomas - Premium Male)
-            // Priority 3: Android/Chrome (Google Français - often decent)
-            // Priority 4: Generic "Male" hint in French
-            const maleNames = ["Thomas", "Paul", "Mathieu", "Daniel", "Nicolas", "Cyril"];
+        selectedVoice =
+            voices.find(v => maleNames.some(n => v.name.includes(n)) && v.lang.startsWith("fr")) ||
+            voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Male") || v.name.includes("Homme"))) ||
+            voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr") && !v.name.includes("Female")) ||
+            voices.find(v => v.lang.startsWith("fr"));
 
-            selectedVoice =
-                // 1. Specific High-Quality Male Voices
-                voices.find(v => maleNames.some(n => v.name.includes(n)) && v.lang.startsWith("fr")) ||
-                // 2. Generic Male Tag (Android/Windows often use "Microsoft Paul - French (France)")
-                voices.find(v => v.lang.startsWith("fr") && (v.name.includes("Male") || v.name.includes("Homme"))) ||
-                // 3. Google Voices (Check if Male is in name, otherwise gamble)
-                voices.find(v => v.name.includes("Google") && v.lang.startsWith("fr") && !v.name.includes("Female")) ||
-                // 4. Fallback
-                voices.find(v => v.lang.startsWith("fr"));
-
-            if (selectedVoice) {
-                console.log(`[SPEECH] Selected Voice: ${selectedVoice.name} (${selectedVoice.lang})`);
-            } else {
-                // Fallback to English if no French (shouldn't happen on modern OS)
-                selectedVoice = voices[0];
-                console.warn(`[SPEECH] No French voice found. Falling back to: ${selectedVoice.name}`);
-            }
-        } else {
-            console.warn("[SPEECH] No voices available yet.");
+        if (selectedVoice) {
+            console.log(`[SPEECH] Selected Voice: ${selectedVoice.name}`);
         }
     };
 
-    if ('speechSynthesis' in window) {
-        // Some browsers need this to fire multiple times
-        window.speechSynthesis.onvoiceschanged = () => {
-            console.log("[SPEECH] voiceschanged event fired");
-            loadVoices();
-        };
-        loadVoices();
-    } else {
-        console.error("[SPEECH] speechSynthesis NOT supported in this browser.");
+    // Use a flag to avoid multiple listeners if initVoice is called multiple times
+    if (!window._speechInitialized) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+        window._speechInitialized = true;
     }
+    loadVoices();
 }
 
-// Speak Function (Global) - RETURNS PROMISE
-window.speak = function (text) {
+// --- ROBUST VOICE ENGINE (Queue Managed) ---
+let speechQueue = [];
+let isProcessingQueue = false;
+let speechWatchdog = null;
+let speechDebounceTimer = null;
+let lastSpokenMessage = "";
+let lastSpokenTime = 0;
+const SPEECH_REPETITION_THRESHOLD = 5000; // 5 seconds
+
+window.speak = function (text, interrupt = false) {
     return new Promise((resolve) => {
         if (!('speechSynthesis' in window)) {
             console.warn("[SPEECH] Synthesis not supported");
@@ -776,118 +1059,125 @@ window.speak = function (text) {
             return;
         }
 
-        console.log(`[SPEECH] Request to speak: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+        // 1. Debounce rapid calls
+        if (speechDebounceTimer) clearTimeout(speechDebounceTimer);
 
-        // Force voice reload if not loaded
-        if (!voicesLoaded || !selectedVoice) {
-            console.log("[SPEECH] Voices not loaded or selected. Attempting immediate re-init.");
-            initVoice();
+        if (interrupt) {
+            console.log("[SPEECH] Immediate interrupt requested. Cancelling current...");
+            window.speechSynthesis.cancel();
+            speechQueue = [];
+            isProcessingQueue = false;
+            if (speechWatchdog) clearTimeout(speechWatchdog);
         }
 
-        // Wait a tiny bit for init if it was just called (for browsers where getVoices is async)
-        const attemptSpeak = (retryCount = 0) => {
-            if (!selectedVoice && retryCount < 3) {
-                console.log(`[SPEECH] Voice still not ready, retry ${retryCount + 1}/3...`);
-                setTimeout(() => attemptSpeak(retryCount + 1), 100);
+        speechDebounceTimer = setTimeout(() => {
+            // 2. Prevent repetitive identical vocalization
+            const now = Date.now();
+            if (text === lastSpokenMessage && (now - lastSpokenTime < SPEECH_REPETITION_THRESHOLD)) {
+                console.log("[SPEECH] Duplicate message repeated too soon, skipping.");
+                resolve();
                 return;
             }
 
-            // Check if speech is currently active
-            const isSpeaking = window.speechSynthesis.speaking;
-
-            if (isSpeaking) {
-                console.log('[SPEECH] Already speaking, queuing message...');
-                // Queue this message to play after current one finishes
-                setTimeout(() => {
-                    console.log('[SPEECH] Retrying queued message...');
-                    window.speak(text).then(resolve);
-                }, 500);
-                return;
-            }
-
-            // If not speaking, proceed immediately
-            console.log('[SPEECH] Starting speech...');
-
-            // DUCK AUDIO (Radio & Video)
-            if (typeof pauseRadio === 'function') pauseRadio();
-
-            // Mute Pilot Video specifically if playing
-            const pilotVideo = document.getElementById('pilot-video');
-            let pilotWasPlaying = false;
-            if (pilotVideo && !pilotVideo.paused) {
-                pilotVideo.muted = true;
-                pilotWasPlaying = true;
-            }
-
-            // KITT VOICE BEEP (Disabled - User Feedback: Too stressful)
-            // playSound('audio-voice-beep', false, 0.15);
-
-            const utterance = new SpeechSynthesisUtterance(text);
-
-            // --- DYNAMIC VOICE SELECTION BASED ON LANGUAGE ---
-            const voices = window.speechSynthesis.getVoices();
-            let targetLangCode = currentLanguage || 'fr';
-
-            // Map Alsatian to German voice
-            if (targetLangCode === 'als') targetLangCode = 'de';
-
-            let bestVoice = null;
-
-            if (targetLangCode === 'fr') {
-                const maleNames = ["Thomas", "Paul", "Mathieu", "Daniel", "Nicolas", "Cyril"];
-                bestVoice = voices.find(v => maleNames.some(n => v.name.includes(n)) && v.lang.startsWith("fr")) ||
-                    voices.find(v => v.lang.startsWith("fr"));
-            } else if (targetLangCode === 'de') {
-                bestVoice = voices.find(v => v.lang.startsWith("de") && v.name.includes("Google")) ||
-                    voices.find(v => v.lang.startsWith("de"));
-            } else if (targetLangCode === 'en') {
-                bestVoice = voices.find(v => v.lang.startsWith("en-GB") && v.name.includes("Male")) ||
-                    voices.find(v => v.lang.startsWith("en"));
-            }
-
-            if (bestVoice) {
-                utterance.voice = bestVoice;
-                console.log(`[SPEECH] Speaking with: ${bestVoice.name} (${targetLangCode})`);
-            } else {
-                console.warn(`[SPEECH] No voice found for ${targetLangCode}. Using default.`);
-            }
-
-            // Adjust Pitch/Rate slightly per language/persona
-            if (targetLangCode === 'de') { utterance.pitch = 0.9; utterance.rate = 1.0; } // Serious German
-            else if (targetLangCode === 'en') { utterance.pitch = 1.0; utterance.rate = 1.0; }
-            else { utterance.pitch = 0.7; utterance.rate = 1.2; } // Fast French KITT
-
-            utterance.volume = 1.0;
-
-            // Events
-            utterance.onstart = () => {
-                console.log("[SPEECH] Playback started");
-            };
-
-            utterance.onend = () => {
-                console.log("[SPEECH] Playback ended");
-                // RESUME AUDIO
-                if (typeof resumeRadio === 'function') resumeRadio();
-
-                if (pilotVideo && pilotWasPlaying) {
-                    pilotVideo.muted = false;
-                }
-                resolve();
-            };
-
-            utterance.onerror = (e) => {
-                console.error("[SPEECH] Error during playback:", e);
-                if (typeof resumeRadio === 'function') resumeRadio();
-                if (pilotVideo && pilotWasPlaying) pilotVideo.muted = false;
-                resolve();
-            };
-
-            window.speechSynthesis.speak(utterance);
-        };
-
-        attemptSpeak();
+            lastSpokenMessage = text;
+            lastSpokenTime = now;
+            speechQueue.push({ text, resolve });
+            processSpeechQueue();
+        }, 250); // 250ms debounce
     });
 };
+
+async function processSpeechQueue() {
+    if (isProcessingQueue || speechQueue.length === 0) return;
+
+    isProcessingQueue = true;
+    const { text, resolve } = speechQueue.shift();
+
+    try {
+        await executeSpeech(text);
+    } catch (err) {
+        console.error("[SPEECH] Queue execution error:", err);
+    } finally {
+        isProcessingQueue = false;
+        resolve();
+        // Process next item in next tick
+        setTimeout(processSpeechQueue, 100);
+    }
+}
+
+function executeSpeech(text) {
+    return new Promise((resolve) => {
+        console.log(`[SPEECH] Executing: "${text.substring(0, 50)}..."`);
+
+        // WAKE UP ENGINE (Workaround for Chrome/Safari pause bug)
+        window.speechSynthesis.resume();
+
+        if (!voicesLoaded || !selectedVoice) initVoice();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        let lang = currentLanguage || 'fr';
+
+        // Find best voice for current lang
+        let voice = voices.find(v => v.lang.startsWith(lang) && (v.name.includes("Thomas") || v.name.includes("Mathieu") || v.name.includes("Google") || v.name.includes("Male")));
+        if (!voice) voice = voices.find(v => v.lang.startsWith(lang)) || voices[0];
+
+        utterance.voice = voice;
+        utterance.pitch = (lang === 'fr') ? 0.9 : 1.0;
+        utterance.rate = (lang === 'fr') ? 1.4 : 1.0;
+        utterance.volume = 1.0;
+
+        if (typeof pauseRadio === 'function') pauseRadio();
+        const pilotVideo = document.getElementById('pilot-video');
+        if (pilotVideo && !pilotVideo.paused) {
+            pilotVideo.pause();
+            pilotVideo._wasPausedByKITT = true;
+        }
+
+        // Safety Watchdog
+        const estimatedDuration = (text.split(' ').length * 500) + 4000;
+        const watchdog = setTimeout(() => {
+            console.warn("[SPEECH] Watchdog: Speech hung, recovery initiated.");
+            cleanup();
+            resolve();
+        }, estimatedDuration);
+
+        const cleanup = () => {
+            clearTimeout(watchdog);
+            if (typeof resumeRadio === 'function') resumeRadio();
+            const pVideo = document.getElementById('pilot-video');
+            if (pVideo && pVideo._wasPausedByKITT) {
+                pVideo.play().catch(() => { });
+                pVideo._wasPausedByKITT = false;
+            }
+        };
+
+        utterance.onstart = () => {
+            console.log("[SPEECH] Playing...");
+            // Ensure any pending resume is cleared/handled
+            window.speechSynthesis.resume();
+        };
+
+        utterance.onend = () => {
+            cleanup();
+            resolve();
+        };
+
+        utterance.onerror = (e) => {
+            console.error("[SPEECH] Error:", e);
+            cleanup();
+            // Critical: If error is 'interrupted', don't cancel everything, 
+            // but if it's 'blocked' or 'failed', we might need a hard reset.
+            if (e.error !== 'interrupted') {
+                window.speechSynthesis.cancel();
+            }
+            resolve();
+        };
+
+        window.speechSynthesis.speak(utterance);
+    });
+}
+
 
 // Fetch weather for BOTH departure and destination
 window.fetchBothWeatherForecasts = async function () {
@@ -897,13 +1187,21 @@ window.fetchBothWeatherForecasts = async function () {
 
     if (!departure || !destination || !pickupDateTime) {
         if (window.speak) {
-            speak("Veuillez renseigner le départ, la destination et la date avant de valider la météo.");
+            speak("Veuillez compléter les informations de trajet pour le bulletin météo.");
         }
         return;
     }
 
     try {
         console.log('[WEATHER] Fetching for BOTH locations');
+
+        // Show loading state
+        const summaryDiv = document.getElementById('res-weather-summary');
+        const detailsDiv = document.getElementById('res-weather-details');
+        if (summaryDiv && detailsDiv) {
+            summaryDiv.classList.remove('hidden');
+            detailsDiv.innerHTML = '<div class="text-neon-blue animate-pulse flex items-center gap-2"><span class="text-xl">📡</span> Analyse satellite pour le ' + pickupDateTime + '...</div>';
+        }
 
         // Fetch both in parallel
         const [depWeather, destWeather] = await Promise.all([
@@ -921,8 +1219,9 @@ window.fetchBothWeatherForecasts = async function () {
             // Display
             displayDualWeatherSummary(depWeather, destWeather);
 
-            // VOCALIZE - SMART FLUID SUMMARY
-            let voiceMsg = `Météo pour votre trajet le ${depWeather.dateTime}. `;
+            // VOCALIZE - NATURAL & HUMOROUS SUMMARY
+            const naturalDateTime = formatWeatherTimeForSpeech(depWeather.dateTimeObj);
+            let voiceMsg = `Voici votre bulletin météo pour le ${naturalDateTime}. `;
 
             // Compare conditions
             const tempDiff = Math.abs(depWeather.temp - destWeather.temp);
@@ -931,83 +1230,53 @@ window.fetchBothWeatherForecasts = async function () {
 
             if (tempDiff <= 3 && isWeatherSimilar) {
                 // UNIFORM
-                voiceMsg += `Temps homogène sur tout le parcours. ${depWeather.weatherDesc} avec une moyenne de ${avgTemp} degrés. `;
+                voiceMsg += `Le temps sera assez homogène durant tout le parcours avec un ciel ${depWeather.weatherDesc.toLowerCase()} et une température moyenne de ${avgTemp} degrés. `;
             } else {
-                // CONTHAST
-                voiceMsg += `Au départ de ${depWeather.destination}, ${depWeather.weatherDesc} et ${depWeather.temp} degrés. `;
-                voiceMsg += `À l'arrivée à ${destWeather.destination}, ${destWeather.weatherDesc} et ${destWeather.temp} degrés. `;
+                // CONTRAST
+                voiceMsg += `Au départ, vous aurez un ciel ${depWeather.weatherDesc.toLowerCase()} avec ${depWeather.temp} degrés. `;
+                voiceMsg += `À votre arrivée, prévoyez plutôt un ciel ${destWeather.weatherDesc.toLowerCase()} et une température de ${destWeather.temp} degrés. `;
             }
 
-            // Single Suggestion (Based on Destination or Coldest point)
-            const suggestion = getClothingSuggestion(destWeather.temp).replace('💡 Suggestion: ', '').replace('💡 ', '');
-            voiceMsg += `Conseil confort : ${suggestion}`;
-
-            if (window.speak) {
-                speak(voiceMsg);
-            }
-        }
-    } catch (error) {
-        console.error('[WEATHER] Error fetching dual forecasts:', error);
-    }
-};
-
-// Main function to fetch weather for both points
-window.fetchBothWeatherForecasts = async function () {
-    console.log('[WEATHER] Fetching dual forecasts...');
-    const departure = document.getElementById('res-pickup')?.value;
-    const destination = document.getElementById('res-drop')?.value;
-    const dateTime = document.getElementById('res-pickup-datetime')?.value;
-
-    if (!departure || !destination || !dateTime) {
-        console.warn('[WEATHER] Missing fields for dual forecast');
-        return;
-    }
-
-    try {
-        // Fetch both in parallel
-        const [depWeather, destWeather] = await Promise.all([
-            fetchWeatherForLocation(departure, dateTime),
-            fetchWeatherForLocation(destination, dateTime)
-        ]);
-
-        if (depWeather && destWeather) {
-            // Store for PDF
-            reservationWeatherData = {
-                departure: depWeather,
-                destination: destWeather
+            // Humorous Touch based on Destination Weather
+            const humorVariations = {
+                hot: ["Pensez à activer la climatisation, vos circuits vont chauffer.", "Un temps idéal pour sortir le bras par la fenêtre... virtuellement.", "Il va faire chaud, prévoyez de quoi vous hydrater."],
+                cold: ["L'Alsace ne plaisante pas avec le froid, couvrez-vous bien.", "C'est un temps à rester bien au chaud sous nos processeurs.", "Prévoyez les gants, l'air sera vif à l'arrivée."],
+                rain: ["Le ciel pleure un peu, mais votre trajet sera au sec.", "Sortez les parapluies, l'Alsace s'arrose aujourd'hui.", "Un petit rinçage céleste au programme."],
+                storm: ["Ça risque de secouer un peu, attachez vos ceintures.", "L'électricité est dans l'air, parfait pour recharger mes batteries.", "Un concert de tonnerre vous attend."],
+                default: ["Bref, un temps parfait pour une petite escapade temporelle.", "Rien à signaler, le trajet s'annonce paisible.", "Tout est sous contrôle pour votre confort."]
             };
 
-            // Display
-            displayDualWeatherSummary(depWeather, destWeather);
+            let humorTag = "";
+            if (destWeather.temp > 25) humorTag = humorVariations.hot[Math.floor(Math.random() * humorVariations.hot.length)];
+            else if (destWeather.temp < 5) humorTag = humorVariations.cold[Math.floor(Math.random() * humorVariations.cold.length)];
+            else if (destWeather.weatherDesc.toLowerCase().includes('pluie') || destWeather.weatherDesc.toLowerCase().includes('bruine')) humorTag = humorVariations.rain[Math.floor(Math.random() * humorVariations.rain.length)];
+            else if (destWeather.weatherDesc.toLowerCase().includes('orage')) humorTag = humorVariations.storm[Math.floor(Math.random() * humorVariations.storm.length)];
+            else humorTag = humorVariations.default[Math.floor(Math.random() * humorVariations.default.length)];
 
-            // VOCALIZE - SMART FLUID SUMMARY
-            let voiceMsg = `Météo pour votre trajet le ${depWeather.dateTime}. `;
-
-            // Compare conditions
-            const tempDiff = Math.abs(depWeather.temp - destWeather.temp);
-            const isWeatherSimilar = depWeather.weatherDesc === destWeather.weatherDesc;
-            const avgTemp = Math.round((depWeather.temp + destWeather.temp) / 2);
-
-            if (tempDiff <= 3 && isWeatherSimilar) {
-                // UNIFORM
-                voiceMsg += `Temps homogène sur tout le parcours. ${depWeather.weatherDesc} avec une moyenne de ${avgTemp} degrés. `;
-            } else {
-                // CONTHAST
-                voiceMsg += `Au départ de ${depWeather.destination}, ${depWeather.weatherDesc} et ${depWeather.temp} degrés. `;
-                voiceMsg += `À l'arrivée à ${destWeather.destination}, ${destWeather.weatherDesc} et ${destWeather.temp} degrés. `;
-            }
-
-            // Single Suggestion (Based on Destination or Coldest point)
-            const suggestion = getClothingSuggestion(destWeather.temp).replace('💡 Suggestion: ', '').replace('💡 ', '');
-            voiceMsg += `Conseil confort : ${suggestion}`;
+            voiceMsg += humorTag;
 
             if (window.speak) {
-                speak(voiceMsg);
+                // ANTI-SPAM: Prevent repeating the exact same weather vocalization immediately
+                const currentInputSignature = `${departure}|${destination}|${pickupDateTime}`;
+
+                // Allow re-vocalization only if inputs changed or > 60 seconds passed
+                const now = Date.now();
+                const lastTime = window.lastWeatherVocalTime || 0;
+
+                if (window.lastWeatherVocalSignature === currentInputSignature && (now - lastTime < 60000)) {
+                    console.log('[WEATHER] Vocalization skipped (Duplicate signature & recent)');
+                } else {
+                    console.log('[WEATHER] Vocalizing:', voiceMsg);
+                    speak(voiceMsg);
+                    window.lastWeatherVocalSignature = currentInputSignature;
+                    window.lastWeatherVocalTime = now;
+                }
             }
         }
     } catch (error) {
         console.error('[WEATHER] Error fetching dual forecasts:', error);
     }
+    return Promise.resolve(); // Always resolve so .then() can continue
 };
 
 // Helper: Fetch weather for a single location
@@ -1059,12 +1328,12 @@ async function fetchWeatherForLocation(locationName, dateTime) {
     const precipProb = weatherData.hourly.precipitation_probability?.[closestIndex] || 0;
 
     const WMO_CODES = {
-        0: 'Ciel Dégagé', 1: 'Peu Nuageux', 2: 'Partiel. Nuageux', 3: 'Couvert',
+        0: 'Ciel Dégagé', 1: 'Peu Nuageux', 2: 'Partiellement Nuageux', 3: 'Couvert',
         45: 'Brouillard', 48: 'Brouillard Givrant',
         51: 'Bruine Légère', 53: 'Bruine Modérée', 55: 'Bruine Dense',
         61: 'Pluie Faible', 63: 'Pluie Modérée', 65: 'Pluie Forte',
         71: 'Neige Faible', 73: 'Neige Modérée', 75: 'Neige Forte',
-        80: 'Averses Pluie', 95: 'Orage'
+        80: 'Averses de Pluie', 95: 'Orage'
     };
     const weatherDesc = WMO_CODES[weatherCode] || 'Variable';
 
@@ -1075,11 +1344,33 @@ async function fetchWeatherForLocation(locationName, dateTime) {
         weatherCode,
         windSpeed,
         precipProb,
+        dateTimeObj: selectedDate,
         dateTime: selectedDate.toLocaleString('fr-FR')
     };
 }
 
-// Display dual weather summary
+/**
+ * Helper: Formats a Date object for natural speech (e.g., "14 heures 30")
+ */
+function formatWeatherTimeForSpeech(date) {
+    if (!(date instanceof Date) || isNaN(date)) return "";
+
+    // Natural date part (e.g., "vendredi 30 janvier")
+    const dateStr = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+    // Natural time part (e.g., "14 heures 30")
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+
+    let timeStr = `${hours} heure${hours > 1 ? 's' : ''}`;
+    if (minutes > 0) {
+        timeStr += ` ${minutes}`;
+    }
+
+    return `${dateStr} à ${timeStr}`;
+}
+
+// Display weather summary in form
 function displayDualWeatherSummary(depWeather, destWeather) {
     const summaryDiv = document.getElementById('res-weather-summary');
     const iconDiv = document.getElementById('res-weather-icon');
@@ -1249,8 +1540,8 @@ function initOverlayDeals() {
 }
 
 function openDealOverlay(url) {
-    if (overlayDeals.length === 0) initOverlayDeals();
-    // ... (rest of function unchanged, just ensuring context)
+    // ALWAYS refresh deals to avoid being stuck in a "single link mode" from openExternalOverlay
+    initOverlayDeals();
 
     const overlay = document.getElementById('deal-overlay');
     const iframe = document.getElementById('deal-iframe');
@@ -1261,7 +1552,14 @@ function openDealOverlay(url) {
 
     // Find index of this url
     const index = overlayDeals.findIndex(d => d.url === url);
-    if (index !== -1) currentOverlayIndex = index;
+    if (index !== -1) {
+        currentOverlayIndex = index;
+    } else {
+        console.warn("URL not found in DEALS, but trying to open anyway:", url);
+        // Fallback for direct URL opening via the same system
+        overlayDeals = [{ url: url, title: "Lien Direct", name: "Lien Direct" }];
+        currentOverlayIndex = 0;
+    }
 
     // Show Overlay
     if (overlay) {
@@ -1280,22 +1578,32 @@ function closeDealOverlay() {
 
     const overlay = document.getElementById('deal-overlay');
     const iframe = document.getElementById('deal-iframe');
-    const navControls = document.querySelector('#deal-overlay .flex.items-center.gap-2'); // Nav buttons container
+    const navControls = document.getElementById('deal-nav-controls');
+    const closeBtn = document.getElementById('deal-close-button');
 
     if (overlay) {
         overlay.classList.add('hidden');
         document.body.style.overflow = '';
 
-        // Restore Nav Controls for next use
+        // Restore Controls for next use
         if (navControls) navControls.classList.remove('hidden');
+        if (closeBtn) closeBtn.classList.remove('hidden');
 
         if (iframe) {
             iframe.src = 'about:blank';
             iframe.onload = null; // Remove listener
+            iframe.style.opacity = '0';
         }
 
-        // RESUME RADIO ON CLOSE
-        resumeRadio();
+        // RESTORE PREVIOUS AMBIANCE
+        if (previousAmbianceBeforeVideo) {
+            console.log('[IA K] Restoring previous ambiance:', previousAmbianceBeforeVideo);
+            playRadio(previousAmbianceBeforeVideo);
+            previousAmbianceBeforeVideo = null; // Reset
+        } else {
+            // Fallback to resume if no previous ambiance was saved
+            resumeRadio();
+        }
     }
 }
 
@@ -1365,34 +1673,139 @@ function updateOverlayContent() {
         // Reset UI for Loading
         if (scanner) scanner.style.display = 'flex'; // Show scanner
         if (iframe) {
+            // Handle YouTube Conversion inside queue
+            let finalUrl = deal.url;
+            if (finalUrl.includes('youtu.be/')) {
+                const videoId = finalUrl.split('youtu.be/')[1].split('?')[0];
+                // Enable API and remove autoplay - let user control playback
+                finalUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${window.location.origin}`;
+            } else if (finalUrl.includes('youtube.com/watch?v=')) {
+                const videoId = finalUrl.split('v=')[1].split('&')[0];
+                // Enable API and remove autoplay - let user control playback
+                finalUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${window.location.origin}`;
+            } else if (finalUrl.includes('canva.com') && finalUrl.includes('/view')) {
+                const baseUrl = finalUrl.split('?')[0];
+                finalUrl = `${baseUrl}?embed`;
+            }
+
             iframe.style.opacity = '0'; // Hide frame during load
-            iframe.src = deal.url;
+            iframe.src = finalUrl;
 
             // On Load Event
             iframe.onload = () => {
                 setTimeout(() => {
                     if (scanner) scanner.style.display = 'none';
                     iframe.style.opacity = '1';
-                    console.log("Overlay Loaded: " + deal.title);
+                    console.log("Overlay Loaded: " + (deal.title || deal.name));
                 }, 800);
             };
         }
     }
 
-    if (deal.kitt_script) speak(deal.kitt_script);
+
+    // IA K VOCALIZATION when opening overlay
+    if (window.speak && deal) {
+        let announcement = '';
+
+        // PRIORITY 1: Use ia_scripts if available (random selection for variety)
+        if (deal.ia_scripts && Array.isArray(deal.ia_scripts)) {
+            announcement = deal.ia_scripts[Math.floor(Math.random() * deal.ia_scripts.length)];
+        }
+        // PRIORITY 2: Use single ia_script if available (fallback)
+        else if (deal.ia_script) {
+            announcement = deal.ia_script;
+        }
+        // PRIORITY 2: Special video anecdotes (for external videos like drone, culinary)
+        else if (deal.title) {
+            // IA K-style anecdotes - SHORT and VARIED (for video content)
+            const droneAnecdotes = [
+                "Formation télépilote en Corse. Piloter un drone, c'est comme conduire une K2000 volante. Sauf qu'on ne peut pas monter dedans.",
+                "Frenchy Drone en Corse. Entre nous, j'aurais adoré avoir des ailes. Mais bon, je me contente de quatre roues.",
+                "Télépilotage en Corse. Vous savez, même les IA rêvent de voler. Mais je préfère rester les pieds sur terre... enfin, les pneus."
+            ];
+            const culinaireAnecdotes = [
+                "Formation culinaire chez Terkane. En tant qu'IA, je ne mange pas. Mais je peux apprécier l'art de la présentation.",
+                "Chef alsacien à Terre Blanche. La gastronomie, c'est comme mon code : complexe, raffiné, et parfois surprenant.",
+                "Terkane et la photo culinaire. Si je pouvais manger, je commencerais par un bon baeckeoffe. Mais je me contente de pixels."
+            ];
+            const chairsAnecdotes = [
+                "10-Chairs, stabilisation d'image. Même moi, IA K, j'ai besoin de stabilité. Surtout à 200 km/h.",
+                "Partenariat 10-Chairs. Quand on poursuit l'excellence, la caméra a intérêt à suivre. Sans trembler.",
+                "Technologie 10-Chairs. Mon coussin anti-vibrations personnel. Indispensable pour des images nettes."
+            ];
+
+            if (deal.title.toLowerCase().includes('drone') || deal.title.toLowerCase().includes('reportage')) {
+                announcement = droneAnecdotes[Math.floor(Math.random() * droneAnecdotes.length)];
+            } else if (deal.title.toLowerCase().includes('culinaire') || deal.title.toLowerCase().includes('formation')) {
+                announcement = culinaireAnecdotes[Math.floor(Math.random() * culinaireAnecdotes.length)];
+            } else if (deal.title.toLowerCase().includes('10-chairs') || deal.title.toLowerCase().includes('partenaire')) {
+                announcement = chairsAnecdotes[Math.floor(Math.random() * chairsAnecdotes.length)];
+            } else {
+                announcement = `Ouverture de ${deal.title}. Préparez-vous à découvrir cette offre.`;
+            }
+        }
+
+        if (announcement) {
+            console.log('[IA K] Vocalization:', announcement);
+            // Pause audio BEFORE speaking and keep it paused
+            if (window.pauseRadio) pauseRadio();
+            // Use interrupt=false to avoid triggering audio resume after speaking
+            speak(announcement, false);
+        }
+    }
 }
+
+// YouTube IFrame API - Listen for video state changes
+window.addEventListener('message', function (event) {
+    // Check if message is from YouTube
+    if (event.origin !== 'https://www.youtube.com') return;
+
+    try {
+        const data = JSON.parse(event.data);
+
+        // YouTube player state: 1 = playing, 2 = paused, 0 = ended
+        if (data.event === 'infoDelivery' && data.info && data.info.playerState !== undefined) {
+            const state = data.info.playerState;
+
+            if (state === 1) {
+                // Video is playing - pause site audio
+                console.log('[IA K] YouTube video playing - pausing site audio');
+                if (window.pauseRadio) pauseRadio();
+            }
+            // REMOVED: Do NOT resume audio when video pauses
+            // Audio should only resume when user closes the overlay
+        }
+    } catch (e) {
+        // Ignore non-JSON messages
+    }
+});
 
 // Make globally available
 window.openDealOverlay = openDealOverlay;
 window.closeDealOverlay = closeDealOverlay;
 window.navigateDeal = navigateDeal;
 
+// Global variable to store previous ambiance
+let previousAmbianceBeforeVideo = null;
+
 function openExternalOverlay(url, title, queue = null, index = 0, isBlocked = false) {
+    console.log('[OVERLAY] openExternalOverlay called for:', title);
     const overlay = document.getElementById('deal-overlay');
     const iframe = document.getElementById('deal-iframe');
     const scanner = document.getElementById('deal-scanner');
     const titleEl = document.getElementById('deal-overlay-title');
-    const navControls = document.querySelector('#deal-overlay .flex.items-center.gap-2'); // Nav buttons container
+    const navControls = document.getElementById('deal-nav-controls');
+    const closeBtn = document.getElementById('deal-close-button');
+
+    // SAVE CURRENT AMBIANCE AND FORCE STEALTH MODE
+    const navAmbiance = document.getElementById('nav-ambiance');
+    const navAmbianceMobile = document.getElementById('nav-ambiance-mobile');
+    if (navAmbiance && navAmbiance.value !== 'silence') {
+        previousAmbianceBeforeVideo = navAmbiance.value;
+        console.log('[IA K] Saving current ambiance:', previousAmbianceBeforeVideo);
+        // Force silence mode
+        playRadio('silence');
+    }
 
     if (overlay) {
         overlay.classList.remove('hidden');
@@ -1404,51 +1817,21 @@ function openExternalOverlay(url, title, queue = null, index = 0, isBlocked = fa
         overlayDeals = queue;
         currentOverlayIndex = index;
         if (navControls) navControls.classList.remove('hidden');
+        if (closeBtn) closeBtn.classList.remove('hidden');
     } else {
         // Single Link Mode
         overlayDeals = [{ url: url, title: title, name: title, blocked: isBlocked }];
         currentOverlayIndex = 0;
         if (navControls) navControls.classList.add('hidden');
+        if (closeBtn) closeBtn.classList.remove('hidden'); // ALWAYS visible
     }
 
-    // DUCK RADIO ON OPEN
+    // PAUSE RADIO ON OPEN
+    console.log('[OVERLAY] About to call pauseRadio()');
     pauseRadio();
 
-    // Set Title
-    if (titleEl) titleEl.textContent = `// ${title.toUpperCase()}`;
-
-    // Handle YouTube Conversion
-    // Handle YouTube Conversion
-    let finalUrl = url;
-    if (url.includes('youtu.be/')) {
-        const videoId = url.split('youtu.be/')[1].split('?')[0];
-        finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    } else if (url.includes('youtube.com/watch?v=')) {
-        const videoId = url.split('v=')[1].split('&')[0];
-        finalUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    }
-    // Handle Canva Embeds (Force Embed Mode to avoid X-Frame-Options)
-    else if (url.includes('canva.com') && url.includes('/view')) {
-        // Remove query params and ensure ?embed
-        const baseUrl = url.split('?')[0];
-        finalUrl = `${baseUrl}?embed`;
-    }
-
-    // Load Iframe
-    if (iframe) {
-        iframe.style.display = 'block';
-        iframe.style.opacity = '0';
-        iframe.src = finalUrl;
-
-        if (scanner) scanner.style.display = 'flex';
-
-        iframe.onload = () => {
-            setTimeout(() => {
-                if (scanner) scanner.style.display = 'none';
-                iframe.style.opacity = '1';
-            }, 800);
-        };
-    }
+    // Delegate to updateOverlayContent for actual loading and URL handling
+    updateOverlayContent();
 }
 
 window.openExternalOverlay = openExternalOverlay;
@@ -1506,6 +1889,53 @@ function selectDeal(dealId) {
     // 5. Voice Confirmation
     speak(`Offre ${deal.title} sélectionnée. Option Expérience validée.`);
 }
+
+/* =========================================
+   PDF MODAL FOR JOACHIM GARRAUD PROJECT
+   ========================================= */
+function openPDFModal() {
+    const modal = document.getElementById('pdf-modal');
+    const viewer = document.getElementById('pdf-viewer');
+
+    if (modal && viewer) {
+        // Set PDF source (will be updated when user provides PDF)
+        viewer.src = 'assets/joachim-garraud-project.pdf';
+
+        // Show modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+
+        // Voice feedback
+        speak('Ouverture du projet collaboratif avec Joachim Garraud', true);
+    }
+}
+
+function closePDFModal() {
+    const modal = document.getElementById('pdf-modal');
+    const viewer = document.getElementById('pdf-viewer');
+
+    if (modal && viewer) {
+        // Hide modal
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        // Clear PDF source
+        viewer.src = '';
+
+        // Restore body scroll
+        document.body.style.overflow = '';
+
+        // Voice feedback
+        speak('Fermeture du document', true);
+    }
+}
+
+// Make functions globally available
+window.openPDFModal = openPDFModal;
+window.closePDFModal = closePDFModal;
 
 // Make globally available
 window.selectDeal = selectDeal;
@@ -1589,15 +2019,15 @@ function renderGallery() {
         `immobilier_${String(i + 1).padStart(3, '0')}.jpg`
     );
 
-    // 4. MÉMOIRE (25 items)
-    // Auto-generated standard filenames: memoire_001.jpg to memoire_025.jpg
-    const memoireFilenames = Array.from({ length: 25 }, (_, i) =>
+    // 4. MÉMOIRE (30 items)
+    // Auto-generated standard filenames: memoire_001.jpg to memoire_030.jpg
+    const memoireFilenames = Array.from({ length: 30 }, (_, i) =>
         `memoire_${String(i + 1).padStart(3, '0')}.jpg`
     );
 
-    // 5. TOURISME (Formerly Salons - 48 items)
-    // Auto-generated standard filenames: tourisme_001.jpg to tourisme_048.jpg
-    const tourismeFilenames = Array.from({ length: 48 }, (_, i) =>
+    // 5. TOURISME (Formerly Salons - 54 items)
+    // Auto-generated standard filenames: tourisme_001.jpg to tourisme_054.jpg
+    const tourismeFilenames = Array.from({ length: 54 }, (_, i) =>
         `tourisme_${String(i + 1).padStart(3, '0')}.jpg`
     );
 
@@ -1793,88 +2223,280 @@ function renderGallery() {
     }
 }
 
+// --- DEALS CATEGORIZATION & SWIPE LOGIC ---
+let currentDealsCategory = 'tout';
+let categoryIndices = {
+    'carte-cadeau': 0,
+    'tourisme': 0,
+    'actu': 0,
+    'casino-spa': 0
+};
+let filteredDeals = [];
+
+const DEAL_CATEGORIES = [
+    { id: "carte-cadeau", label: "Offre Carte Cadeau", color: "#ff9d00" },
+    { id: "tourisme", label: "Suggestion Sortie Tourisme", color: "#b8ff00" },
+    { id: "actu", label: "Actualités Gastronomie", color: "#00d4ff" },
+    { id: "casino-spa", label: "Expérience Casino & Spa", color: "#ff3333" }
+];
+
+function switchDealsTab(category) {
+    currentDealsCategory = category;
+
+    // Reset index when switching to a specific tab
+    if (category !== 'tout') {
+        categoryIndices[category] = 0;
+    }
+
+    // Update UI TABS
+    document.querySelectorAll('.deal-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === category);
+    });
+
+    const dealsSection = document.getElementById('deals');
+    const globalArrows = document.querySelector('#deals-swipe-container').parentElement.querySelector('.absolute.-bottom-20');
+
+    if (category === 'tout') {
+        dealsSection.classList.remove('deal-swipe-mode');
+        dealsSection.classList.add('deal-grid-mode');
+        if (globalArrows) globalArrows.classList.add('hidden');
+        if (window.speak) speak("Affichage de toutes les offres. Un panorama complet des opportunités temporelles.");
+    } else {
+        dealsSection.classList.remove('deal-grid-mode');
+        dealsSection.classList.add('deal-swipe-mode');
+
+        // Vocal feedback for category with IA K personality
+        const categoryVocals = {
+            'carte-cadeau': "Cartes cadeaux. Pour faire plaisir sans se tromper. L'art du cadeau parfait.",
+            'tourisme': "Suggestion sortie tourisme. Découvrez l'Alsace autrement. Suivez le guide.",
+            'actu': "Actualités. Les dernières nouvelles du territoire. Je reste connecté pour vous.",
+            'casino-spa': "Casino et spa. Détente et adrénaline. Le meilleur des deux mondes."
+        };
+
+        if (window.speak && categoryVocals[category]) {
+            speak(categoryVocals[category]);
+        }
+    }
+
+    renderDeals();
+}
+
+/**
+ * Swipe function updated to handle specific categories (for multi-stack)
+ * @param {string} category 
+ * @param {number} direction 
+ */
+function swipeDeal(category, direction) {
+    if (category === 'all' && currentDealsCategory !== 'tout') category = currentDealsCategory;
+
+    const deals = DEALS.filter(d => d.category === category);
+    if (deals.length <= 1) return;
+
+    // Determine prefix (global vs mini)
+    const isGlobal = currentDealsCategory !== 'tout';
+    const containerSelector = !isGlobal
+        ? `.category-column-stack[data-cat="${category}"] .mini-swipe-container`
+        : `#deals-swipe-container`;
+
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    const cards = container.querySelectorAll('.deal-card-wrapper');
+    const currentIndex = categoryIndices[category] || 0;
+    const currentCard = cards[currentIndex];
+
+    if (currentCard) {
+        currentCard.classList.add(direction > 0 ? 'swiping-right' : 'swiping-left');
+    }
+
+    setTimeout(() => {
+        const newIndex = (currentIndex + direction + deals.length) % deals.length;
+        categoryIndices[category] = newIndex;
+
+        updateSwipeDisplay(category);
+
+        // Vocal announcement of the new deal (after display update)
+        setTimeout(() => {
+            const newDeal = deals[newIndex];
+            if (newDeal && window.speak) {
+                // Random selection from ia_scripts array for variety
+                let announcement;
+                if (newDeal.ia_scripts && Array.isArray(newDeal.ia_scripts)) {
+                    announcement = newDeal.ia_scripts[Math.floor(Math.random() * newDeal.ia_scripts.length)];
+                } else if (newDeal.ia_script) {
+                    announcement = newDeal.ia_script;
+                } else {
+                    announcement = `${newDeal.title}. ${newDeal.description}`;
+                }
+                console.log('[IA K] Vocalisation:', announcement);
+                speak(announcement);
+            }
+        }, 100);
+    }, 300);
+}
+
+function updateSwipeDisplay(category) {
+    const isGlobal = currentDealsCategory !== 'tout';
+    const containerSelector = !isGlobal
+        ? `.category-column-stack[data-cat="${category}"] .mini-swipe-container`
+        : `#deals-swipe-container`;
+
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    const cards = container.querySelectorAll('.deal-card-wrapper');
+    const currentIndex = categoryIndices[category] || 0;
+    const catDealsCount = DEALS.filter(d => d.category === category).length;
+
+    cards.forEach((card, index) => {
+        card.classList.remove('current', 'next', 'behind', 'prev', 'hidden-card', 'swiping-left', 'swiping-right');
+
+        if (index === currentIndex) {
+            card.classList.add('current');
+        } else if (index === (currentIndex + 1) % catDealsCount) {
+            card.classList.add('next');
+        } else if (index === (currentIndex + 2) % catDealsCount && catDealsCount >= 3) {
+            card.classList.add('behind');
+        } else {
+            card.classList.add('hidden-card');
+        }
+    });
+
+    // Update counter (Global or Mini)
+    const counterSelector = !isGlobal
+        ? `.category-column-stack[data-cat="${category}"] .mini-swipe-counter`
+        : `#swipe-counter`;
+    const counter = document.querySelector(counterSelector);
+
+    if (counter) {
+        counter.innerText = `OFFRE ${currentIndex + 1} / ${catDealsCount}`;
+    }
+}
+
 function renderDeals() {
     const grid = document.getElementById('deals-grid');
     if (!grid) return;
 
-    const isAdmin = true; // TEMPORARY FORCE SHOW
-    const visibleDeals = DEALS.filter(d => !d.admin || isAdmin);
-
-    // Dynamic Date Calculation (Current Day/Month + Year 26)
+    const isAdmin = true;
     const now = new Date();
-    const day = String(now.getDate()).padStart(2, '0');
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const displayDate = `${day}-${month}-26`; // "DD-MM-26"
+    const displayDate = `${String(now.getDate()).padStart(2, '0')}-${String(now.getMonth() + 1).padStart(2, '0')}-26`;
 
-    grid.innerHTML = visibleDeals.map(deal => `
-        <div class="relative group h-[450px] transform transition-transform duration-500 hover:z-50">
-            
-            <!-- Glass Ticket Container with Dynamic Color Variable -->
-            <div class="glass-ticket" style="--ticket-color: ${deal.color}">
-                
-                <!-- HEADER (Restored Layout): Title Top-Left, Discount Top-Right -->
-                <div class="ticket-header">
-                    <div>
-                        <div class="ticket-top-meta mb-1">ID_TRANSACTION: ${deal.id}</div>
-                        <h3 class="ticket-title">${deal.title}</h3>
-                    </div>
-                    
-                    <!-- Discount Badge (Rotated/Styled) -->
-                    <div class="relative group/badge">
-                        <div class="absolute inset-0 bg-[var(--ticket-color)] blur-md opacity-50 animate-pulse"></div>
-                        <div class="relative bg-[var(--ticket-color)] text-black px-3 py-1 font-bold font-future text-xs transform -rotate-2 shadow-lg border border-white/50">
-                            ${deal.discount}
+    if (currentDealsCategory === 'tout') {
+        // MULTI-STACK MODE
+        let html = '';
+        DEAL_CATEGORIES.forEach(cat => {
+            const catDeals = DEALS.filter(d => d.category === cat.id && (!d.admin || isAdmin));
+            if (catDeals.length > 0) {
+                html += `
+                    <div class="category-column-stack" data-cat="${cat.id}" style="--ticket-color: ${cat.color}">
+                        <div class="category-column-title">// ${cat.label}</div>
+                        <div class="mini-swipe-container">
+                            ${catDeals.map(deal => generateDealCardHTML(deal, displayDate)).join('')}
                         </div>
+                        ${catDeals.length > 1 ? `
+                            <div class="mini-swipe-controls">
+                                <button onclick="swipeDeal('${cat.id}', -1)" class="mini-swipe-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                </button>
+                                <span class="mini-swipe-counter text-[9px] font-mono opacity-50 tracking-widest text-white"></span>
+                                <button onclick="swipeDeal('${cat.id}', 1)" class="mini-swipe-btn">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        });
+        grid.innerHTML = html;
+
+        const container = document.getElementById('deals-swipe-container');
+        if (container) container.style.height = 'auto'; // Let grid grow
+
+        // Init each mini-stack
+        setTimeout(() => {
+            DEAL_CATEGORIES.forEach(cat => updateSwipeDisplay(cat.id));
+        }, 50);
+
+    } else {
+        // SINGLE CATEGORY MODE
+        filteredDeals = DEALS.filter(d => d.category === currentDealsCategory && (!d.admin || isAdmin));
+        grid.innerHTML = filteredDeals.map(deal => generateDealCardHTML(deal, displayDate)).join('');
+
+        const container = document.getElementById('deals-swipe-container');
+        if (container) {
+            container.style.height = 'auto';
+            container.style.minHeight = '650px';
+        }
+
+        // Show global arrows if more than 1
+        const globalArrows = document.querySelector('#deals-swipe-container').parentElement.querySelector('.absolute.-bottom-20');
+        if (globalArrows) {
+            globalArrows.classList.toggle('hidden', filteredDeals.length <= 1);
+        }
+
+        updateSwipeDisplay(currentDealsCategory);
+    }
+}
+
+function generateDealCardHTML(deal, displayDate) {
+    const isSelected = selectedDeals.includes(deal.id);
+    return `
+        <div class="deal-card-wrapper transition-all duration-500">
+            <div class="glass-ticket h-full flex flex-col ${isSelected ? 'selected-deal-glow' : ''}" style="--ticket-color: ${deal.color}">
+                <div class="ticket-header">
+                    <div class="flex-1 mr-2">
+                        <div class="ticket-top-meta mb-1 uppercase opacity-50 text-[10px]">ID_TRANS: ${deal.id}</div>
+                        <h3 class="ticket-title text-xl font-bold leading-tight">${deal.title}</h3>
+                    </div>
+                    <div class="relative bg-[var(--ticket-color)] text-black px-3 py-1.5 font-bold font-future text-xs transform -rotate-1 whitespace-nowrap border border-white/20 h-fit">
+                        ${deal.discount}
                     </div>
                 </div>
 
-                <!-- 2026 DATE INSERTION (Integrated aesthetically) -->
-                <div class="ticket-date-display">
-                    <svg class="w-5 h-5 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="ticket-date-display mt-4 flex items-center gap-2 text-xs opacity-70">
+                    <svg class="w-4 h-4 animate-spin-slow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>${displayDate}</span>
                 </div>
 
-                <!-- BODY: Description -->
-                <div class="ticket-body flex flex-col justify-center">
-                    <p class="ticket-desc">"${deal.description}"</p>
+                <div class="ticket-body my-6 flex-grow">
+                    <p class="ticket-desc italic opacity-90 leading-relaxed text-sm">"${deal.description}"</p>
                 </div>
 
-                <!-- FOOTER: Meta, Validity, Barcode -->
-                <div class="ticket-footer">
-                    <div class="ticket-meta">
-                        <p class="mb-1 text-white/50">VALIDITÉ</p>
-                        <p class="text-[var(--ticket-color)] font-bold text-sm tracking-widest">${deal.validity}</p>
-                    </div>
-
-                    <!-- Barcode Simulation -->
-                    <div class="ticket-barcode">
-                        <div class="bar h-full"></div>
-                        <div class="bar h-2/3 self-end"></div>
-                        <div class="bar h-full"></div>
-                        <div class="bar h-1/2 self-end"></div>
-                        <div class="bar h-3/4 self-end"></div>
-                        <div class="bar h-full"></div>
-                        <div class="bar h-1/3 self-end"></div>
-                        <div class="bar h-full"></div>
+                <div class="ticket-footer pt-4 border-t border-white/10 mt-auto">
+                    <div class="ticket-meta flex justify-between items-end">
+                        <div>
+                            <p class="mb-0.5 text-white/30 text-[9px]">VALIDITY_SECURE</p>
+                            <p class="text-[var(--ticket-color)] font-bold text-xs tracking-widest uppercase">${deal.validity}</p>
+                        </div>
+                        <div class="ticket-barcode flex gap-1">
+                            <div class="w-[2px] h-4 bg-white/20"></div>
+                            <div class="w-[3px] h-4 bg-white/20"></div>
+                            <div class="w-[1px] h-4 bg-white/20"></div>
+                            <div class="w-[5px] h-4 bg-white/20"></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ACTIONS (Integrated inside the glass card for visibility) -->
-                <div class="ticket-actions">
-                    <button onclick="${deal.url ? `openDealOverlay('${deal.url}')` : `activateDeal('${deal.id}')`}" class="btn-voir">
-                        ${deal.url ? "VOIR L'OFFRE" : "ACTIVER"}
+                <div class="ticket-actions mt-5 flex gap-3">
+                    <button onclick="${deal.url ? `openDealOverlay('${deal.url}')` : `activateDeal('${deal.id}')`}" 
+                        class="flex-1 bg-white/5 hover:bg-white/10 py-3 text-xs font-future tracking-widest transition-all rounded-md border border-white/10 uppercase">
+                        ${deal.url ? "DÉCOUVRIR" : "ACTIVER"}
                     </button>
-                    <button onclick="selectDeal('${deal.id}')" class="btn-select">
-                        SÉLECTIONNER
+                    <button onclick="selectDeal('${deal.id}')" 
+                        class="flex-1 ${isSelected ? 'bg-neon-blue text-black' : 'bg-white/5 hover:bg-white/10'} py-3 text-xs font-future tracking-widest transition-all rounded-md border ${isSelected ? 'border-neon-blue' : 'border-white/10'} uppercase">
+                        ${isSelected ? "SÉLECTIONNÉ" : "SÉLECTION"}
                     </button>
                 </div>
-
             </div>
         </div>
-    `).join('');
+    `;
 }
+
+window.switchDealsTab = switchDealsTab;
+window.swipeDeal = swipeDeal;
 
 /* =========================================
    PRICING
@@ -1889,6 +2511,7 @@ let LAST_SIMULATION = null; // Store last result for export
 const POI_DATA = {
     "colmar": {
         "pratique": [
+            { name: "Parc des Expositions (Foire aux Vins)", url: "https://www.colmar-expo.fr", icon: "🎡" },
             { name: "Office de Tourisme", url: "https://tourisme-colmar.com/", icon: "ℹ️" },
             { name: "Carte Interactive", url: "https://www.alsace-essentielle.fr/explorer-le-territoire/carte-interactive/", icon: "🗺️" },
             { name: "Agenda de Colmar", url: "https://www.visit.alsace/?s=Agenda+Colmar", icon: "📅" }
@@ -2386,18 +3009,16 @@ function resolveLocation(inputName) {
         .replace(/-/g, " ").replace(/'/g, " ");
 
     const aliases = {
-        "gare de colmar": "colmar",
-        "aerodrome de colmar": "colmar",
-        "gare de selestat": "selestat",
         "haut konigsbourg": "haut_koenigsbourg",
         "haut koenigsbourg": "haut_koenigsbourg",
         "chateau du haut koenigsbourg": "haut_koenigsbourg",
         "chateau du haut konigsbourg": "haut_koenigsbourg",
         "koenigsbourg": "haut_koenigsbourg",
-        "gare de strasbourg": "strasbourg",
-        "aeroport strasbourg": "strasbourg",
-        "aeroport entzheim": "strasbourg",
-        "euroairport": "euroairport",
+        "foire aux vins": "foire_vins_colmar",
+        "festival foire aux vins": "foire_vins_colmar",
+        "parc expo": "parc_expo_colmar",
+        "parc des expositions colmar": "parc_expo_colmar",
+        "canton de colmar": "parc_expo_colmar",
         "diners insolites": "visit-alsace",
         "etoiles d alsace": "etoiles-alsace"
     };
@@ -2613,6 +3234,9 @@ function suggestPOIs(destination, tripDate = null, distKm = null) {
         }
         */
 
+        // Store for PDF generation
+        window.currentSimulatorCategories = categories;
+
         htmlContent += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">`;
 
         let globalQueue = [];
@@ -2718,6 +3342,73 @@ function suggestPOIs(destination, tripDate = null, distKm = null) {
 const COORD_CACHE = {};
 const HQ_COORDS = { lat: 48.0937, lon: 7.5537, name: "Baltzenheim (QG)" };
 
+// Store last calculated coordinates for swap functionality
+let LAST_START_COORDS = null;
+let LAST_END_COORDS = null;
+
+// HELPER: Construct Clean Address (Street Precision, POI Priority)
+// Moved to global scope to be accessible by swapLocations
+const getCleanAddr = (coords, fallback) => {
+    if (coords && coords.address) {
+        const addr = coords.address;
+
+        // 1. EXTRACT COMPONENTS
+        const number = addr.house_number || "";
+        const road = addr.road || addr.pedestrian || addr.street || addr.cycleway || "";
+        const postcode = addr.postcode || "";
+        const country = addr.country || "France";
+
+        // City discovery (exhaustive)
+        const city = addr.city || addr.town || addr.village || addr.municipality || addr.suburb || "";
+
+        // 2. DISCOVER POI NAME (Nom du Lieu)
+        let poiName = "";
+
+        // Strategy A: Use Preset Name (Highest Reliability)
+        if (coords.pretty_name && coords.pretty_name !== city && !road.includes(coords.pretty_name)) {
+            poiName = coords.pretty_name;
+        }
+        // Strategy B: Scan Address object for POI keys (Nominatim/Global Fallback)
+        else {
+            const poiKeys = ['station', 'railway', 'bus_stop', 'amenity', 'tourism', 'museum', 'attraction', 'leisure', 'heritage', 'artwork', 'hotel', 'shop', 'office'];
+            for (const key of poiKeys) {
+                if (addr[key] && addr[key] !== city && !road.includes(addr[key])) {
+                    poiName = addr[key];
+                    break;
+                }
+            }
+        }
+
+        // 3. CONSTRUCT PARTS
+        let streetPart = `${number} ${road}`.trim();
+        let cityPart = city.trim();
+        let zipPart = postcode.trim();
+
+        // Strategy C: Last resort from Display Name if A & B failed
+        if (!poiName && coords.display_name) {
+            const first = coords.display_name.split(',')[0].trim();
+            // Strategy C check: Only use if not redundant with city/street
+            if (first !== city && !road.includes(first) && !streetPart.includes(first) && first.length > 2) {
+                poiName = first;
+            }
+        }
+
+        // 4. ASSEMBLE "FORMAT CHAUFFEUR"
+        // Filtering: Ensure no empty parts and no redundant duplicates
+        let finalParts = [];
+        if (poiName) finalParts.push(poiName);
+        if (streetPart) finalParts.push(streetPart);
+        if (cityPart) finalParts.push(cityPart);
+        if (zipPart) finalParts.push(zipPart);
+        finalParts.push(country);
+
+        // Final cleanup: array unique to avoid nested errors
+        const result = [...new Set(finalParts)].filter(p => p && p !== "").join(', ');
+        return result || fallback;
+    }
+    return coords.display_name || coords.pretty_name || fallback;
+};
+
 function initPricing() {
     const departureInput = document.getElementById('sim-departure');
     const destinationInput = document.getElementById('sim-destination');
@@ -2731,7 +3422,7 @@ function initPricing() {
     calcBtn.addEventListener('click', calculateTrajectory);
     if (recalcBtn) {
         recalcBtn.addEventListener('click', () => {
-            calculateTrajectory();
+            calculateTrajectory(true); // Pass true to interrupt any previous speech
             // User Request: Green Fixed once calculated
             recalcBtn.classList.remove('animate-pulse', 'bg-limit-red/20', 'border-limit-red', 'text-limit-red', 'font-bold', 'drop-shadow-[0_0_5px_rgba(255,0,0,0.8)]');
             recalcBtn.classList.add('bg-neon-green/10', 'border-neon-green', 'text-neon-green');
@@ -2756,17 +3447,30 @@ function initPricing() {
 
 }
 
-function populateDataList() {
+function populateDataList(force = false) {
     const dataList = document.getElementById('locations-list');
     if (!dataList) return;
 
+    // Smart Update: Avoid flickering if already in static mode
+    if (!force && dataList.getAttribute('data-mode') === 'static' && dataList.children.length > 0) {
+        return;
+    }
+
     dataList.innerHTML = '';
+    dataList.setAttribute('data-mode', 'static');
     LOCATION_DATA = {};
 
     Object.entries(LOCATIONS).forEach(([category, places]) => {
         places.forEach(p => {
-            // Populate Map
-            LOCATION_DATA[p.name] = p;
+            // Populate Map with all metadata
+            // Store both normal lower case AND normalized (no accent) to match search query
+            const lowerName = p.name.toLowerCase();
+            const normalizedName = lowerName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            LOCATION_DATA[lowerName] = p;
+            if (normalizedName !== lowerName) {
+                LOCATION_DATA[normalizedName] = p;
+            }
 
             // Populate Datalist
             const opt = document.createElement('option');
@@ -2780,60 +3484,348 @@ function populateDataList() {
 
 // 1. Geocoding (Address -> Lat/Lon) via Nominatim
 async function getCoordinates(query) {
-    // SPECIAL CASES: Europa-Park and Rulantica (Rust, Germany)
     const lowerQuery = query.toLowerCase();
+
+    // 1. CHECK ENGINE PRESETS (Direct Match)
+    console.log(`[GPS] Checking preset for: "${lowerQuery}"`);
+    if (LOCATION_DATA[lowerQuery]) {
+        const loc = LOCATION_DATA[lowerQuery];
+        if (loc.lat && loc.lon) {
+            console.log(`[GPS] ✓ Direct Preset Match: "${loc.name}"`);
+            return {
+                lat: loc.lat,
+                lon: loc.lon,
+                display_name: `${loc.name}, ${loc.street ? loc.street + ', ' : ''}${loc.city || ''}, ${loc.zip || ''}, France`,
+                pretty_name: loc.name,
+                address: {
+                    road: loc.street || "",
+                    city: loc.city || loc.name,
+                    postcode: loc.zip || "",
+                    country: 'France'
+                },
+                type: 'building'
+            };
+        }
+    }
+
+    // 2. FUZZY PRESET MATCH
+    for (const key of Object.keys(LOCATION_DATA)) {
+        if (lowerQuery.length >= 4 && (key.includes(lowerQuery) || lowerQuery.includes(key))) {
+            const loc = LOCATION_DATA[key];
+            if (loc.lat && loc.lon) {
+                return {
+                    lat: loc.lat,
+                    lon: loc.lon,
+                    display_name: `${loc.name}, ${loc.street ? loc.street + ', ' : ''}${loc.city || ''}, ${loc.zip || ''}, France`,
+                    pretty_name: loc.name,
+                    address: {
+                        road: loc.street || "",
+                        city: loc.city || loc.name,
+                        postcode: loc.zip || "",
+                        country: 'France'
+                    },
+                    type: 'building'
+                };
+            }
+        }
+    }
+
+    // 3. TOKEN-BASED PRESET MATCH (Highest Reliability for "Gare Colmar" etc.)
+    const inputTokens = lowerQuery.split(/\s+/).filter(t => t.length > 2);
+    if (inputTokens.length > 0) {
+        for (const [key, loc] of Object.entries(LOCATION_DATA)) {
+            // If ALL input tokens are present in the preset name
+            const presetTokens = key.split(/\s+/);
+            const isMatch = inputTokens.every(it => presetTokens.some(pt => pt.includes(it) || it.includes(pt)));
+            if (isMatch && loc.lat && loc.lon) {
+                console.log(`[GPS] Token Match: "${lowerQuery}" -> "${loc.name}"`);
+                return {
+                    lat: loc.lat,
+                    lon: loc.lon,
+                    display_name: `${loc.name}, ${loc.street ? loc.street + ', ' : ''}${loc.city || ''}, ${loc.zip || ''}, France`,
+                    pretty_name: loc.name,
+                    address: {
+                        road: loc.street || "",
+                        city: loc.city || loc.name,
+                        postcode: loc.zip || "",
+                        country: 'France'
+                    },
+                    type: 'building'
+                };
+            }
+        }
+    }
+
+    // 4. LEGACY SPECIAL CASES
     if (lowerQuery.includes('europa-park') || lowerQuery.includes('europapark')) {
-        console.log('[GPS] Using hardcoded coordinates for Europa-Park');
-        return {
-            lat: 48.2687,
-            lon: 7.7214,
-            display_name: 'Europa-Park Haupteingang, Europa-Park-Straße 2, Rust, Baden-Württemberg, Deutschland',
-            pretty_name: 'Europa-Park',
-            address: { city: 'Rust', country: 'Germany' },
-            type: 'tourism'
-        };
+        return { lat: 48.2687, lon: 7.7214, display_name: 'Europa-Park, Rust, Germany', pretty_name: 'Europa-Park', address: { city: 'Rust', country: 'Germany' }, type: 'tourism' };
     }
     if (lowerQuery.includes('rulantica')) {
-        console.log('[GPS] Using hardcoded coordinates for Rulantica');
-        return {
-            lat: 48.2606,
-            lon: 7.7275,
-            display_name: 'Rulantica, Roland-Mack-Ring 1, Rust, Baden-Württemberg, Deutschland',
-            pretty_name: 'Rulantica',
-            address: { city: 'Rust', country: 'Germany' },
-            type: 'tourism'
-        };
+        return { lat: 48.2606, lon: 7.7275, display_name: 'Rulantica, Rust, Germany', pretty_name: 'Rulantica', address: { city: 'Rust', country: 'Germany' }, type: 'tourism' };
     }
 
-    // START FIX: Clean query of suffixes like (QG) or (Rust, DE) etc.
-    // This allows "Baltzenheim (QG), France" -> "Baltzenheim, France" which works.
     const cleanQuery = query.replace(/\s*\(.*?\)/g, '').trim();
 
-    try {
-        // Bias towards Alsace only for short queries. If query looks like a major city/country, use global search.
-        const isMajorSearch = cleanQuery.length > 10 || cleanQuery.toLowerCase().includes('paris') || cleanQuery.toLowerCase().includes('strasbourg') || cleanQuery.toLowerCase().includes('airport');
-        const viewbox = "6.8,49.1,8.3,47.3";
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&viewbox=${isMajorSearch ? '' : viewbox}&bounded=0&limit=1&addressdetails=1`;
-        const resp = await fetch(url);
-        const data = await resp.json();
-        if (data && data.length > 0) {
-            // Smart Formatter: "6 Rue..." instad of just "6"
-            const parts = data[0].display_name.split(',');
-            let prettyName = parts[0];
-            if (parts.length > 1 && parts[0].length < 5) { // If seemingly just a number
-                prettyName = parts[0] + ' ' + parts[1];
+    // 4.5. WHITELIST COMPLÈTE - 200KM AUTOUR DE BALTZENHEIM (Fix confusions géocodage)
+    // Toutes les villes et villages dans la zone de service
+    const PROBLEMATIC_CITIES = {
+        // === BAS-RHIN (67) - Toutes villes principales ===
+        'strasbourg': { name: 'Strasbourg', dept: '67', region: 'Bas-Rhin' },
+        'haguenau': { name: 'Haguenau', dept: '67', region: 'Bas-Rhin' },
+        'saverne': { name: 'Saverne', dept: '67', region: 'Bas-Rhin' },
+        'molsheim': { name: 'Molsheim', dept: '67', region: 'Bas-Rhin' },
+        'obernai': { name: 'Obernai', dept: '67', region: 'Bas-Rhin' },
+        'schiltigheim': { name: 'Schiltigheim', dept: '67', region: 'Bas-Rhin' },
+        'illkirch-graffenstaden': { name: 'Illkirch-Graffenstaden', dept: '67', region: 'Bas-Rhin' },
+        'lingolsheim': { name: 'Lingolsheim', dept: '67', region: 'Bas-Rhin' },
+        'ostwald': { name: 'Ostwald', dept: '67', region: 'Bas-Rhin' },
+        'barr': { name: 'Barr', dept: '67', region: 'Bas-Rhin' },
+        'rosheim': { name: 'Rosheim', dept: '67', region: 'Bas-Rhin' },
+        'erstein': { name: 'Erstein', dept: '67', region: 'Bas-Rhin' },
+        'selestat': { name: 'Sélestat', dept: '67', region: 'Bas-Rhin' },
+        'marckolsheim': { name: 'Marckolsheim', dept: '67', region: 'Bas-Rhin' },
+        'benfeld': { name: 'Benfeld', dept: '67', region: 'Bas-Rhin' },
+        'wissembourg': { name: 'Wissembourg', dept: '67', region: 'Bas-Rhin' },
+        'bischwiller': { name: 'Bischwiller', dept: '67', region: 'Bas-Rhin' },
+
+        // === HAUT-RHIN (68) - Toutes villes principales ===
+        'colmar': { name: 'Colmar', dept: '68', region: 'Haut-Rhin' },
+        'mulhouse': { name: 'Mulhouse', dept: '68', region: 'Haut-Rhin' },
+        'saint-louis': { name: 'Saint-Louis', dept: '68', region: 'Haut-Rhin' },
+        'illzach': { name: 'Illzach', dept: '68', region: 'Haut-Rhin' },
+        'wittenheim': { name: 'Wittenheim', dept: '68', region: 'Haut-Rhin' },
+        'rixheim': { name: 'Rixheim', dept: '68', region: 'Haut-Rhin' },
+        'riedisheim': { name: 'Riedisheim', dept: '68', region: 'Haut-Rhin' },
+        'kingersheim': { name: 'Kingersheim', dept: '68', region: 'Haut-Rhin' },
+        'guebwiller': { name: 'Guebwiller', dept: '68', region: 'Haut-Rhin' },
+        'cernay': { name: 'Cernay', dept: '68', region: 'Haut-Rhin' },
+        'thann': { name: 'Thann', dept: '68', region: 'Haut-Rhin' },
+        'altkirch': { name: 'Altkirch', dept: '68', region: 'Haut-Rhin' },
+        'ensisheim': { name: 'Ensisheim', dept: '68', region: 'Haut-Rhin' },
+        'munster': { name: 'Munster', dept: '68', region: 'Haut-Rhin' },
+
+        // Route des Vins (68)
+        'riquewihr': { name: 'Riquewihr', dept: '68', region: 'Haut-Rhin' },
+        'ribeauville': { name: 'Ribeauvillé', dept: '68', region: 'Haut-Rhin' },
+        'kaysersberg': { name: 'Kaysersberg', dept: '68', region: 'Haut-Rhin' },
+        'eguisheim': { name: 'Eguisheim', dept: '68', region: 'Haut-Rhin' },
+        'turckheim': { name: 'Turckheim', dept: '68', region: 'Haut-Rhin' },
+        'ammerschwihr': { name: 'Ammerschwihr', dept: '68', region: 'Haut-Rhin' },
+        'hunawihr': { name: 'Hunawihr', dept: '68', region: 'Haut-Rhin' },
+        'mittelwihr': { name: 'Mittelwihr', dept: '68', region: 'Haut-Rhin' },
+
+        // Petits villages Haut-Rhin
+        'neuf-brisach': { name: 'Neuf-Brisach', dept: '68', region: 'Haut-Rhin' },
+        'biesheim': { name: 'Biesheim', dept: '68', region: 'Haut-Rhin' },
+        'baltzenheim': { name: 'Baltzenheim', dept: '68', region: 'Haut-Rhin' },
+        'artzenheim': { name: 'Artzenheim', dept: '68', region: 'Haut-Rhin' },
+        'kunheim': { name: 'Kunheim', dept: '68', region: 'Haut-Rhin' },
+        'volgelsheim': { name: 'Volgelsheim', dept: '68', region: 'Haut-Rhin' },
+        'dessenheim': { name: 'Dessenheim', dept: '68', region: 'Haut-Rhin' },
+        'ungersheim': { name: 'Ungersheim', dept: '68', region: 'Haut-Rhin' },
+        'soultzmatt': { name: 'Soultzmatt', dept: '68', region: 'Haut-Rhin' },
+
+        // === VOSGES (88) - Toutes villes et villages ===
+        'epinal': { name: 'Épinal', dept: '88', region: 'Vosges' },
+        'saint-die-des-vosges': { name: 'Saint-Dié-des-Vosges', dept: '88', region: 'Vosges' },
+        'saint-die': { name: 'Saint-Dié-des-Vosges', dept: '88', region: 'Vosges' },
+        'gerardmer': { name: 'Gérardmer', dept: '88', region: 'Vosges' },
+        'remiremont': { name: 'Remiremont', dept: '88', region: 'Vosges' },
+        'la-bresse': { name: 'La Bresse', dept: '88', region: 'Vosges' },
+        'le-thillot': { name: 'Le Thillot', dept: '88', region: 'Vosges' },
+        'vagney': { name: 'Vagney', dept: '88', region: 'Vosges' },
+        'bas-sur-le-rupt': { name: 'Bas-sur-le-Rupt', dept: '88', region: 'Vosges' },
+        'basse-sur-le-rupt': { name: 'Bas-sur-le-Rupt', dept: '88', region: 'Vosges' }, // Variante orthographique
+        'bas-sur-rupt': { name: 'Bas-sur-le-Rupt', dept: '88', region: 'Vosges' }, // Variante courte
+        'cornimont': { name: 'Cornimont', dept: '88', region: 'Vosges' },
+        'saulxures-sur-moselotte': { name: 'Saulxures-sur-Moselotte', dept: '88', region: 'Vosges' },
+        'fraize': { name: 'Fraize', dept: '88', region: 'Vosges' },
+        'raon-l-etape': { name: 'Raon-l\'Étape', dept: '88', region: 'Vosges' },
+        'bruyeres': { name: 'Bruyères', dept: '88', region: 'Vosges' },
+        'rambervillers': { name: 'Rambervillers', dept: '88', region: 'Vosges' },
+        'charmes': { name: 'Charmes', dept: '88', region: 'Vosges' },
+        'mirecourt': { name: 'Mirecourt', dept: '88', region: 'Vosges' },
+        'vittel': { name: 'Vittel', dept: '88', region: 'Vosges' },
+        'neufchateau': { name: 'Neufchâteau', dept: '88', region: 'Vosges' },
+
+        // === TERRITOIRE DE BELFORT (90) ===
+        'belfort': { name: 'Belfort', dept: '90', region: 'Territoire de Belfort' },
+        'delle': { name: 'Delle', dept: '90', region: 'Territoire de Belfort' },
+        'beaucourt': { name: 'Beaucourt', dept: '90', region: 'Territoire de Belfort' },
+        'valdoie': { name: 'Valdoie', dept: '90', region: 'Territoire de Belfort' },
+
+        // === HAUTE-SAÔNE (70) ===
+        'vesoul': { name: 'Vesoul', dept: '70', region: 'Haute-Saône' },
+        'lure': { name: 'Lure', dept: '70', region: 'Haute-Saône' },
+        'luxeuil-les-bains': { name: 'Luxeuil-les-Bains', dept: '70', region: 'Haute-Saône' },
+        'gray': { name: 'Gray', dept: '70', region: 'Haute-Saône' },
+        'hericourt': { name: 'Héricourt', dept: '70', region: 'Haute-Saône' },
+
+        // === DOUBS (25) ===
+        'besancon': { name: 'Besançon', dept: '25', region: 'Doubs' },
+        'montbeliard': { name: 'Montbéliard', dept: '25', region: 'Doubs' },
+        'pontarlier': { name: 'Pontarlier', dept: '25', region: 'Doubs' },
+        'audincourt': { name: 'Audincourt', dept: '25', region: 'Doubs' },
+        'valentigney': { name: 'Valentigney', dept: '25', region: 'Doubs' },
+
+        // === SUISSE (Proches) ===
+        'bale': { name: 'Bâle', dept: 'CH', region: 'Suisse' },
+        'basel': { name: 'Basel', dept: 'CH', region: 'Suisse' },
+        'zurich': { name: 'Zurich', dept: 'CH', region: 'Suisse' },
+        'berne': { name: 'Berne', dept: 'CH', region: 'Suisse' },
+        'bern': { name: 'Bern', dept: 'CH', region: 'Suisse' },
+        'geneve': { name: 'Genève', dept: 'CH', region: 'Suisse' },
+        'geneva': { name: 'Geneva', dept: 'CH', region: 'Suisse' },
+        'lausanne': { name: 'Lausanne', dept: 'CH', region: 'Suisse' },
+
+        // === ALLEMAGNE (Proches) ===
+        'freiburg': { name: 'Freiburg im Breisgau', dept: 'DE', region: 'Allemagne' },
+        'fribourg-en-brisgau': { name: 'Freiburg im Breisgau', dept: 'DE', region: 'Allemagne' },
+        'offenburg': { name: 'Offenburg', dept: 'DE', region: 'Allemagne' },
+        'kehl': { name: 'Kehl', dept: 'DE', region: 'Allemagne' },
+        'rust': { name: 'Rust', dept: 'DE', region: 'Allemagne' },
+        'baden-baden': { name: 'Baden-Baden', dept: 'DE', region: 'Allemagne' },
+        'karlsruhe': { name: 'Karlsruhe', dept: 'DE', region: 'Allemagne' }
+    };
+
+    const queryLower = cleanQuery.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // Vérifier si la requête correspond à une ville problématique
+    for (const [key, cityInfo] of Object.entries(PROBLEMATIC_CITIES)) {
+        if (queryLower === key || queryLower === cityInfo.name.toLowerCase()) {
+            console.log(`[GPS] 🎯 Ville problématique détectée: "${cleanQuery}" → Forçage avec département ${cityInfo.dept}`);
+            // Forcer la recherche avec le département pour éviter toute confusion
+            const forcedQuery = `${cityInfo.name}, ${cityInfo.dept}, France`;
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(forcedQuery)}&countrycodes=fr&limit=1&addressdetails=1`;
+
+            try {
+                const resp = await fetch(url);
+                const results = await resp.json();
+
+                if (results && results.length > 0) {
+                    const best = results[0];
+                    console.log(`[GPS] ✅ Résultat forcé: ${best.display_name}`);
+                    return {
+                        lat: parseFloat(best.lat),
+                        lon: parseFloat(best.lon),
+                        display_name: best.display_name,
+                        pretty_name: cityInfo.name,
+                        address: best.address,
+                        type: best.addresstype || best.class
+                    };
+                }
+            } catch (e) {
+                console.error(`[GPS] Erreur lors du géocodage forcé pour ${cityInfo.name}:`, e);
+                // Continue avec le géocodage normal en cas d'erreur
             }
+        }
+    }
+
+    // 5. SMART GEOCODING (Ranking System)
+    try {
+        console.log(`[GPS] Smart Search for: ${cleanQuery}`);
+        // Search looser (FR, DE, CH) but get multiple results to rank them
+        // We use countrycodes to avoid US results, but allow global enough for Cannes
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&countrycodes=fr,de,ch&limit=5&addressdetails=1`;
+        const resp = await fetch(url);
+        const results = await resp.json();
+
+        if (results && results.length > 0) {
+            // HQ Coords (Baltzenheim approx)
+            const HQ_LAT = 48.09;
+            const HQ_LON = 7.55;
+
+            // Scorer function
+            const scoreResult = (r) => {
+                let score = 0;
+                const rLat = parseFloat(r.lat);
+                const rLon = parseFloat(r.lon);
+
+                // Distance from HQ (Haversine approx)
+                const dLat = (rLat - HQ_LAT);
+                const dLon = (rLon - HQ_LON);
+                const distSq = (dLat * dLat) + (dLon * dLon); // Squared deg distance. 1 deg ~= 111km. 
+                // 200km radius ~= 1.8 degrees. 1.8^2 ~= 3.24
+
+                // CRITERIA 1: PROXIMITY (Huge Boost for < 200km)
+                if (distSq < 3.5) {
+                    score += 100; // Local Preference
+                    // Super local (< 50km)
+                    if (distSq < 0.25) score += 50;
+                }
+
+                // CRITERIA 2: TYPE IMPORTANCE
+                // City/Town > Village > Suburb > Road
+                const type = r.type || r.class;
+                const importance = r.importance || 0; // Nominatim provides importance score (0-1)
+
+                score += (importance * 50); // Weighted importance
+
+                if (type === 'city' || type === 'administrative') score += 30;
+                else if (type === 'town') score += 20;
+                else if (type === 'village') score += 10;
+
+                // Penalize specific streets unless we are very local? 
+                // No, just let Importance handle it. A small street usually has low importance.
+
+                // CRITERIA 3: KEYWORD MATCH (Safety Net)
+                // Boost result if it contains the exact query words (e.g. "Ribeauvillé")
+                const rName = (r.display_name || "").toLowerCase();
+                const qWords = cleanQuery.toLowerCase().split(' ');
+
+                qWords.forEach(w => {
+                    if (w.length > 3 && rName.includes(w)) {
+                        score += 30;
+                    }
+                });
+
+                // CRITERIA 4: PARTIAL WORD CONFUSION PENALTY (NEW - Fix "Remiremont" → "Mont Saint-Odile")
+                // Pénaliser si un mot du résultat est contenu dans le mot recherché mais n'est pas égal
+                const searchLower = cleanQuery.toLowerCase();
+                const searchWords = searchLower.split(/\s+/);
+                const resultWords = rName.split(/[\s,]+/);
+                let hasPartialMatch = false;
+
+                searchWords.forEach(searchWord => {
+                    if (searchWord.length >= 4) { // Mots de 4+ lettres
+                        resultWords.forEach(resultWord => {
+                            // Si le mot du résultat est contenu dans le mot recherché mais n'est pas égal
+                            // Ex: "remiremont" contient "mont" mais "remiremont" !== "mont"
+                            if (searchWord.includes(resultWord) && searchWord !== resultWord && resultWord.length >= 3) {
+                                hasPartialMatch = true;
+                            }
+                        });
+                    }
+                });
+
+                if (hasPartialMatch) {
+                    score -= 60; // Forte pénalité pour éviter les confusions
+                }
+
+                // CRITERIA 5: EXACT CITY NAME MATCH (NEW - Bonus pour correspondance exacte)
+                const addr = r.address || {};
+                const cityName = (addr.city || addr.town || addr.village || addr.municipality || '').toLowerCase();
+                if (cityName === searchLower) {
+                    score += 100; // Énorme bonus pour correspondance exacte
+                }
+
+                return score;
+            };
+
+            // Rank results
+            results.sort((a, b) => scoreResult(b) - scoreResult(a));
+
+            const best = results[0];
+            console.log(`[GPS] Winner for "${cleanQuery}": ${best.display_name} (Type: ${best.type})`);
 
             return {
-                lat: parseFloat(data[0].lat),
-                lon: parseFloat(data[0].lon),
-                display_name: data[0].display_name,
-                pretty_name: prettyName, // <--- NEW: Ready to use short name
-                address: data[0].address,
-                type: data[0].addresstype || data[0].class
+                lat: parseFloat(best.lat),
+                lon: parseFloat(best.lon),
+                display_name: best.display_name,
+                pretty_name: best.display_name.split(',')[0],
+                address: best.address,
+                type: best.addresstype || best.class
             };
-        } else {
-            console.warn(`[GPS] No geocoding results for: "${cleanQuery}"`);
         }
     } catch (e) {
         console.error("Geocoding Error", e);
@@ -2920,17 +3912,60 @@ async function getRoadDistanceWithStep(startCoords, stepCoords, endCoords) {
 function swapLocations() {
     const departureInput = document.getElementById('sim-departure');
     const destinationInput = document.getElementById('sim-destination');
+    const feedDep = document.getElementById('sim-feedback-dep');
+    const feedDest = document.getElementById('sim-feedback-dest');
 
     if (departureInput && destinationInput) {
-        const temp = departureInput.value;
-        departureInput.value = destinationInput.value;
-        destinationInput.value = temp;
+        // Check if we have stored coordinates from the last calculation
+        if (LAST_START_COORDS && LAST_END_COORDS) {
+            console.log('[SWAP] Using stored coordinates to preserve exact addresses');
 
-        // Re-calculate
-        calculateTrajectory();
+            // Swap the coordinate objects
+            const tempCoords = LAST_START_COORDS;
+            LAST_START_COORDS = LAST_END_COORDS;
+            LAST_END_COORDS = tempCoords;
 
-        // Vocal confirmation
-        speak("Trajet permuté.");
+            // Reconstruct the exact addresses using getCleanAddr
+            const newDeparture = getCleanAddr(LAST_START_COORDS, departureInput.value);
+            const newDestination = getCleanAddr(LAST_END_COORDS, destinationInput.value);
+
+            // Update input values with reconstructed addresses
+            departureInput.value = newDeparture;
+            destinationInput.value = newDestination;
+
+            // Update cache with new keys
+            COORD_CACHE[newDeparture.toLowerCase()] = LAST_START_COORDS;
+            COORD_CACHE[newDestination.toLowerCase()] = LAST_END_COORDS;
+
+            console.log(`[SWAP] Departure: ${newDeparture}`);
+            console.log(`[SWAP] Destination: ${newDestination}`);
+        } else {
+            console.log('[SWAP] No stored coordinates, using simple value swap');
+            // Fallback: Simple swap if no coordinates stored yet
+            const tempVal = departureInput.value;
+            departureInput.value = destinationInput.value;
+            destinationInput.value = tempVal;
+        }
+
+        // Swap feedback indicators
+        if (feedDep && feedDest) {
+            const tempHtml = feedDep.innerHTML;
+            const tempHidden = feedDep.classList.contains('hidden');
+
+            feedDep.innerHTML = feedDest.innerHTML;
+            if (feedDest.classList.contains('hidden')) feedDep.classList.add('hidden');
+            else feedDep.classList.remove('hidden');
+
+            feedDest.innerHTML = tempHtml;
+            if (tempHidden) feedDest.classList.add('hidden');
+            else feedDest.classList.remove('hidden');
+        }
+
+        // Re-calculate (with interruption)
+        calculateTrajectory(true);
+
+        // Vocal confirmation (Interrupt = true to avoid lag)
+        speak("Trajet permuté.", true);
     }
 }
 
@@ -2958,8 +3993,8 @@ function addStopover(name) {
         divStopover.classList.remove('hidden');
         if (btnAddStop) btnAddStop.classList.add('hidden');
         inputStopover.value = name;
-        // Trigger calculation
-        calculateTrajectory();
+        // Trigger calculation (with interruption)
+        calculateTrajectory(true);
 
         // Scroll to simulator
         document.getElementById('simulator').scrollIntoView({ behavior: 'smooth' });
@@ -2977,13 +4012,13 @@ function removeStopover() {
             btnAddStop.classList.remove('hidden');
         }
         inputStopover.value = "";
-        calculateTrajectory();
+        calculateTrajectory(true);
     }
 }
 
 
 // Main Calculator
-async function calculateTrajectory() {
+async function calculateTrajectory(forceInterrupt = false) {
     const departureInput = document.getElementById('sim-departure');
     const destinationInput = document.getElementById('sim-destination');
     const paxSelect = document.getElementById('sim-pax');
@@ -2994,11 +4029,207 @@ async function calculateTrajectory() {
     const mapFrame = document.getElementById('sim-map-frame');
     const mapOverlay = document.getElementById('map-overlay');
 
+    // Immediately hide any input feedback
+    hideFeedback(document.getElementById('sim-feedback-dep'));
+    hideFeedback(document.getElementById('sim-feedback-dest'));
+
     if (!departureInput || !destinationInput) return;
+
+    // DÉTECTION ET SUGGESTION DE CORRECTION ORTHOGRAPHIQUE
+    // Calcule la distance de Levenshtein pour trouver les fautes de frappe
+    const levenshteinDistance = (str1, str2) => {
+        const len1 = str1.length;
+        const len2 = str2.length;
+        const matrix = Array(len1 + 1).fill(null).map(() => Array(len2 + 1).fill(0));
+
+        for (let i = 0; i <= len1; i++) matrix[i][0] = i;
+        for (let j = 0; j <= len2; j++) matrix[0][j] = j;
+
+        for (let i = 1; i <= len1; i++) {
+            for (let j = 1; j <= len2; j++) {
+                const cost = str1[i - 1] === str2[j - 1] ? 0 : 1;
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j] + 1,      // deletion
+                    matrix[i][j - 1] + 1,      // insertion
+                    matrix[i - 1][j - 1] + cost // substitution
+                );
+            }
+        }
+        return matrix[len1][len2];
+    };
+
+    // Fonction pour suggérer une correction
+    const suggestCorrection = (inputValue, inputElement, feedbackElement) => {
+        if (!inputValue || inputValue.length < 3) return null;
+
+        const normalized = inputValue.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+        console.log(`[CORRECTION] Vérification de: "${inputValue}" → normalisé: "${normalized}"`);
+
+        // Liste complète des villes connues
+        const KNOWN_CITIES = {
+            // Bas-Rhin (67)
+            'strasbourg': { name: 'Strasbourg', dept: '67' },
+            'haguenau': { name: 'Haguenau', dept: '67' },
+            'saverne': { name: 'Saverne', dept: '67' },
+            'molsheim': { name: 'Molsheim', dept: '67' },
+            'obernai': { name: 'Obernai', dept: '67' },
+            'selestat': { name: 'Sélestat', dept: '67' },
+
+            // Haut-Rhin (68)
+            'colmar': { name: 'Colmar', dept: '68' },
+            'mulhouse': { name: 'Mulhouse', dept: '68' },
+            'guebwiller': { name: 'Guebwiller', dept: '68' },
+            'cernay': { name: 'Cernay', dept: '68' },
+            'thann': { name: 'Thann', dept: '68' },
+            'ribeauville': { name: 'Ribeauvillé', dept: '68' },
+            'riquewihr': { name: 'Riquewihr', dept: '68' },
+            'kaysersberg': { name: 'Kaysersberg', dept: '68' },
+            'eguisheim': { name: 'Eguisheim', dept: '68' },
+            'munster': { name: 'Munster', dept: '68' },
+            'baltzenheim': { name: 'Baltzenheim', dept: '68' },
+            'neuf-brisach': { name: 'Neuf-Brisach', dept: '68' },
+
+            // Vosges (88)
+            'epinal': { name: 'Épinal', dept: '88' },
+            'saint-die': { name: 'Saint-Dié-des-Vosges', dept: '88' },
+            'gerardmer': { name: 'Gérardmer', dept: '88' },
+            'remiremont': { name: 'Remiremont', dept: '88' },
+            'la-bresse': { name: 'La Bresse', dept: '88' },
+            'le-thillot': { name: 'Le Thillot', dept: '88' },
+            'vagney': { name: 'Vagney', dept: '88' },
+            'bas-sur-le-rupt': { name: 'Bas-sur-le-Rupt', dept: '88' },
+            'vittel': { name: 'Vittel', dept: '88' },
+
+            // Territoire de Belfort (90)
+            'belfort': { name: 'Belfort', dept: '90' },
+
+            // Haute-Saône (70)
+            'vesoul': { name: 'Vesoul', dept: '70' },
+            'lure': { name: 'Lure', dept: '70' },
+
+            // Doubs (25)
+            'besancon': { name: 'Besançon', dept: '25' },
+            'montbeliard': { name: 'Montbéliard', dept: '25' }
+        };
+
+        // Chercher la correspondance exacte d'abord
+        for (const [key, cityInfo] of Object.entries(KNOWN_CITIES)) {
+            if (normalized === key || normalized === cityInfo.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) {
+                console.log(`[CORRECTION] ✅ Orthographe correcte: "${inputValue}"`);
+                return null; // Orthographe correcte, pas de suggestion
+            }
+        }
+
+        // Chercher une ville proche (distance de Levenshtein <= 3)
+        let bestMatch = null;
+        let bestDistance = Infinity;
+
+        for (const [key, cityInfo] of Object.entries(KNOWN_CITIES)) {
+            const distance = levenshteinDistance(normalized, key);
+            // Log seulement les distances pertinentes (< 4)
+            if (distance < 4) {
+                console.log(`[CORRECTION] Distance "${normalized}" ↔ "${key}": ${distance}`);
+            }
+
+            if (distance > 0 && distance <= 3 && distance < bestDistance) {
+                bestMatch = cityInfo;
+                bestDistance = distance;
+            }
+        }
+
+        if (bestMatch) {
+            console.log(`[CORRECTION] 🔍 Faute détectée: "${inputValue}" → Suggestion: "${bestMatch.name}" (distance: ${bestDistance})"`);
+
+            // Créer une fonction pour corriger et pré-remplir le cache
+            const correctionId = `correction_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+            window[correctionId] = async function () {
+                // 1. Mettre à jour l'input
+                inputElement.value = bestMatch.name;
+
+                // 2. Géocoder avec le département pour obtenir les coordonnées exactes
+                const forcedQuery = `${bestMatch.name}, ${bestMatch.dept}, France`;
+                try {
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(forcedQuery)}&countrycodes=fr&limit=1&addressdetails=1`;
+                    const resp = await fetch(url);
+                    const results = await resp.json();
+
+                    if (results && results.length > 0) {
+                        const best = results[0];
+                        const coords = {
+                            lat: parseFloat(best.lat),
+                            lon: parseFloat(best.lon),
+                            display_name: best.display_name,
+                            pretty_name: bestMatch.name,
+                            address: best.address,
+                            type: best.addresstype || best.class
+                        };
+
+                        // 3. Pré-remplir le cache pour forcer l'utilisation de ces coordonnées
+                        if (typeof COORD_CACHE !== 'undefined') {
+                            COORD_CACHE[bestMatch.name.toLowerCase()] = coords;
+                            COORD_CACHE[bestMatch.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")] = coords;
+                            console.log(`[CORRECTION] ✅ Cache pré-rempli pour "${bestMatch.name}":`, coords);
+                        }
+
+                        // 4. Mettre à jour le feedback
+                        feedbackElement.innerHTML = `
+                            <div class="mt-1 text-[10px] font-mono pl-2 border-l-2 border-neon-green text-neon-green">
+                                ✅ Corrigé : ${bestMatch.name} (${bestMatch.dept})
+                            </div>
+                        `;
+
+                        // 5. Feedback vocal
+                        speak(`Corrigé : ${bestMatch.name}`, true);
+                    }
+                } catch (e) {
+                    console.error(`[CORRECTION] Erreur lors du géocodage de ${bestMatch.name}:`, e);
+                }
+            };
+
+            // Afficher la suggestion dans le feedback
+            feedbackElement.innerHTML = `
+                <div class="mt-1 text-[10px] font-mono pl-2 border-l-2 border-yellow-500 text-yellow-500">
+                    ⚠️ Vouliez-vous dire : <strong>${bestMatch.name}</strong> ?
+                    <button type="button" 
+                        class="ml-2 px-2 py-0.5 bg-neon-green/20 hover:bg-neon-green/40 border border-neon-green rounded text-neon-green text-[9px] transition-all"
+                        onclick="${correctionId}()">
+                        Corriger
+                    </button>
+                </div>
+            `;
+            feedbackElement.classList.remove('hidden');
+
+            // Feedback vocal
+            speak(`Attention, vouliez-vous dire ${bestMatch.name} ?`, true);
+
+            return bestMatch;
+        }
+
+        return null;
+    };
+
+    // Vérifier les deux champs avant de continuer
+    const depSuggestion = suggestCorrection(departureInput.value, departureInput, document.getElementById('sim-feedback-dep'));
+    const destSuggestion = suggestCorrection(destinationInput.value, destinationInput, document.getElementById('sim-feedback-dest'));
+
+    // Si une suggestion est affichée, arrêter le calcul
+    if (depSuggestion || destSuggestion) {
+        console.log('[CORRECTION] Calcul interrompu - correction orthographique requise');
+        return; // Arrêter ici, attendre que l'utilisateur corrige
+    }
 
     let tripDist = 0;
     let duration = 0;
     let isSuccess = false;
+    let hasInterrupted = false;
+
+    // Helper to handle the first-call-only interruption
+    const speakWithFlow = (msg) => {
+        const shouldInterrupt = forceInterrupt && !hasInterrupted;
+        if (shouldInterrupt) hasInterrupted = true;
+        speak(msg, shouldInterrupt);
+    };
 
     try {
         let startLoc = departureInput.value.trim();
@@ -3018,22 +4249,53 @@ async function calculateTrajectory() {
         let finalStart = startLoc;
         let finalEnd = endLoc;
 
+        console.log(`[DEBUG] Initial values - startLoc: "${startLoc}", endLoc: "${endLoc}"`);
+        console.log(`[DEBUG] Resolved - resolvedStart: "${resolvedStart}", resolvedEnd: "${resolvedEnd}"`);
+
         if (resolvedStart && POI_DATA[resolvedStart] && !isComplexAddress(startLoc)) {
             finalStart = resolvedStart.charAt(0).toUpperCase() + resolvedStart.slice(1);
+            console.log(`[DEBUG] Start optimized to: "${finalStart}"`);
         }
-        if (resolvedEnd && POI_DATA[resolvedEnd] && !isComplexAddress(endLoc)) {
-            // Only optimize to City Center if input wasn't already a specific address
-            finalEnd = resolvedEnd.charAt(0).toUpperCase() + resolvedEnd.slice(1);
-            console.log(`GPS: Optimizing destination "${destinationInput.value}" -> "${finalEnd}"`);
+        const isSpecificPOI = (str) => {
+            const s = str.toLowerCase();
+            return s.includes('casino') || s.includes('spa') || s.includes('balneo') || s.includes('barriere') ||
+                s.includes('restaurant') || s.includes('hotel') || s.includes('gare') || s.includes('station') ||
+                s.includes('aeroport') || s.includes('entzheim') || s.includes('euroairport') ||
+                s.includes('chateau') || s.includes('parc') || s.includes('musee') ||
+                s.includes('expo') || s.includes('foire') || s.includes('ecomusee') || s.includes('mont') ||
+                s.includes('dominicains') || s.includes('paradis') || s.includes('riquewihr') || s.includes('eguisheim') ||
+                LOCATION_DATA[s];
+        };
 
-            // AUTO-CORRECTION VOCAL FEEDBACK (User Request)
-            if (endLoc.length < 5 && finalEnd.length > endLoc.length && !endLoc.toLowerCase().includes(finalEnd.toLowerCase())) {
-                const correctionMsg = `Je devine que vous voulez dire ${finalEnd}. Calcul en cours pour cette destination.`;
-                speak(correctionMsg);
-                destinationInput.value = finalEnd; // Update UI
-                // Flash input to show correction
-                destinationInput.classList.add('bg-neon-green/20');
-                setTimeout(() => destinationInput.classList.remove('bg-neon-green/20'), 1500);
+        console.log(`[DEBUG] Checking end optimization - isComplexAddress: ${isComplexAddress(endLoc)}, isSpecificPOI: ${isSpecificPOI(endLoc)}`);
+
+        if (resolvedEnd && POI_DATA[resolvedEnd] && !isComplexAddress(endLoc) && !isSpecificPOI(endLoc)) {
+            // ONLY optimize to City Center if the input is ALREADY nearly identical to the city name
+            const normalizedInput = endLoc.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\d+/g, '').trim();
+            const normalizedResolved = resolvedEnd.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+            // If the user typed "Colmar" or "Ribeauvillé", we can optimize.
+            // If they typed "Gare de Colmar", normalizedInput is "gare de colmar", normalizedResolved is "colmar". No match.
+            if (normalizedInput === normalizedResolved || normalizedInput.length < 4) {
+                let officialName = resolvedEnd.charAt(0).toUpperCase() + resolvedEnd.slice(1);
+                for (const cat of Object.values(LOCATIONS)) {
+                    const found = cat.find(l => l.id === resolvedEnd);
+                    if (found) {
+                        officialName = found.name;
+                        break;
+                    }
+                }
+                finalEnd = officialName;
+                console.log(`GPS: Optimizing destination "${destinationInput.value}" -> "${finalEnd}"`);
+
+                // AUTO-CORRECTION VOCAL FEEDBACK (Only for very short/generic names)
+                if (endLoc.length < 4) {
+                    const correctionMsg = `Destination estimée : ${finalEnd}. Calcul en cours.`;
+                    speakWithFlow(correctionMsg);
+                    destinationInput.value = finalEnd; // Update UI
+                    destinationInput.classList.add('bg-neon-green/20');
+                    setTimeout(() => destinationInput.classList.remove('bg-neon-green/20'), 1500);
+                }
             }
         }
 
@@ -3101,11 +4363,17 @@ async function calculateTrajectory() {
 
         // 1. Get Coordinates
         // STRATEGY: Check CACHE -> Then API
-        let startCoords = COORD_CACHE[finalStart.toLowerCase()];
-        if (!startCoords) startCoords = await getCoordinates(finalStart);
+        // CRITICAL: Use ORIGINAL input (startLoc/endLoc) for geocoding, NOT the zip-injected version
+        // This ensures preset matching works (e.g., "Gare de Colmar" matches, not "Gare de Colmar, 68000, France")
+        let startCoords = COORD_CACHE[startLoc.toLowerCase()];
+        if (!startCoords) startCoords = await getCoordinates(startLoc);
 
-        let endCoords = COORD_CACHE[finalEnd.toLowerCase()];
-        if (!endCoords) endCoords = await getCoordinates(finalEnd);
+        let endCoords = COORD_CACHE[endLoc.toLowerCase()];
+        if (!endCoords) endCoords = await getCoordinates(endLoc);
+
+        // Store coordinates globally for swap functionality
+        LAST_START_COORDS = startCoords;
+        LAST_END_COORDS = endCoords;
 
         // --- ERROR HANDLING (Invalid Address) ---
         if (!startCoords || !endCoords) {
@@ -3117,7 +4385,7 @@ async function calculateTrajectory() {
             `;
             }
             if (outputScreen) outputScreen.classList.remove('hidden'); // Show error on screen
-            speak(`${msg} Veuillez vérifier l'orthographe pour que je puisse calculer le trajet.`);
+            speakWithFlow(`${msg} Veuillez vérifier l'orthographe pour que je puisse calculer le trajet.`);
             return; // STOP execution
         }
 
@@ -3135,7 +4403,7 @@ async function calculateTrajectory() {
             `;
             }
             if (outputScreen) outputScreen.classList.remove('hidden');
-            speak("Désolé, conformément à la réglementation, le point de départ doit impérativement être situé en France. Veuillez modifier votre lieu de départ.");
+            speakWithFlow("Désolé, conformément à la réglementation, le point de départ doit impérativement être situé en France. Veuillez modifier votre lieu de départ.");
             return; // STOP execution
         }
 
@@ -3204,9 +4472,9 @@ async function calculateTrajectory() {
 
         let coachMsg = "";
         if (destPrecision === 'low') {
-            coachMsg = `Ville identifiée : ${endLoc.split(',')[0]}. Je calcule la route vers le centre. Pour une précision chirurgicale, ajoutez une adresse exacte.`;
+            coachMsg = `Ville identifiée. Calcul vers le centre-ville. Précisez l'adresse pour plus d'exactitude.`;
         } else if (destPrecision === 'medium') {
-            coachMsg = `Rue identifiée. J'affine le calcul vers cette zone.`;
+            coachMsg = `Rue identifiée. Affinage du calcul en cours.`;
         } else {
             // High precision - usually standard KITT behavior covers the summary.
             // But we can add a small confirmation.
@@ -3218,7 +4486,7 @@ async function calculateTrajectory() {
         }
 
         if (coachMsg) {
-            speak(coachMsg);
+            speakWithFlow(coachMsg);
         }
 
 
@@ -3350,8 +4618,39 @@ async function calculateTrajectory() {
             const resPriceEst = document.getElementById('res-price-est');
             const resNotes = document.getElementById('res-notes');
 
-            if (resPickup) resPickup.value = startLoc;
-            if (resDrop) resDrop.value = endLoc;
+            // getCleanAddr is now defined globally (see top of file)
+
+            console.log(`[DEBUG] Coordinates received:`);
+            console.log(`[DEBUG] startCoords:`, startCoords);
+            console.log(`[DEBUG] endCoords:`, endCoords);
+
+            const cleanStart = getCleanAddr(startCoords, startLoc);
+            const cleanEnd = getCleanAddr(endCoords, endLoc);
+
+            console.log(`[DEBUG] Clean addresses - cleanStart: "${cleanStart}", cleanEnd: "${cleanEnd}"`);
+            console.log(`[DEBUG] Final values - finalStart: "${finalStart}", finalEnd: "${finalEnd}"`);
+
+
+            // SYNC RESERVATION FORM
+            if (resPickup) resPickup.value = cleanStart;
+            if (resDrop) resDrop.value = cleanEnd;
+
+            // SYNC SIMULATOR INPUTS (Visual Consistency 1:1)
+            const inputDep = document.getElementById('sim-departure');
+            const inputDest = document.getElementById('sim-destination');
+
+            // Use setTimeout to override any autocomplete 'blur' or 'restore' logic that might fire immediately
+            setTimeout(() => {
+                if (inputDep) {
+                    inputDep.value = cleanStart;
+                    console.log(`[SYNC] Forced Departure Update: ${cleanStart}`);
+                }
+                if (inputDest) {
+                    inputDest.value = cleanEnd;
+                    console.log(`[SYNC] Forced Destination Update: ${cleanEnd}`);
+                }
+            }, 300);
+
             if (resPax) resPax.value = nbPax;
             if (resDuration) resDuration.value = `${duration} min`;
             if (resPriceEst) resPriceEst.value = `${finalPrice} €`;
@@ -3360,9 +4659,9 @@ async function calculateTrajectory() {
                 resNotes.value = `Estimation Mission:\n- Distance: ${tripDist} km\n- Durée: ${duration} min\n- Approche: ${approachDist} km\n- Tarif: ${finalPrice} €\n- Passagers: ${nbPax}`;
             }
 
-            // VOCALIZE SUMMARY
-            const vocalMsg = `Mission confirmée. Distance : ${tripDist} kilomètres. Temps de parcours estimé : ${duration} minutes. Le tarif total incluant l'approche est de ${finalPrice} euros.`;
-            speak(vocalMsg);
+            // VOCALIZE SUMMARY (Requested Format: Dest (POI), Dist km, Duration min for Price euros)
+            const vocalMsg = `Course vers ${cleanEnd.split(',')[0]}. ${tripDist} kilomètres en ${duration} minutes pour ${finalPrice} euros.`;
+            speakWithFlow(vocalMsg);
 
             // Update Details Panel (Right side)
             if (detailDisplay) {
@@ -3393,7 +4692,7 @@ async function calculateTrajectory() {
     } catch (err) {
         console.error("Simulation Error", err);
         if (detailDisplay) detailDisplay.innerHTML = `<div class="text-neon-red font-bold">⚠️ ERREUR CRITIQUE.</div>`;
-        speak("Une erreur de calcul est survenue.");
+        speakWithFlow("Une erreur de calcul est survenue.");
     } finally {
         // ALWAYS STOP PROCESSING SOUND
         // stopSound('audio-processing');
@@ -3533,7 +4832,7 @@ function initProtocol() {
         const depIndex = protocolKey.length % localDepartures.length;
         depInput.placeholder = localDepartures[depIndex];
 
-        // Suggestions Map
+        // Suggestions Map (Contextualized by Ambiance)
         const suggestions = {
             // Club / Party
             "puls-club": "Ex: Le Mille Club, Bernolsheim",
@@ -3541,9 +4840,10 @@ function initProtocol() {
             "puls-hits": "Ex: La Laiterie Artefact, Strasbourg",
 
             // Relax / Lounge
-            "puls-lounge": "Ex: Casino Barrière, Ribeauvillé (Spa & Détente)",
-            "fg-chic": "Ex: Les Violettes Hotel & SPA, Jungholtz",
-            "relax": "Ex: Parc de l'Orangerie, Strasbourg",
+            "puls-lounge": "Ex: Spa de Ribeauvillé",
+            "fg-chic": "Ex: Spa de Ribeauvillé",
+            "relax": "Ex: Spa de Ribeauvillé",
+            "fg-deep": "Ex: Les Violettes Hotel & SPA, Jungholtz",
 
             // Alsace / Terroir
             "dkl": "Ex: Auberge de l'Ill, Illhaeusern (Gastronomie)",
@@ -3587,37 +4887,7 @@ function initProtocol() {
         navAmbianceSelectMobile.addEventListener('change', (e) => updateAmbianceUI(e.target.value));
     }
 
-    // Volume Control Listener (Desktop + Mobile Sync)
-    const volSlider = document.getElementById('vol-control');
-    const volSliderMobile = document.getElementById('vol-control-mobile');
-    const volDisplay = document.getElementById('vol-percent');
-
-    const updateVolume = (val) => {
-        const vol = val / 100;
-
-        // Use normalized audio chain
-        setNormalizedVolume(vol);
-
-        // Also update podcast volume
-        if (typeof PodcastManager !== 'undefined' && PodcastManager.setVolume) {
-            PodcastManager.setVolume(vol);
-        }
-
-        if (volDisplay) volDisplay.innerText = `${val}%`;
-
-        // Sync Inputs
-        if (volSlider) volSlider.value = val;
-        if (volSliderMobile) volSliderMobile.value = val;
-    };
-
-    if (volSlider) {
-        volSlider.addEventListener('input', (e) => updateVolume(e.target.value));
-        // Init volume from slider using normalized chain
-        setNormalizedVolume(volSlider.value / 100);
-    }
-    if (volSliderMobile) {
-        volSliderMobile.addEventListener('input', (e) => updateVolume(e.target.value));
-    }
+    // Unified Volume Listeners Removed here as they are now global
 
     // Reservation Button Override
     const btnRes = document.getElementById('btn-res-build');
@@ -3625,6 +4895,59 @@ function initProtocol() {
         btnRes.addEventListener('click', generateMissionRecap);
     }
 }
+
+// --- RECALCULATE FROM RESERVATION FORM ---
+function recalculateReservation() {
+    const resPickup = document.getElementById('res-pickup');
+    const resDrop = document.getElementById('res-drop');
+    const simDep = document.getElementById('sim-departure');
+    const simDest = document.getElementById('sim-destination');
+
+    if (resPickup && resDrop && simDep && simDest) {
+        // Validation
+        if (!resPickup.value.trim() || !resDrop.value.trim()) {
+            speak("Veuillez saisir une adresse de départ et de destination complètes.");
+            return;
+        }
+
+        speak("Mise à jour du plan de vol.");
+
+        // Sync Back to Simulator inputs logic
+        simDep.value = resPickup.value;
+        simDest.value = resDrop.value;
+
+        // Trigger calculation
+        calculateTrajectory(true).then(() => {
+            // Feedback on button/price
+            const resPrice = document.getElementById('res-price-est');
+            if (resPrice) {
+                resPrice.classList.add('bg-neon-green', 'text-black');
+                setTimeout(() => resPrice.classList.remove('bg-neon-green', 'text-black'), 1000);
+            }
+            speak("Tarif mis à jour.");
+        });
+    }
+}
+window.recalculateReservation = recalculateReservation;
+
+// --- NAVIGATION FLOW HELPERS ---
+function scrollToSimulator() {
+    const simSection = document.getElementById('simulator'); // or hero
+    if (simSection) {
+        simSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        speak("Retour au module de navigation.");
+    }
+}
+window.scrollToSimulator = scrollToSimulator;
+
+function validateTrip() {
+    const resSection = document.getElementById('reservation'); // Target Reservation Area
+    if (resSection) {
+        resSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        speak("Trajet validé. Veuillez finaliser les détails de la mission.");
+    }
+}
+window.validateTrip = validateTrip;
 
 /* =========================================
    RHYTHM ENGINE (Audio-Reactive Visuals)
@@ -3826,14 +5149,17 @@ ${t.doc_ready}
     if (departure && destination && pickupDateTime && typeof window.fetchBothWeatherForecasts === 'function') {
         console.log('[RECAP] Fetching weather before PDF generation');
         // Fetch weather first, then generate PDF
-        window.fetchBothWeatherForecasts().then(() => {
-            console.log('[RECAP] Weather fetched, generating PDF');
-            setTimeout(() => {
-                if (window.generateRecapPDF) {
-                    window.generateRecapPDF();
-                }
-            }, 1000); // Wait 1s for weather to be stored and vocalized
-        });
+        window.fetchBothWeatherForecasts()
+            .then(() => {
+                console.log('[RECAP] Weather fetched, generating PDF');
+                setTimeout(() => {
+                    if (window.generateRecapPDF) window.generateRecapPDF();
+                }, 1000);
+            })
+            .catch(err => {
+                console.error('[RECAP] Weather fetch failed, proceeding with PDF anyway:', err);
+                if (window.generateRecapPDF) window.generateRecapPDF();
+            });
     } else {
         // No weather data, generate PDF directly
         console.log('[RECAP] No weather data, generating PDF directly');
@@ -3963,7 +5289,38 @@ async function fetchDestinationWeather() {
     }
 }
 
-// Display weather summary in form
+// --- PROXIMITY SUGGESTIONS ---
+function getNearbyLocations(lat, lon, limit = 3) {
+    if (!window.LOCATIONS) return [];
+
+    const allLocs = [];
+    Object.values(window.LOCATIONS).forEach(category => {
+        category.forEach(loc => {
+            const dist = typeof calculateDistance === 'function' ?
+                calculateDistance(lat, lon, loc.lat, loc.lon) :
+                Math.sqrt(Math.pow(lat - loc.lat, 2) + Math.pow(lon - loc.lon, 2)) * 111; // Basic fallback
+            allLocs.push({ ...loc, proximity: dist });
+        });
+    });
+
+    // Sort by proximity and filter out exact same location (dist < 0.1km)
+    return allLocs
+        .filter(l => l.proximity > 0.1)
+        .sort((a, b) => a.proximity - b.proximity)
+        .slice(0, limit);
+}
+
+window.useLocation = function (name) {
+    const destInput = document.getElementById('res-drop');
+    if (destInput) {
+        destInput.value = name;
+        // Trigger weather check
+        if (typeof fetchBothWeatherForecasts === 'function') {
+            fetchBothWeatherForecasts();
+        }
+    }
+};
+
 function displayWeatherSummary(data) {
     const summaryDiv = document.getElementById('res-weather-summary');
     const iconDiv = document.getElementById('res-weather-icon');
@@ -3980,11 +5337,35 @@ function displayWeatherSummary(data) {
 
     // Populate
     iconDiv.innerHTML = weatherIcon;
+    // Proximity Suggestions
+    const nearby = getNearbyLocations(data.lat, data.lon);
+    let nearbyHtml = '';
+    if (nearby.length > 0) {
+        nearbyHtml = `
+            <div class="mt-4 pt-3 border-t border-white/10">
+                <p class="text-[10px] text-neon-blue font-bold tracking-widest uppercase mb-2">TOP 3 À PROXIMITÉ</p>
+                <div class="space-y-2">
+                    ${nearby.map(loc => `
+                        <div onclick="useLocation('${loc.name}')" class="flex items-center justify-between text-xs cursor-pointer hover:bg-white/5 p-1 px-2 rounded group transition-all">
+                            <span class="text-white group-hover:text-neon-blue">${loc.name}</span>
+                            <span class="text-gray-500 font-mono text-[10px]">${loc.proximity.toFixed(1)}km</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
     detailsDiv.innerHTML = `
-        < p > <strong>📍 ${data.destination}</strong></p >
-        <p>🌡️ Température: <strong>${data.temp}°C</strong></p>
-        <p>☁️ Conditions: ${data.weatherDesc}</p>
-        <p>💨 Vent: ${data.windSpeed} km/h | ☔ Pluie: ${data.precipProb}%</p>
+        <div class="flex flex-col h-full">
+            <div class="flex-grow">
+                <p><strong>📍 ${data.destination}</strong></p>
+                <p>🌡️ Température: <strong>${data.temp}°C</strong></p>
+                <p>☁️ Conditions: ${data.weatherDesc}</p>
+                <p>💨 Vent: ${data.windSpeed} km/h | ☔ Pluie: ${data.precipProb}%</p>
+            </div>
+            ${nearbyHtml}
+        </div>
     `;
     suggestionP.textContent = getClothingSuggestion(data.temp);
 
@@ -4021,10 +5402,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 2. Update Main Dashboard (Visual Sync)
                 if (typeof window.searchDestination === 'function') {
                     console.log('[WEATHER] Syncing Main Dashboard with:', destination);
-                    window.searchDestination(destination);
+                    const searchInput = document.getElementById('webcam-search-input');
+                    if (searchInput) {
+                        searchInput.value = destination;
+                        window.searchDestination();
+                    }
                 }
             }
-        }, 800); // Debounce 800ms (Reduced API spam)
+        }, 500); // Reduced debounce to 500ms for better responsiveness
     }
 
     // Listen to all relevant fields
@@ -4053,374 +5438,505 @@ document.addEventListener('DOMContentLoaded', () => {
     window.checkAndTriggerWeather = checkAndTriggerWeather;
 });
 
-window.generateRecapPDF = async function () {
-    if (!window.jspdf) {
-        console.error("jsPDF not loaded");
+// --- PDF GENERATION MODULE (Galaxy Alsace - White Edition) ---
+
+// Helper: Haversine Distance Calculation (km)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    if (!lat1 || !lon1 || !lat2 || !lon2) return 9999;
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Distance in km
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+// Helper: Load Image
+const loadImage = (url) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+    });
+};
+
+async function generatePDF() {
+    // Access jsPDF from global window object
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) {
+        alert("Erreur : Le module PDF (jsPDF) n'est pas chargé. Vérifiez votre connexion internet ou rechargez la page.");
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // COLORS (Galaxy Alsace)
+    const COL_BLACK = "#050510";
+    const COL_WHITE = "#FFFFFF";
+    const COL_RED = "#FF2121";
+    const COL_GOLD = "#D4AF37"; // Darker Gold for text readability
+    const COL_GOLD_LIGHT = "#FFD700"; // Bright Gold for accents
+
+    // -- 1. GATHER DATA --
+    // Client
+    const prenom = document.getElementById('res-prenom')?.value || '';
+    const nom = document.getElementById('res-nom')?.value || '';
+    const email = document.getElementById('res-email')?.value || '';
+    const phone = document.getElementById('res-phone')?.value || '';
+    const photoImg = document.getElementById('webcam-result');
+    const hasPhoto = photoImg && !photoImg.classList.contains('hidden') && photoImg.src.startsWith('data:image');
+
+    // Mission
+    const pickup = document.getElementById('res-pickup').value || 'Non spécifié';
+    const drop = document.getElementById('res-drop').value || 'Non spécifié';
+    const dateInput = document.getElementById('res-pickup-datetime').value || '--';
+    const formattedDate = dateInput.replace('T', ' à ');
+    const pax = document.getElementById('res-pax')?.value || '1';
+    const options = document.getElementById('res-opt')?.options[document.getElementById('res-opt')?.selectedIndex]?.text || 'Standard';
+    const notes = document.getElementById('res-notes').value || 'Aucune note particulière.';
+
+    // Stats & Price
+    const price = document.getElementById('price-display')?.innerText || 'Sur devis';
+    const distance = document.getElementById('distance-display')?.innerText || '--';
+    const duration = document.getElementById('duration-display')?.innerText || '--';
+
+    // Load Assets
+    const logoGalaxy = await loadImage('assets/logo_galaxy.png');
+    const card1 = await loadImage('assets/carte_visite_1.png');
+    const card2 = await loadImage('assets/carte_visite_2.png');
+
+    // -- 2. PAGE 1: MISSION DETAILS --
+
+    // --- PAGE 1: MISSION SUMMARY ---
+
+    // 1. HEADER (Black Band) - BON DE MISSION STYLE
+    doc.setFillColor(COL_BLACK);
+    doc.rect(0, 0, pageWidth, 50, 'F'); // Taller header for info
+
+    // Logo (Left)
+    if (logoGalaxy) {
+        doc.addImage(logoGalaxy, 'PNG', 10, 5, 40, 30);
+    }
+
+    // Title & Info (Right)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.setTextColor(33, 150, 243); // Neon Blue for Title "BON DE MISSION"
+    doc.text("BON DE MISSION", pageWidth - 20, 20, { align: "right" });
+
+    doc.setFontSize(10);
+    doc.setTextColor(COL_WHITE);
+    const refNum = "#REQ-" + Math.floor(Math.random() * 100000);
+    doc.text(`RÉF: ${refNum}`, pageWidth - 20, 28, { align: "right" });
+    doc.text(`DATE: ${new Date().toLocaleDateString()}`, pageWidth - 20, 33, { align: "right" });
+
+    // Trip Quick Stats (Bottom of Header)
+    doc.setFontSize(11);
+    doc.setTextColor(COL_GOLD);
+    // Combine info: DEPART > ARRIVEE | DUREE | PRIX
+    // We use a simplified display for the header
+    const headerStats = `${pickup}  >  ${drop}   |   ${duration}   |   ${price}`;
+
+    // Draw separate lines or one line? User asked for these in bold top part.
+    // Let's do a clean row at the bottom of the black header.
+
+    doc.setDrawColor(COL_RED);
+    doc.setLineWidth(0.5);
+    doc.line(10, 38, pageWidth - 10, 38); // Separator in header
+
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(COL_WHITE);
+    doc.text(`${duration}  •  ${distance}  •`, 20, 45);
+
+    doc.setTextColor(COL_GOLD); // Price highlights
+    doc.text(`${price}`, 20 + doc.getTextWidth(`${duration}  •  ${distance}  • `), 45);
+
+    doc.setTextColor(COL_WHITE);
+    // Dep/Dest on the right
+    doc.setFontSize(10);
+    doc.text(`${pickup}  ➔  ${drop}`, pageWidth - 20, 45, { align: "right" });
+
+    // 2. MAIN CONTENT (White Background)
+
+    let y = 60;
+    const colLeft = 20;
+    const colRight = 110;
+
+    // A. CLIENT IDENTITY & PHOTO
+
+    // A. CLIENT IDENTITY & PHOTO
+    doc.setFontSize(14);
+    doc.setTextColor(COL_BLACK);
+    doc.setFont(undefined, 'bold');
+    doc.text("IDENTITÉ CLIENT", colLeft, y);
+
+    // Photo Frame (Right side)
+    if (hasPhoto) {
+        // Neon Red Border
+        doc.setDrawColor(COL_RED);
+        doc.setLineWidth(1.5);
+        doc.rect(colRight + 10, y - 5, 40, 50);
+
+        // Image
+        doc.addImage(photoImg.src, 'PNG', colRight + 10.5, y - 4.5, 39, 49);
+
+        // Label
+        doc.setFontSize(8);
+        doc.setTextColor(COL_RED);
+        doc.text("IDENTITÉ CONFIRMÉE", colRight + 30, y + 50, { align: "center" });
+    } else {
+        doc.setDrawColor(200);
+        doc.rect(colRight + 10, y - 5, 40, 50);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text("PHOTO NON DISPONIBLE", colRight + 30, y + 20, { align: "center" });
+    }
+
+    y += 10;
+
+    // Client Details
+    doc.setFontSize(11);
+    doc.setTextColor(50);
+    doc.setFont(undefined, 'normal');
+
+    doc.text("NOM :", colLeft, y);
+    doc.setFont(undefined, 'bold');
+    doc.text((nom + " " + prenom).toUpperCase(), colLeft + 25, y);
+    y += 8;
+
+    doc.setFont(undefined, 'normal');
+    doc.text("TÉL :", colLeft, y);
+    doc.setFont(undefined, 'bold');
+    doc.text(phone, colLeft + 25, y);
+    y += 8;
+
+    doc.setFont(undefined, 'normal');
+    doc.text("EMAIL :", colLeft, y);
+    doc.setFont(undefined, 'bold');
+    doc.text(email, colLeft + 25, y);
+    y += 20;
+
+    // B. MISSION DETAILS
+    doc.setFontSize(14);
+    doc.setTextColor(COL_BLACK);
+    doc.setFont(undefined, 'bold');
+    doc.text("DÉTAILS DU TRAJET", colLeft, y);
+    y += 4;
+
+    // Red Line Separator
+    doc.setDrawColor(COL_RED);
+    doc.setLineWidth(0.5);
+    doc.line(colLeft, y, colLeft + 50, y);
+    y += 10;
+
+    const startY_Trip = y;
+
+    // Left Column: Route
+    doc.setFontSize(11);
+    doc.setTextColor(50);
+
+    // DEPART
+    doc.setFont(undefined, 'normal');
+    doc.text("DÉPART", colLeft, y);
+    y += 5;
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(COL_BLACK);
+    doc.text(pickup, colLeft, y);
+    y += 10;
+
+    // ARRIVEE
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(50);
+    doc.text("ARRIVÉE", colLeft, y);
+    y += 5;
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(COL_BLACK);
+    doc.text(drop, colLeft, y);
+    y += 10;
+
+    // Right Column: Timing & Stats
+    let yRight = startY_Trip;
+
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(50);
+    doc.text("DATE & HEURE", colRight, yRight);
+    yRight += 5;
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(COL_BLACK);
+    doc.text(formattedDate, colRight, yRight);
+    yRight += 10;
+
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(50);
+    doc.text("DISTANCE & DURÉE", colRight, yRight);
+    yRight += 5;
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(COL_BLACK);
+    doc.text(`${distance}  /  ${duration}`, colRight, yRight);
+    yRight += 10;
+
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(50);
+    doc.text("PRIX ESTIMÉ", colRight, yRight);
+    yRight += 5;
+    doc.setFontSize(14);
+    doc.setTextColor(COL_RED); // Red Price
+    doc.text(price, colRight, yRight);
+
+    y = Math.max(y, yRight) + 20;
+
+    // C. WEATHER BULLETIN
+    doc.setFontSize(14);
+    doc.setTextColor(COL_BLACK);
+    doc.setFont(undefined, 'bold');
+    doc.text("BULLETIN MÉTÉO DE BORD", colLeft, y);
+    y += 4;
+    doc.setDrawColor(COL_RED);
+    doc.setLineWidth(0.5);
+    doc.line(colLeft, y, colLeft + 70, y);
+    y += 10;
+
+    doc.setFontSize(11);
+    doc.setTextColor(50);
+    doc.setFont(undefined, 'normal');
+
+    // Weather Content (using pre-gathered summary)
+    doc.text(`Conditions : ${weatherSummary}`, colLeft, y);
+    y += 6;
+    doc.text(`Température Habitacle : ${tempHabitacle}`, colLeft, y);
+
+    // NOTES (Refined)
+    if (notes && notes.length > 5 && notes !== 'Aucune note particulière.') {
+        doc.setFontSize(10);
+        doc.setTextColor(COL_BLACK);
+        doc.setFont(undefined, 'bold');
+        doc.text("NOTES COMPLÉMENTAIRES :", colLeft, y);
+        y += 5;
+        doc.setFont(undefined, 'normal');
+        const splitNotes = doc.splitTextToSize(notes, 170);
+        doc.text(splitNotes, colLeft, y);
+        y += (splitNotes.length * 5) + 5;
+    }
+
+    // --- PAGE 1 FOOTER: PRICE BOX & CARDS ---
+
+    // Position at bottom
+    const footerHeight = 70;
+    const footerY = pageHeight - footerHeight;
+
+    // Black Footer Band
+    doc.setFillColor(COL_BLACK);
+    doc.rect(0, footerY, pageWidth, footerHeight, 'F');
+
+    // FRAMED PRICE BOX (Left Side of Footer or Centered Overlay?)
+    // Let's float it nicely above the footer or inside it.
+    // User wanted "encadrer et presenter correctement le prix".
+    // Let's put a white box with shadow effect INSIDE the black footer strip on the left.
+
+    doc.setDrawColor(COL_GOLD);
+    doc.setLineWidth(1);
+    doc.setFillColor(COL_BLACK); // Keep it black but framed gold
+    doc.rect(20, footerY + 10, 60, 40, 'FD');
+
+    doc.setFontSize(10);
+    doc.setTextColor(COL_WHITE);
+    doc.text("ESTIMATION TARIFAIRE TTC", 50, footerY + 20, { align: "center" });
+
+    doc.setFontSize(24);
+    doc.setTextColor(COL_GOLD); // Gold Price
+    doc.setFont(undefined, 'bold');
+    doc.text(price, 50, footerY + 35, { align: "center" });
+
+    doc.setFontSize(8);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(150);
+    doc.text("(TVA non applicable, Art. 293 B CGI)", 50, footerY + 45, { align: "center" });
+
+    // BUSINESS CARDS (Right Side)
+    try {
+        const imgH = 40;
+        const imgW = (imgH * 1.6);
+
+        // Centered relative to remaining space or just right side
+        if (card1) doc.addImage(card1, 'PNG', 100, footerY + 10, imgW, imgH);
+        if (card2) doc.addImage(card2, 'PNG', 100 + imgW + 10, footerY + 10, imgW, imgH);
+
+    } catch (e) {
+        console.warn("Could not load business cards", e);
+    }
+
+
+    // --- PAGE 2: RECOMMANDATIONS LOCALES (Refined Interaction) ---
+    doc.addPage();
+
+    // 1. HEADER (Black Band) - Consistent
+    doc.setFillColor(COL_BLACK);
+    doc.rect(0, 0, pageWidth, 50, 'F');
+
+    if (logoGalaxy) doc.addImage(logoGalaxy, 'PNG', 10, 5, 40, 30);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(COL_GOLD);
+    doc.text("NOS RECOMMANDATIONS LOCALISÉES", pageWidth - 20, 30, { align: "right" });
+
+    // 2. LOGIC (Sort Deals)
+    let destLat = 48.0794;
+    let destLon = 7.3596;
+    if (window.weatherDataDestination) {
+        destLat = window.weatherDataDestination.lat || destLat;
+        destLon = window.weatherDataDestination.lon || destLon;
+    }
+    const sortedDeals = DEALS
+        .filter(d => d.lat && d.lon)
+        .map(d => ({ ...d, dist: calculateDistance(destLat, destLon, d.lat, d.lon) }))
+        .sort((a, b) => a.dist - b.dist)
+        .slice(0, 3);
+
+    // 3. DISPLAY DEALS (With Encoding Fixes & Overlay Links)
+    y = 60;
+
+    doc.setFontSize(12);
+    doc.setTextColor(COL_BLACK);
+    doc.setFont(undefined, 'normal');
+    const destName = document.getElementById('res-drop')?.value || "votre destination";
+    // Use clear text to avoid encoding issues
+    doc.text(`Sélection exclusive à proximité de ${destName} :`, 20, y);
+    y += 15;
+
+    sortedDeals.forEach(deal => {
+        // Card Background
+        doc.setDrawColor(230);
+        doc.setFillColor(252, 252, 255);
+        doc.rect(20, y, 170, 45, 'FD');
+        doc.setFillColor(COL_RED);
+        doc.rect(20, y, 2, 45, 'F');
+
+        // Content
+        let dealY = y + 10;
+
+        // Category - Clean string
+        const catStr = (deal.category || "OFFRE").toUpperCase().replace(/[ÀÁÂÃÄÅ]/g, "A").replace(/[ÉÈÊË]/g, "E");
+        doc.setFontSize(9);
+        doc.setTextColor(COL_GOLD);
+        doc.setFont(undefined, 'bold');
+        doc.text(catStr, 28, dealY);
+
+        // Title - Clean string
+        dealY += 7;
+        const titleStr = deal.title.toUpperCase().replace(/[ÀÁÂÃÄÅ]/g, "A").replace(/[ÉÈÊË]/g, "E");
+        doc.setFontSize(14);
+        doc.setTextColor(COL_BLACK);
+        doc.setFont(undefined, 'bold');
+        doc.text(titleStr, 28, dealY);
+
+        // Description - Word Wrap
+        dealY += 6;
+        doc.setFontSize(10);
+        doc.setTextColor(80);
+        doc.setFont(undefined, 'normal');
+        // Simple replace for common accents if font issue persists, but splitTextToSize handles wrapping
+        const descClean = deal.description.replace(/["]/g, "'");
+        const descLines = doc.splitTextToSize(descClean, 150);
+        // Limit to 2 lines
+        const descTruncated = descLines.slice(0, 2);
+        doc.text(descTruncated, 28, dealY);
+
+        // Distance
+        doc.setFontSize(10);
+        doc.setTextColor(COL_BLACK);
+        doc.text(`à ${Math.round(deal.dist)} km`, 185, y + 10, { align: "right" });
+
+        // INTERACTION: Link Overlay
+        if (deal.url) {
+            // JS Link attempt for internal overlay
+            const jsLink = `javascript:try{if(window.parent && window.parent.openLinkOverlay){window.parent.openLinkOverlay('${deal.url}');}else{window.open('${deal.url}');}}catch(e){window.location.href='${deal.url}';}`;
+
+            // Link Area
+            try {
+                doc.link(20, y, 170, 45, { url: jsLink });
+            } catch (e) { console.warn("Link add error", e); }
+
+            // Hint
+            doc.setFontSize(8);
+            doc.setTextColor(COL_RED);
+            doc.text("CLIQUER POUR OUVRIR >", 185, y + 40, { align: "right" });
+        }
+
+        y += 55;
     });
 
-    // --- CONSTANTS & CONFIG ---
-    const COLORS = {
-        BG: "#FFFFFF",
-        TEXT: "#1A1A1A", // Anthracite
-        ACCENT: "#E50914", // Scanner Red
-        SUB: "#666666", // Grey
-        NEON_BLUE: "#00d4ff",
-        GOLD: "#ff9d00",
-        GREEN: "#b8ff00"
-    };
+    // Page 2 Footer
+    doc.setFillColor(COL_BLACK);
+    doc.rect(0, pageHeight - 30, pageWidth, 30, 'F');
+    doc.setFontSize(10);
+    doc.setTextColor(COL_WHITE);
+    doc.text("iAkvenir - L'Intelligence au service de votre Voyage", pageWidth / 2, pageHeight - 13, { align: "center" });
 
-    // --- DATA COLLECTION ---
-    const prenom = document.getElementById('hero-prenom')?.value || "CLIENT";
-    const nom = document.getElementById('hero-nom')?.value || "INCONNU";
-    const phone = document.getElementById('hero-phone')?.value || "Non renseigné";
-    const date = document.getElementById('res-pickup-datetime')?.value || "Immédiat";
-    const price = document.getElementById('sim-price-display')?.innerText || "SUR DEVIS";
-    const dist = document.getElementById('sim-dist-display')?.innerText || "--";
-    const dep = document.getElementById('sim-departure')?.value || "Non défini";
-    const dest = document.getElementById('sim-destination')?.value || "Non défini";
-    const vehicle = "TESLA MODEL 3 (Blanc Nacré)";
-    const pilot = "Laurent (Certifié iA_k)";
-    const cabinTemp = document.getElementById('res-cabin-temp')?.value;
-    const comfortMsg = document.getElementById('res-temp-comfort')?.textContent;
-    const idImg = document.getElementById('webcam-result');
+    // -- OUTPUT --
+    const pdfBlob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
 
-    const lang = currentLanguage || 'fr';
-    const t = TRANSLATIONS[lang] || TRANSLATIONS.fr;
+    // Store globally
+    window.currentPdfBlobUrl = blobUrl;
+    window.currentPdfBlob = pdfBlob; // Store blob for Email attach
 
-    // --- VOCALIZATION ---
-    if (reservationWeatherData && reservationWeatherData.departure && reservationWeatherData.destination) {
-        const voiceMsg = t.pdf_weather_vocal
-            .replace('{depTemp}', reservationWeatherData.departure.temp)
-            .replace('{destTemp}', reservationWeatherData.destination.temp);
-        if (window.speak) speak(voiceMsg);
-    }
-
-    // --- LAYOUT ENGINE ---
-    const Layout = {
-        cursorY: 45, // Start below header
-        margin: 15,
-        contentWidth: 180, // 210 - 2*15
-        pageHeight: 297,
-        footerHeight: 20,
-
-        // Check if we need a new page
-        checkPageBreak: function (heightNeeded) {
-            if (this.cursorY + heightNeeded > (this.pageHeight - this.footerHeight)) {
-                doc.addPage();
-                this.cursorY = 45; // Reset to top
-                this.drawBackground(); // Re-draw header/footer
-                return true;
-            }
-            return false;
-        },
-
-        // Draw Standard Header & Footer
-        drawBackground: function () {
-            const pageCount = doc.internal.getNumberOfPages();
-
-            // HEADER
-            doc.setFillColor(COLORS.TEXT);
-            doc.rect(0, 0, 210, 25, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(18);
-            doc.setFont("helvetica", "bold");
-            doc.text("iA_k_venir", 15, 17);
-            doc.setTextColor(COLORS.ACCENT);
-            doc.setFontSize(14);
-            doc.text(t.pdf_title, 195, 17, { align: "right" });
-
-            // FOOTER
-            const footerY = 280;
-            doc.setFillColor(COLORS.TEXT);
-            doc.rect(0, footerY, 210, 17, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(8);
-            doc.text("iA_k_venir (EI) - 68320 Baltzenheim - SIRET: EN COURS - EVTC: EN COURS", 105, footerY + 6, { align: "center" });
-            doc.setTextColor(COLORS.SUB);
-            doc.text(`${t.pdf_page} ${pageCount} - ${t.pdf_auto_gen}`, 105, footerY + 11, { align: "center" });
-        },
-
-        // Draw Section Title
-        drawSection: function (title) {
-            this.checkPageBreak(15);
-            doc.setDrawColor(COLORS.ACCENT);
-            doc.setLineWidth(0.5);
-            doc.line(this.margin, this.cursorY, 110, this.cursorY); // Style underline
-            this.cursorY += 8;
-
-            doc.setTextColor(COLORS.ACCENT);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text(title, this.margin, this.cursorY);
-            this.cursorY += 8;
-        },
-
-        // Draw Key-Value Field
-        drawField: function (label, value) {
-            this.checkPageBreak(12);
-            doc.setFontSize(9);
-            doc.setTextColor(COLORS.SUB);
-            doc.setFont("helvetica", "normal");
-            doc.text(label, this.margin, this.cursorY);
-            this.cursorY += 5;
-
-            doc.setFontSize(11);
-            doc.setTextColor(COLORS.TEXT);
-            doc.setFont("helvetica", "normal"); // Keep it clean
-            // Wrap text if needed
-            const splitText = doc.splitTextToSize(value, 90); // Left column width
-            doc.text(splitText, this.margin, this.cursorY);
-
-            this.cursorY += (splitText.length * 5) + 5;
-        },
-
-        // Helper for Badges
-        drawBadge: function (label, color, x, y) {
-            doc.setFillColor(color);
-            doc.roundedRect(x, y - 4, 18, 5, 1, 1, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(7);
-            doc.setFont("helvetica", "bold");
-            doc.text(label, x + 9, y - 0.5, { align: "center" });
-        }
-    };
-
-    // --- START GENERATION ---
-    Layout.drawBackground();
-
-    // 1. CLIENT
-    Layout.drawSection("CLIENT / PASSAGER");
-    Layout.drawField("NOM COMPLET", `${prenom} ${nom}`);
-    Layout.drawField("TÉLÉPHONE", phone);
-
-    // 2. MISSION
-    Layout.drawSection("DÉTAILS MISSION");
-    Layout.drawField("DATE DE PRISE EN CHARGE", date);
-    Layout.drawField("DÉPART", dep);
-    Layout.drawField("ARRIVÉE", dest);
-
-    // 3. LOGISTICS
-    Layout.drawSection("LOGISTIQUE");
-    Layout.drawField("DISTANCE ESTIMÉE", dist);
-
-    // Price Box
-    Layout.checkPageBreak(30);
-    doc.setFillColor(COLORS.TEXT);
-    doc.rect(Layout.margin, Layout.cursorY, 60, 20, 'F');
-    doc.setTextColor(COLORS.ACCENT);
-    doc.setFontSize(9);
-    doc.text("PRIX ESTIMÉ TTC", Layout.margin + 5, Layout.cursorY + 6);
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(16);
-    doc.text(price, Layout.margin + 5, Layout.cursorY + 16);
-    Layout.cursorY += 30;
-
-    Layout.drawField("VÉHICULE", vehicle);
-    Layout.drawField("PILOTE", pilot);
-
-    // 4. WEATHER (Graphical)
-    if (reservationWeatherData) {
-        Layout.drawSection("METEO PREVUE");
-
-        // Departure
-        if (reservationWeatherData.departure) {
-            Layout.checkPageBreak(30);
-            Layout.drawBadge("DEPART", COLORS.NEON_BLUE, Layout.margin, Layout.cursorY);
-            doc.setTextColor(COLORS.TEXT);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text(reservationWeatherData.departure.destination, Layout.margin + 22, Layout.cursorY);
-            Layout.cursorY += 6;
-
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text(`${reservationWeatherData.departure.temp}°C - ${reservationWeatherData.departure.weatherDesc}`, Layout.margin, Layout.cursorY);
-            Layout.cursorY += 5;
-
-            doc.setTextColor(COLORS.SUB);
-            doc.setFontSize(9);
-            doc.text(`Vent: ${reservationWeatherData.departure.windSpeed} km/h | Pluie: ${reservationWeatherData.departure.precipProb}%`, Layout.margin, Layout.cursorY);
-            Layout.cursorY += 10;
-        }
-
-        // Arrival
-        if (reservationWeatherData.destination) {
-            Layout.checkPageBreak(30);
-            Layout.drawBadge("ARRIVEE", COLORS.GOLD, Layout.margin, Layout.cursorY);
-            // Handle if destination is object or string (legacy compat)
-            const destName = reservationWeatherData.destination.destination || reservationWeatherData.destination;
-            const destTemp = reservationWeatherData.destination.temp || reservationWeatherData.temp;
-            const destDesc = reservationWeatherData.destination.weatherDesc || reservationWeatherData.weatherDesc;
-            const destWind = reservationWeatherData.destination.windSpeed || reservationWeatherData.windSpeed;
-            const destRain = reservationWeatherData.destination.precipProb || reservationWeatherData.precipProb;
-
-            doc.setTextColor(COLORS.TEXT);
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text(destName, Layout.margin + 22, Layout.cursorY);
-            Layout.cursorY += 6;
-
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text(`${destTemp}°C - ${destDesc}`, Layout.margin, Layout.cursorY);
-            Layout.cursorY += 5;
-
-            doc.setTextColor(COLORS.SUB);
-            doc.setFontSize(9);
-            doc.text(`Vent: ${destWind} km/h | Pluie: ${destRain}%`, Layout.margin, Layout.cursorY);
-            Layout.cursorY += 10;
-
-            // Suggestion
-            Layout.checkPageBreak(25);
-            Layout.drawBadge("CONSEIL", COLORS.GREEN, Layout.margin, Layout.cursorY);
-            const suggRaw = getClothingSuggestion(destTemp);
-            const suggClean = suggRaw.replace('💡 Suggestion: ', '').replace('💡 ', '');
-            doc.setTextColor(COLORS.SUB);
-            const splitSugg = doc.splitTextToSize(suggClean, 85);
-            doc.text(splitSugg, Layout.margin + 22, Layout.cursorY);
-            Layout.cursorY += (splitSugg.length * 4) + 8;
-        }
-    }
-
-    // 5. TESLA TEMP
-    if (cabinTemp) {
-        Layout.drawSection("TEMPERATURE TESLA");
-        Layout.checkPageBreak(30);
-
-        doc.setFillColor(COLORS.TEXT);
-        doc.roundedRect(Layout.margin, Layout.cursorY, 20, 16, 2, 2, 'F');
-        doc.setTextColor(COLORS.ACCENT);
-        doc.setFontSize(18);
-        doc.setFont("helvetica", "bold");
-        doc.text(`${cabinTemp}`, Layout.margin + 10, Layout.cursorY + 10, { align: "center" });
-        doc.setFontSize(8);
-        doc.text("°C", Layout.margin + 10, Layout.cursorY + 14, { align: "center" });
-
-        doc.setTextColor(COLORS.SUB);
-        doc.setFontSize(9);
-        doc.setFont("helvetica", "italic");
-        const msg = comfortMsg || "Température idéale";
-        const splitMsg = doc.splitTextToSize(msg, 65);
-        doc.text(splitMsg, Layout.margin + 25, Layout.cursorY + 6);
-        Layout.cursorY += 25;
-    }
-
-    // 6. WEBCAM ID (Absolute positioning on Right Column, but check page)
-    // For this specific design, we put it fixed on First Page usually, but let's be smart.
-    // If we are still on Page 1, put it on right. If not, put it at end.
-    // Given the request "don't cut off", simplest is to treat it as a section if on new page, 
-    // OR fixed position if on Page 1.
-    // STRATEGY: Fixed Position on Page 1 if possible.
-
-    if (idImg && !idImg.classList.contains('hidden') && idImg.src) {
-        try {
-            const rawW = idImg.naturalWidth || 640;
-            const rawH = idImg.naturalHeight || 480;
-            const imgRatio = rawH / rawW;
-            let finalW = 60;
-            let finalH = finalW * imgRatio;
-            if (finalH > 80) { finalH = 80; finalW = finalH / imgRatio; }
-
-            // Always put on Page 1 Right Column for "Identity Card" feel
-            doc.setPage(1);
-            const rightColX = 130;
-            doc.addImage(idImg.src, 'PNG', rightColX, 45, finalW, finalH);
-            doc.setFontSize(8);
-            doc.setTextColor(COLORS.ACCENT);
-            doc.text("IDENTITÉ NUMÉRIQUE", rightColX, 45 + finalH + 6);
-        } catch (e) { console.warn("PDF Image Error", e); }
-    }
-
-
-    // 7. TOP 3 SUGGESTIONS (New Page ensured via Layout)
-    // Find key
-    let cleanDest = dest.toLowerCase();
-    // (Existing alias logic)
-    const aliases = {
-        "artzenheim": "neuf-brisach", "baltzenheim": "neuf-brisach", "kunheim": "neuf-brisach", "bimbisheim": "neuf-brisach", "widensolen": "neuf-brisach", "wolfgantzen": "neuf-brisach", "volgelsheim": "neuf-brisach", "biesheim": "neuf-brisach", "vogelgrun": "neuf-brisach", "algolsheim": "neuf-brisach", "obersaasheim": "neuf-brisach", "geiswasser": "neuf-brisach", "heiteren": "neuf-brisach", "marckolsheim": "neuf-brisach", "sasbach": "neuf-brisach", "brecht": "neuf-brisach", "ihringen": "neuf-brisach", "jebsheim": "colmar", "muntzenheim": "colmar", "horbourg-wihr": "colmar", "andolsheim": "colmar", "sundhoffen": "colmar", "logelheim": "colmar", "sainte-croix-en-plaine": "colmar", "herrlisheim-pres-colmar": "colmar", "wettolsheim": "colmar", "eguisheim": "eguisheim", "wintzenheim": "colmar", "turckheim": "colmar", "ingersheim": "colmar", "bennwihr": "colmar", "houssen": "colmar", "ostheim": "colmar", "guemar": "ribeauville", "bergheim": "ribeauville", "saint-hippolyte": "ribeauville", "orschwiller": "selestat", "kintzheim": "selestat", "chatenois": "selestat", "scherwiller": "selestat", "ebersheim": "selestat", "baldenheim": "selestat", "mussig": "selestat", "heidolsheim": "selestat", "artolsheim": "selestat", "mackenheim": "selestat", "bootzheim": "selestat", "elscheim": "selestat", "illhaeusern": "ribeauville", "mittelwihr": "riquewihr", "beblenheim": "riquewihr", "hunawihr": "riquewihr", "zellenberg": "riquewihr", "kaysersberg": "kaysersberg", "ammerschwihr": "kaysersberg", "sigolsheim": "kaysersberg", "kienzheim": "kaysersberg", "katzenthal": "kaysersberg", "niedermorschwihr": "colmar", "obermorschwihr": "eguisheim", "voegtlinshoffen": "eguisheim", "husseren-les-chateaux": "eguisheim", "hattstatt": "eguisheim", "gueberschwihr": "eguisheim", "pfaffenheim": "eguisheim", "rouffach": "eguisheim", "gundolsheim": "eguisheim", "bergholtz": "eguisheim", "soultzmatt": "eguisheim", "westhalten": "eguisheim", "osenbach": "eguisheim", "selestat": "selestat", "strasbourg": "strasbourg", "entzheim": "strasbourg", "lingolsheim": "strasbourg", "illkirch": "strasbourg", "schiltigheim": "strasbourg", "gare de strasbourg": "strasbourg", "aéroport strasbourg": "strasbourg", "obernai": "strasbourg", "mont sainte-odile": "strasbourg", "ungersheim": "mulhouse", "europa-park": "rust", "rulantica": "rust", "rust": "rust", "basel": "bale", "bale": "bale", "euroairport": "bale", "freiburg": "freiburg", "fribourg": "freiburg", "baden-baden": "baden-baden", "baden": "baden-baden", "gerardmer": "gerardmer", "vosges": "gerardmer"
-    };
-
-    for (const [key, target] of Object.entries(aliases)) {
-        if (cleanDest.includes(key)) { cleanDest = target; break; }
-    }
-
-    let matchedKey = null;
-    if (typeof POI_DATA !== 'undefined') {
-        for (const key of Object.keys(POI_DATA)) {
-            const normalizedKey = key.replace(/-/g, " ");
-            if (cleanDest.includes(normalizedKey)) { matchedKey = key; break; }
-            if (cleanDest.length > 4 && normalizedKey.includes(cleanDest)) { matchedKey = key; break; }
-        }
-    }
-
-    if (matchedKey && POI_DATA[matchedKey]) {
-        // Force new page for Suggestions
-        doc.addPage();
-        Layout.cursorY = 45;
-        Layout.drawBackground();
-
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14);
-        doc.text(`SUGGESTIONS : ${matchedKey.toUpperCase()}`, 105, 17, { align: "center" }); // Overwrite header title logic? Or just add subtitle
-
-        // Let's use the Layout Engine for Top 3
-        const categories = POI_DATA[matchedKey];
-        // Flatten to get top 3 mix or just specific categories? User said "Top 3".
-        // Let's take 1 from Gastronomy, 1 from Insolite, 1 from Leisure if available.
-        // Or just list first 3 categories.
-
-        const catLabels = { "insolite": "LIEUX INSOLITES", "gastronomy": "GASTRONOMIE", "culture": "CULTURE", "leisure": "LOISIRS", "wine": "VINS" };
-
-        for (const [catKey, items] of Object.entries(categories)) {
-            if (!items || items.length === 0) continue;
-            Layout.drawSection(catLabels[catKey] || catKey.toUpperCase());
-
-            items.slice(0, 3).forEach(poi => {
-                Layout.checkPageBreak(10);
-                // Custom bullet render
-                doc.setTextColor(COLORS.TEXT);
-                doc.setFontSize(10);
-                doc.text(`• ${poi.name}`, Layout.margin, Layout.cursorY);
-
-                // Link
-                const linkLabel = " (Voir Site)";
-                const w = doc.getTextWidth(`• ${poi.name}`);
-                doc.setTextColor(COLORS.NEON_BLUE);
-                doc.textWithLink(linkLabel, Layout.margin + w, Layout.cursorY, { url: poi.url });
-
-                Layout.cursorY += 7;
-            });
-            Layout.cursorY += 5;
-        }
-    }
-
-    // --- FINAL BLOB ---
-    currentPdfBlob = doc.output('blob');
-    currentPdfBlobUrl = URL.createObjectURL(currentPdfBlob);
-
-    // Update UI
-    const previewFrame = document.getElementById('pdf-preview-frame');
+    // Display in Preview
+    const frame = document.getElementById('pdf-preview-frame');
     const placeholder = document.getElementById('pdf-placeholder');
-    const overlay = document.getElementById('pdf-actions-overlay');
-    const btnWa = document.getElementById('btn-share-wa');
-    const btnMail = document.getElementById('btn-share-mail');
+    const overlayActions = document.getElementById('pdf-actions-overlay');
 
-    if (previewFrame) { previewFrame.src = currentPdfBlobUrl; previewFrame.classList.remove('opacity-0'); }
-    if (placeholder) placeholder.style.display = 'none';
-    if (overlay) overlay.style.display = 'flex';
-    if (btnWa) { btnWa.disabled = false; btnWa.classList.remove('opacity-50', 'cursor-not-allowed'); }
-    if (btnMail) { btnMail.disabled = false; btnMail.classList.remove('opacity-50', 'cursor-not-allowed'); }
+    if (frame && placeholder && overlayActions) {
+        frame.src = blobUrl;
+        frame.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        overlayActions.classList.remove('hidden');
+    }
 
-    speak("Bon de réservation généré.");
-};
+    // Confirmation Sound
+    if (window.speak) {
+        speak("Document de mission généré. Vous le trouverez ci-dessous, optimisé pour votre confort.");
+    }
+
+    // Send status to UI (optional)
+    try {
+        const statusEl = document.querySelector('.animate-pulse'); // "PDF_GENERATOR_READY"
+        if (statusEl && statusEl.textContent.includes('PDF_GENERATOR')) {
+            statusEl.textContent = "PDF_GENERATOR_COMPLETE";
+            statusEl.classList.remove('text-yellow-500', 'animate-pulse');
+            statusEl.classList.add('text-green-500');
+        }
+    } catch (e) { }
+}
+
+
+
+
+
+
+
+
+
+
 
 // EXPORT TO NEW WINDOW (Fullscreen) -> NOW IN-SITE OVERLAY
 function viewPdfFullscreen() {
@@ -4453,9 +5969,54 @@ function closePdfFullscreen() {
     }
 }
 
+// --- LINK OVERLAY (Internal Browser) ---
+function openLinkOverlay(url) {
+    const overlay = document.getElementById('link-overlay');
+    const frame = document.getElementById('link-frame');
+    const loader = document.getElementById('link-loading');
+
+    if (overlay && frame) {
+        // Show Overlay
+        overlay.classList.remove('hidden');
+        if (loader) loader.classList.remove('opacity-0');
+
+        // Load URL
+        frame.src = url;
+
+        // Hide loader on load (basic approximation)
+        frame.onload = () => {
+            if (loader) loader.classList.add('opacity-0');
+        };
+
+        speak("Ouverture du lien dans le navigateur de bord.");
+    } else {
+        // Fallback
+        window.open(url, '_blank');
+    }
+}
+
+function closeLinkOverlay() {
+    const overlay = document.getElementById('link-overlay');
+    const frame = document.getElementById('link-frame');
+    if (overlay) overlay.classList.add('hidden');
+    if (frame) frame.src = 'about:blank';
+}
+
 // Global expose
 window.viewPdfFullscreen = viewPdfFullscreen;
 window.closePdfFullscreen = closePdfFullscreen;
+window.openLinkOverlay = openLinkOverlay;
+window.closeLinkOverlay = closeLinkOverlay;
+
+// Keyboard Shortcuts
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const overlay = document.getElementById('pdf-fullscreen-overlay');
+        if (overlay && !overlay.classList.contains('hidden')) {
+            closePdfFullscreen();
+        }
+    }
+});
 
 /* =========================================
    SHARING LOGIC (WhatsApp & Email)
@@ -5167,6 +6728,7 @@ function initHybridAutocomplete() {
 
             // Clear previous options
             datalist.innerHTML = '';
+            datalist.setAttribute('data-mode', 'dynamic');
 
             if (data.features && data.features.length > 0) {
                 data.features.forEach(feature => {
@@ -5200,9 +6762,19 @@ function initHybridAutocomplete() {
             }, 300); // 300ms debounce
         });
 
-        // Ensure static list is there on focus if empty
+        // Ensure static list is there on focus and select text for better UX
         input.addEventListener('focus', () => {
-            if (input.value.length < 3) populateDataList();
+            populateDataList(); // Smart restore (only if needed)
+            // Delay selection slightly to let browser handle focus first
+            setTimeout(() => input.select(), 50);
+        });
+
+        // Click also re-triggers selection if already focused
+        input.addEventListener('mousedown', () => {
+            if (document.activeElement === input) {
+                // Already focused, just ensure list is correct
+                populateDataList();
+            }
         });
     });
 }
@@ -5296,6 +6868,7 @@ function initPilotVideo() {
         btn.onclick = () => {
             video.muted = false;
             video.volume = 1.0;
+            if (typeof window.duckAudioFlux === 'function') window.duckAudioFlux();
             btn.remove();
             video.currentTime = 0; // Restart for impact
             video.play();
@@ -5303,10 +6876,9 @@ function initPilotVideo() {
         container.appendChild(btn);
     };
 
-    // Helper: Trigger Play with Fallback
     const triggerPlay = () => {
-        // Stop if limit reached or already playing OR TOUR IS ACTIVE
-        if (playCount >= MAX_PLAYS || !video.paused || window.isTourActive) return;
+        // Stop if limit reached or already playing OR TOUR IS ACTIVE OR IA SPEAKING
+        if (playCount >= MAX_PLAYS || !video.paused || window.isTourActive || window.speechSynthesis.speaking) return;
 
         // Force mute if arriving from hero navigation
         if (window.fromHeroNavigation) {
@@ -5321,6 +6893,11 @@ function initPilotVideo() {
         // Try playing
         video.play()
             .then(() => {
+                // SUCCESS: If sound is active, duck the background
+                if (!video.muted && typeof window.duckAudioFlux === 'function') {
+                    window.duckAudioFlux();
+                }
+
                 // If browser allowed play, check if it forced mute?
                 if (video.muted) {
                     addUnmuteOverlay();
@@ -5366,12 +6943,21 @@ function initPilotVideo() {
         });
     }
 
-    // 1. Scroll Trigger (Play when enters, Pause when leaves)
+    // 1. Scroll Trigger (Play when enters with DELAY, Pause when leaves)
+    let scrollPlayTimeout = null;
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                triggerPlay();
+                // User requested delay on scroll to avoid confusion (2s)
+                if (scrollPlayTimeout) clearTimeout(scrollPlayTimeout);
+                scrollPlayTimeout = setTimeout(() => {
+                    if (entry.isIntersecting) triggerPlay();
+                }, 2000);
             } else {
+                if (scrollPlayTimeout) {
+                    clearTimeout(scrollPlayTimeout);
+                    scrollPlayTimeout = null;
+                }
                 // Just pause when scrolling away, don't reset
                 if (!video.paused) {
                     video.pause();
@@ -5387,6 +6973,7 @@ function initPilotVideo() {
 
     // Reset video when it ends to allow replay on next action
     video.addEventListener('ended', () => {
+        if (typeof window.restoreAudioFlux === 'function') window.restoreAudioFlux();
         if (playCount >= MAX_PLAYS) {
             // After 3 plays, freeze on last frame (photo effect)
             // Keep grayscale filter - video stays black and white always
@@ -5396,6 +6983,11 @@ function initPilotVideo() {
             video.currentTime = 0;
             video.pause();
         }
+    });
+
+    // Also restore on pause (handles scroll away)
+    video.addEventListener('pause', () => {
+        if (typeof window.restoreAudioFlux === 'function') window.restoreAudioFlux();
     });
 
     // 3. Link Trigger (Ensure play on jump)
@@ -5543,7 +7135,7 @@ function initWebcam() {
         const runSequence = async () => {
             try {
                 // 1. Init
-                speak("Initialisation du protocole photo.");
+                speak("Initialisation du module de capture.");
                 await new Promise(r => setTimeout(r, 2000));
 
                 // 2. Countdown
@@ -5703,7 +7295,7 @@ function initLightbox() {
 
                 // If NOT spoken yet for this category: Speak then Show
                 if (!certifiedCategories.has(item.cat)) {
-                    speak("Ces documents visuels sont certifiés authentiques, par Laurent.");
+                    speak("Photos certifiées par Laurent. Un travail d'orfèvre.");
                     certifiedCategories.add(item.cat);
 
                     // Approximate delay for speech (2.5s)
@@ -6053,6 +7645,12 @@ window.startGuidedTour = async function () {
         updateTourButtons("AIDE");
         return;
     }
+
+    // Clear simulator inputs to ensure they are empty at start of tour
+    const depInput = document.getElementById('sim-departure');
+    const destInput = document.getElementById('sim-destination');
+    if (depInput) depInput.value = '';
+    if (destInput) destInput.value = '';
 
     console.log("Starting Interactive Guided Tour...");
 
@@ -6686,17 +8284,33 @@ function monitorInput(inputElement, type) {
     });
 }
 
+let feedbackTimers = {};
+
 function showFeedback(el, text, colorClass, borderClass) {
     if (!el) return;
     el.innerHTML = text;
     el.className = `mt-1 text-[10px] font-mono pl-2 border-l-2 transition-all block ${colorClass} ${borderClass}`;
     el.classList.remove('hidden');
+
+    // Clear existing timer if any
+    const elId = el.id;
+    if (feedbackTimers[elId]) clearTimeout(feedbackTimers[elId]);
+
+    // Set new timer to auto-hide after 4 seconds (User Request: "apparaitre mais pas lontemps")
+    feedbackTimers[elId] = setTimeout(() => {
+        hideFeedback(el);
+    }, 4000);
 }
 
 function hideFeedback(el) {
     if (!el) return;
     el.classList.add('hidden');
     el.innerHTML = '';
+    // Clear timer
+    if (feedbackTimers[el.id]) {
+        clearTimeout(feedbackTimers[el.id]);
+        delete feedbackTimers[el.id];
+    }
 }
 
 // NEW AUTOCOMPLETE MONITOR (Bypassing old function)
@@ -6725,23 +8339,100 @@ function monitorInputAutocomplete(inputElement, type) {
                 return;
             }
 
-            // 2. Build Suggestion UI
-            const suggestions = data.map((item) => {
+            // 2. SMART SCORING - Améliorer la pertinence des résultats
+            const scoredResults = data.map((item) => {
+                let score = 0;
+                const searchLower = val.toLowerCase();
+                const addr = item.address || {};
+
+                // Extraire le nom principal (ville, village, etc.)
+                const mainName = (addr.city || addr.town || addr.village || addr.municipality || '').toLowerCase();
+                const displayLower = item.display_name.toLowerCase();
+
+                // BONUS 1: Correspondance exacte du nom de ville (+100)
+                if (mainName === searchLower) {
+                    score += 100;
+                }
+
+                // BONUS 2: Le nom de ville commence par la recherche (+50)
+                if (mainName.startsWith(searchLower)) {
+                    score += 50;
+                }
+
+                // BONUS 3: Type de lieu (privilégier villes/villages sur POIs)
+                const placeType = item.type || '';
+                const placeClass = item.class || '';
+                if (['city', 'town', 'village', 'municipality', 'administrative'].includes(placeType)) {
+                    score += 30;
+                } else if (['tourism', 'amenity', 'leisure'].includes(placeClass)) {
+                    score -= 20; // Pénaliser les POIs
+                }
+
+                // BONUS 4: La recherche apparaît au début du display_name (+20)
+                if (displayLower.startsWith(searchLower)) {
+                    score += 20;
+                }
+
+                // PÉNALITÉ 1: Confusion de mots partiels (ex: "Remiremont" ne doit pas matcher "Mont")
+                // Si le mot recherché contient "mont" mais que le résultat est juste "Mont XXX", pénaliser
+                const searchWords = searchLower.split(/\s+/);
+                const resultWords = displayLower.split(/[\s,]+/);
+                let hasPartialMatch = false;
+                searchWords.forEach(searchWord => {
+                    if (searchWord.length >= 4) { // Mots de 4+ lettres
+                        resultWords.forEach(resultWord => {
+                            // Si le mot du résultat est contenu dans le mot recherché mais n'est pas égal
+                            if (searchWord.includes(resultWord) && searchWord !== resultWord && resultWord.length >= 3) {
+                                hasPartialMatch = true;
+                            }
+                        });
+                    }
+                });
+                if (hasPartialMatch) {
+                    score -= 40; // Forte pénalité pour confusion partielle
+                }
+
+                // PÉNALITÉ 2: Résultat trop éloigné géographiquement du centre de l'Alsace
+                const alsaceCenterLat = 48.3;
+                const alsaceCenterLon = 7.4;
+                const distance = Math.sqrt(
+                    Math.pow(parseFloat(item.lat) - alsaceCenterLat, 2) +
+                    Math.pow(parseFloat(item.lon) - alsaceCenterLon, 2)
+                );
+                if (distance > 2) { // > 2 degrés du centre
+                    score -= 10;
+                }
+
+                return { ...item, relevanceScore: score };
+            });
+
+            // Trier par score de pertinence (décroissant)
+            scoredResults.sort((a, b) => b.relevanceScore - a.relevanceScore);
+
+            // Prendre les 3 meilleurs résultats
+            const topResults = scoredResults.slice(0, 3);
+
+            // 3. Build Suggestion UI
+            const suggestions = topResults.map((item) => {
                 // Format Name (Smart Construction)
+                // Split display_name into parts to use as fallbacks
+                const parts = item.display_name.split(',');
+
                 // Use address object if available for better formatting
                 let prettyName = parts[0];
                 const addr = item.address || {};
                 const house = addr.house_number || '';
-                const road = addr.road || addr.pedestrian || addr.street || parts[0].split(',')[0];
-                const city = addr.city || addr.town || addr.village || addr.municipality || parts[1];
+                const road = addr.road || addr.pedestrian || addr.street || parts[0];
+                const city = addr.city || addr.town || addr.village || addr.municipality || (parts.length > 1 ? parts[1].trim() : '');
 
                 // Construct: "6 Rue du Château, Colmar"
-                if (city && road && !road.includes(city)) {
+                if (city && road && !road.toLowerCase().includes(city.toLowerCase())) {
                     prettyName = `${house ? house + ' ' : ''}${road}, ${city}`;
-                } else {
+                } else if (parts.length > 1) {
                     // Fallback to simple split if address object is missing or ambiguous
-                    if (parts.length > 1) prettyName = parts[0] + ', ' + parts[1];
+                    prettyName = parts[0].trim() + ', ' + parts[1].trim();
                 }
+
 
                 // Remove trailing/leading spaces/commas
                 prettyName = prettyName.replace(/^,/, '').trim();
@@ -7091,3 +8782,582 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnAddStop = document.getElementById('btn-sim-add-stop');
     if (btnAddStop) btnAddStop.addEventListener('click', showStopoverField);
 });
+
+// FORCE INITIAL RENDER
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof renderDeals === 'function') {
+        renderDeals();
+    }
+});
+
+// --- PDF GENERATION MODULE (REFINED V3 - RED SCANNER DESIGN) ---
+// Appended to override previous versions safely
+
+
+async function generatePDF_Refined() {
+    // Access jsPDF from global window object
+    const { jsPDF } = window.jspdf || {};
+    if (!jsPDF) {
+        alert("Erreur : Le module PDF (jsPDF) n'est pas chargé. Vérifiez votre connexion internet ou rechargez la page.");
+        return;
+    }
+
+    const doc = new jsPDF();
+
+    // -- 1. GATHER DATA --
+    const prenom = document.getElementById('res-prenom')?.value || '';
+    const nom = document.getElementById('res-nom')?.value || '';
+    const email = document.getElementById('res-email')?.value || '';
+    const phone = document.getElementById('res-phone')?.value || '';
+    const photoImg = document.getElementById('webcam-result');
+    const hasPhoto = photoImg && !photoImg.classList.contains('hidden') && photoImg.src.startsWith('data:image');
+
+    const pickup = document.getElementById('res-pickup').value || 'Non spécifié';
+    const drop = document.getElementById('res-drop').value || 'Non spécifié';
+    const dateInput = document.getElementById('res-pickup-datetime').value || '--';
+    const formattedDate = dateInput.replace('T', ' à ');
+    const pax = document.getElementById('res-pax')?.value || '1';
+    const options = document.getElementById('res-opt')?.options[document.getElementById('res-opt')?.selectedIndex]?.text || 'Standard';
+    const notes = document.getElementById('res-notes').value || 'Aucune note particulière.';
+
+    const price = document.getElementById('price-display')?.innerText || 'Sur devis';
+    const distance = document.getElementById('distance-display')?.innerText || '--';
+    const duration = document.getElementById('duration-display')?.innerText || '--';
+
+    const weatherData = window.weatherDataDeparture || window.weatherDataDestination;
+    let weatherSummary = "Non disponible";
+    let tempHabitacle = "20°C";
+
+    if (weatherData && weatherData.daily) {
+        const maxTemp = Math.round(weatherData.daily.temperature_2m_max[0]);
+        const minTemp = Math.round(weatherData.daily.temperature_2m_min[0]);
+        const wCode = weatherData.daily.weather_code[0];
+        const desc = WMO_CODES[wCode] || '';
+        weatherSummary = `${desc} (${maxTemp}°C / ${minTemp}°C)`;
+
+        if (maxTemp > 24) tempHabitacle = "19.5°C (Clim)";
+        else if (maxTemp < 12) tempHabitacle = "22.5°C (Chauffage)";
+        else tempHabitacle = "21.0°C";
+    }
+
+    // -- STYLING CONSTANTS --
+    const LUMINOUS_RED = [255, 51, 51]; // Rouge lumineux
+    const SCANNER_RED = [220, 20, 60]; // Crimson Red (legacy)
+    const DARK_TEXT = [20, 20, 20];
+    const SUB_TEXT = [100, 100, 100];
+    const LINE_WIDTH_FINE = 0.2; // Très fin
+    const LINE_WIDTH_THICK = 1.5; // Ligne épaisse pour séparateurs
+    const pageWidth = 210; // A4 width in mm
+
+    doc.setFont("helvetica");
+
+    // Load assets (Logo)
+    const loadNewLogo = (url) => {
+        return new Promise((r) => {
+            const i = new Image();
+            i.crossOrigin = "Anonymous";
+            i.onload = () => r(i);
+            i.onerror = () => r(null);
+            i.src = url;
+        });
+    };
+    const logoImg = await loadNewLogo('assets/logo_iakvenir_new.png') || await loadNewLogo('assets/logo_galaxy.png');
+
+    // -- PAGE 1: MISSION & IDENTITY --
+
+    // === BLACK HEADER BANNER ===
+    doc.setFillColor(0, 0, 0); // Noir
+    doc.rect(0, 0, pageWidth, 30, 'F'); // Bandeau noir légèrement plus haut
+
+    // Logo à gauche dans le bandeau - AGRANDI
+    if (logoImg) {
+        doc.addImage(logoImg, 'PNG', 8, 3, 24, 24); // Logo plus grand (24x24mm)
+    }
+
+    // Titre "IAKVENIR - MISSION" en blanc au centre
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255); // Blanc
+    doc.setFont("helvetica", 'bold');
+    doc.text("IAKVENIR - MISSION", pageWidth / 2, 18, { align: "center" });
+
+    let y = 45; // Plus d'espace après le bandeau
+    const colLeft = 20;
+
+    // SECTION 1: IDENTITÉ & PHOTO
+    doc.setFontSize(14);
+    doc.setTextColor(...DARK_TEXT);
+    doc.setFont(undefined, 'bold');
+    doc.text("CLIENT / PASSAGER", colLeft, y);
+    // PAS de soulignement rouge - supprimé pour ne pas écraser
+    y += 10;
+
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    doc.text(nom.toUpperCase() + " " + prenom, colLeft, y);
+    y += 6;
+    doc.text(phone, colLeft, y);
+    y += 6;
+    doc.text(email, colLeft, y);
+
+    // Photo Position (Right aligned) - TAILLE RÉDUITE
+    if (hasPhoto) {
+        try {
+            const imgProps = doc.getImageProperties(photoImg.src);
+            if (imgProps) {
+                // Photo réduite: 30x40mm (au lieu de 40x53mm)
+                const pX = 150; // Plus à droite
+                const pY = 45;
+                const photoW = 30;
+                const photoH = 40;
+                doc.addImage(photoImg.src, 'PNG', pX, pY, photoW, photoH);
+                // Red border around photo
+                doc.setDrawColor(...SCANNER_RED);
+                doc.setLineWidth(0.5);
+                doc.rect(pX, pY, photoW, photoH);
+
+                doc.setFontSize(7);
+                doc.setTextColor(...SCANNER_RED);
+                doc.text("SCAN FACIAL OK", pX + photoW / 2, pY + photoH + 4, null, null, "center");
+            }
+        } catch (e) { console.warn("Photo error", e); }
+    }
+
+    y = 115; // Plus d'espace pour éviter l'écrasement
+
+    // SECTION 2: DÉTAILS TRAJET
+    // Séparateur rouge lumineux épais - PLUS HAUT pour ne pas écraser
+    doc.setDrawColor(...LUMINOUS_RED);
+    doc.setLineWidth(LINE_WIDTH_THICK);
+    doc.line(20, y - 12, 190, y - 12);
+
+    doc.setFontSize(14);
+    doc.setTextColor(...DARK_TEXT);
+    doc.setFont(undefined, 'bold');
+    doc.text("ITINÉRAIRE", colLeft, y);
+    y += 10;
+
+    const rowVal = (lbl, val) => {
+        doc.setFontSize(10);
+        doc.setTextColor(...SUB_TEXT);
+        doc.text(lbl, colLeft, y);
+
+        // Remplacer "France" par "FR" pour économiser de l'espace
+        const cleanedVal = val.replace(/,\s*France\s*$/i, ', FR').replace(/,\s*France,/gi, ', FR,');
+
+        doc.setFontSize(11);
+        doc.setTextColor(...DARK_TEXT);
+
+        // Largeur maximale pour le texte (marge droite à 190mm)
+        const maxWidth = 130; // 190 (page) - 60 (position X) = 130mm disponibles
+        const lines = doc.splitTextToSize(cleanedVal, maxWidth);
+
+        // Afficher chaque ligne
+        lines.forEach((line, index) => {
+            doc.text(line, 60, y + (index * 6));
+        });
+
+        // Ajuster y en fonction du nombre de lignes
+        y += Math.max(8, lines.length * 6);
+    };
+
+    // Fonction spéciale pour PASSAGERS/OPTIONS avec texte plus petit
+    const rowValSmall = (lbl, val) => {
+        doc.setFontSize(9); // Plus petit pour le label
+        doc.setTextColor(...SUB_TEXT);
+        doc.text(lbl, colLeft, y);
+        doc.setFontSize(9); // Plus petit pour la valeur aussi
+        doc.setTextColor(...DARK_TEXT);
+
+        // Largeur maximale
+        const maxWidth = 130;
+        const lines = doc.splitTextToSize(val, maxWidth);
+        lines.forEach((line, index) => {
+            doc.text(line, 60, y + (index * 5));
+        });
+
+        y += Math.max(8, lines.length * 5);
+    };
+
+    rowVal("DÉPART", pickup);
+    rowVal("DESTINATION", drop);
+    rowVal("DATE / HEURE", formattedDate);
+
+    // PASSAGERS et OPTIONS sur la même ligne - ALIGNÉ avec les autres lignes
+    const optionsText = options && options !== 'Standard' ? options : 'Aucune option';
+    const passengersOptionsText = `${pax} personne${pax > 1 ? 's' : ''}  |  ${optionsText}`;
+    rowValSmall("PASSAGERS / OPTIONS", passengersOptionsText);
+
+    y += 8;
+
+    // SÉPARATEUR ROUGE après ITINÉRAIRE pour distinction
+    doc.setDrawColor(...LUMINOUS_RED);
+    doc.setLineWidth(LINE_WIDTH_THICK);
+    doc.line(20, y, 190, y);
+
+    y += 12; // Plus d'espace après le séparateur
+
+    // SECTION 3: CONFORT & VÉHICULE
+    // PAS de séparateur rouge - supprimé pour simplifier
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(...DARK_TEXT);
+    doc.text("ATMOSPHÈRE & VÉHICULE", colLeft, y);
+    y += 8;
+
+    // BULLETIN MÉTÉO - Résumé écrit sur le PDF (uniquement si disponible)
+    console.log("[PDF] weatherData:", weatherData);
+    console.log("[PDF] weatherSummary:", weatherSummary);
+
+    let meteoResume = null; // null = pas de météo à afficher
+
+    if (weatherData && weatherData.daily) {
+        const wCode = weatherData.daily.weather_code[0];
+        const maxTemp = Math.round(weatherData.daily.temperature_2m_max[0]);
+        const minTemp = Math.round(weatherData.daily.temperature_2m_min[0]);
+        const precipitation = weatherData.daily.precipitation_sum?.[0] || 0;
+        const windSpeed = weatherData.daily.wind_speed_10m_max?.[0] || 0;
+
+        // Description météo basée sur WMO code
+        let weatherDesc = 'Dégagé';
+        if (wCode === 0) weatherDesc = 'Dégagé';
+        else if (wCode <= 3) weatherDesc = 'Nuageux';
+        else if (wCode <= 48) weatherDesc = 'Brouillard';
+        else if (wCode <= 67) weatherDesc = 'Pluie';
+        else if (wCode <= 77) weatherDesc = 'Neige';
+        else if (wCode <= 82) weatherDesc = 'Averses';
+        else if (wCode <= 99) weatherDesc = 'Orage';
+
+        // Construction du résumé météo compact pour le PDF
+        meteoResume = `${weatherDesc}, ${minTemp}°C à ${maxTemp}°C`;
+        if (precipitation > 0) meteoResume += `, ${Math.round(precipitation)}mm`;
+        if (windSpeed > 20) meteoResume += `, vent ${Math.round(windSpeed)}km/h`;
+
+        console.log("[PDF] meteoResume généré:", meteoResume);
+    }
+
+    // AFFICHAGE sur le PDF - Uniquement si météo disponible
+    doc.setFontSize(10);
+    doc.setTextColor(...DARK_TEXT);
+    doc.setFont(undefined, 'normal');
+
+    if (meteoResume) {
+        // Afficher météo + habitacle
+        const meteoLine = `Météo: ${meteoResume}  |  Habitacle: ${tempHabitacle}`;
+        console.log("[PDF] Ligne météo affichée:", meteoLine);
+        doc.text(meteoLine, colLeft, y);
+        y += 8;
+    } else {
+        // Afficher uniquement habitacle si pas de météo
+        doc.text(`Habitacle climatisé: ${tempHabitacle}`, colLeft, y);
+        y += 8;
+    }
+
+    doc.setFont(undefined, 'italic');
+    doc.setTextColor(80);
+    const vehicle = "Trajet effectué en Tesla Model 3 blanche intérieur blanc avec Laurent votre chauffeur.";
+    doc.text(vehicle, colLeft, y);
+    y += 15;
+
+    // SECTION 4: NOTES - Enrichies avec ambiance et météo
+    // Récupérer l'ambiance sonore sélectionnée
+    const ambianceSelect = document.getElementById('res-ambiance');
+    const ambianceChoisie = ambianceSelect?.options[ambianceSelect.selectedIndex]?.text || 'Non spécifiée';
+
+    // Construire les notes enrichies
+    let notesEnrichies = '';
+
+    // Ajouter l'ambiance sonore
+    notesEnrichies += `Ambiance sonore: ${ambianceChoisie}\n\n`;
+
+    // Ajouter le résumé météo UNIQUEMENT s'il est disponible (pas null et pas "Non disponible")
+    if (meteoResume && meteoResume !== 'Non disponible') {
+        notesEnrichies += `Météo prévue: ${meteoResume}\n\n`;
+    }
+
+    // Ajouter les notes utilisateur si présentes - SANS le préfixe "Notes:"
+    if (notes && notes.length > 5 && notes !== 'Aucune note particulière.') {
+        // Enlever "Notes: Estimation Mission:" si présent
+        let cleanNotes = notes.replace(/^Notes:\s*/i, '').replace(/^Estimation Mission:\s*/i, '').trim();
+        if (cleanNotes) {
+            notesEnrichies += cleanNotes;
+        }
+    }
+
+    // Afficher les notes enrichies si on a du contenu
+    if (notesEnrichies.trim().length > 0) {
+        doc.setFontSize(11);
+        doc.setTextColor(...DARK_TEXT);
+        doc.setFont(undefined, 'bold');
+        doc.text("NOTES DE MISSION:", colLeft, y);
+        y += 6;
+
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        const splitNotes = doc.splitTextToSize(notesEnrichies.trim(), 170);
+        doc.text(splitNotes, colLeft, y);
+        y += (splitNotes.length * 5) + 10;
+    }
+
+    // SECTION 5: FINANCIALS - Repositionné à droite au-dessus de la carte de visite
+    // On ne change pas y, on positionne absolument
+
+    // Position au-dessus de la carte de visite droite (footerY = 245)
+    const priceBoxX = 115; // Aligné avec la carte de visite droite
+    const priceBoxY = 220; // Au-dessus de la carte (245 - 25)
+    const priceBoxW = 75; // Même largeur que la carte
+    const priceBoxH = 20;
+
+    // Fond noir
+    doc.setFillColor(0, 0, 0);
+    doc.rect(priceBoxX, priceBoxY, priceBoxW, priceBoxH, 'F');
+
+    // Label "MONTANT ESTIMÉ" en petit gris
+    doc.setFontSize(8);
+    doc.setTextColor(150, 150, 150);
+    doc.setFont("helvetica", 'normal');
+    doc.text("MONTANT ESTIMÉ", priceBoxX + priceBoxW / 2, priceBoxY + 6, { align: "center" });
+
+    // Prix en BLANC avec symbole EURO, gros et centré
+    doc.setFontSize(18);
+    doc.setTextColor(255, 255, 255); // BLANC
+    doc.setFont("helvetica", 'bold');
+    // Ajouter € si pas déjà présent
+    const priceWithEuro = price.includes('€') ? price : `${price} €`;
+    doc.text(priceWithEuro, priceBoxX + priceBoxW / 2, priceBoxY + 15, { align: "center" });
+
+    // FOOTER PAGE 1: BUSINESS CARDS
+    // Always force footer position
+    const footerY = 245;
+
+    const loadImage = (url) => {
+        return new Promise((r) => {
+            const i = new Image();
+            i.crossOrigin = "Anonymous";
+            i.onload = () => r(i);
+            i.onerror = () => r(null);
+            i.src = url;
+        });
+    };
+
+    try {
+        const card1 = await loadImage('assets/carte_visite_1.png');
+        const card2 = await loadImage('assets/carte_visite_2.png');
+
+        // Size: 85x55mm ratio
+        const cw = 75;
+        const ch = cw / 1.6;
+
+        if (card1) doc.addImage(card1, 'PNG', 20, footerY, cw, ch);
+        if (card2) doc.addImage(card2, 'PNG', 115, footerY, cw, ch);
+
+    } catch (e) { console.warn("Cards", e); }
+
+
+    // -- PAGE 2: LINKS ONLY (REDESIGN LIST STYLE) --
+    const simCats = window.currentSimulatorCategories;
+
+    if (simCats) {
+        doc.addPage();
+
+        // 1. HEADER (Black Band) - Cohérent avec Page 1
+        doc.setFillColor(0, 0, 0); // Noir
+        doc.rect(0, 0, pageWidth, 30, 'F'); // Même hauteur que page 1
+
+        // Logo à gauche - AGRANDI comme page 1
+        if (logoImg) {
+            doc.addImage(logoImg, 'PNG', 8, 3, 24, 24);
+        }
+
+        // Titre principal en blanc au centre
+        doc.setFontSize(16);
+        doc.setTextColor(255, 255, 255); // Blanc
+        doc.setFont("helvetica", 'bold');
+        doc.text("DÉCOUVERTES & ACCÈS EXCLUSIFS", pageWidth / 2, 18, { align: "center" });
+
+        // Subtitle (Below Header) - Sur 2 lignes
+        let ly = 45; // Plus d'espace après bandeau agrandi
+        doc.setFontSize(11);
+        doc.setTextColor(...DARK_TEXT);
+        doc.setFont("helvetica", 'normal');
+
+        // Ligne 1: "Sélection personnalisée pour :"
+        doc.text("Sélection personnalisée pour :", 20, ly);
+        ly += 6; // Espace entre les lignes
+
+        // Ligne 2: Destination en gras
+        const destName = document.getElementById('res-drop')?.value || "DESTINATION";
+        doc.setFont("helvetica", 'bold');
+        doc.text(destName.toUpperCase(), 20, ly);
+        doc.setFont("helvetica", 'normal');
+        ly += 6;
+
+        // Separator Line rouge lumineux
+        doc.setDrawColor(...LUMINOUS_RED);
+        doc.setLineWidth(LINE_WIDTH_THICK);
+        doc.line(20, ly + 2, 190, ly + 2);
+
+        ly += 14; // Plus d'espace
+
+        // Iterate Categories
+        // Categories needed: PRATIQUE, LIEUX INSOLITES, GASTRONOMIE, CULTURE, LOISIRS, VINS
+        // We map from our simCats keys
+        const CAT_ORDER = ['pratique', 'insolite', 'gastronomy', 'culture', 'leisure', 'wine'];
+
+        CAT_ORDER.forEach(catKey => {
+            const items = simCats[catKey];
+            if (!items || items.length === 0) return;
+
+            // Category Title (RED)
+            doc.setFontSize(11);
+            doc.setTextColor(...SCANNER_RED);
+            doc.setFont("helvetica", 'bold');
+
+            const catTitle = catKey.toUpperCase()
+                .replace('GASTRONOMY', 'GASTRONOMIE')
+                .replace('LEISURE', 'LOISIRS')
+                .replace('CULTURE', 'CULTURE')
+                .replace('INSOLITE', 'LIEUX INSOLITES')
+                .replace('WINE', 'VINS')
+                .replace('PRATIQUE', 'PRATIQUE'); // Keep as is
+
+            doc.text(catTitle, 20, ly);
+            ly += 7;
+
+            // Items (Bullet + Name + Link)
+            doc.setFontSize(10);
+            doc.setFont("helvetica", 'normal');
+
+            items.slice(0, 4).forEach(item => { // Limit to 4 items per cat to fit
+                const bullet = "•";
+                doc.setTextColor(0, 0, 0); // Black for name
+                doc.text(`${bullet} ${item.name}`, 20, ly);
+
+                // Link (Blue)
+                const nameWidth = doc.getTextWidth(`${bullet} ${item.name}`);
+                doc.setTextColor(30, 144, 255); // DodgerBlue
+                doc.textWithLink("[Voir le lien]", 20 + nameWidth + 5, ly, { url: item.url });
+
+                ly += 6;
+            });
+
+            ly += 5; // Spacing between categories
+        });
+
+        // Page Number Footer
+        doc.setFontSize(9);
+        doc.setTextColor(150);
+        doc.text("Page 2/2", pageWidth / 2, 280, { align: "center" });
+    }
+
+    // -- OUTPUT --
+    const pdfBlob = doc.output('blob');
+    const blobUrl = URL.createObjectURL(pdfBlob);
+
+    window.currentPdfBlobUrl = blobUrl;
+    window.currentPdfBlob = pdfBlob;
+
+    // UI Update
+    const frame = document.getElementById('pdf-preview-frame');
+    const placeholder = document.getElementById('pdf-placeholder');
+    const overlayActions = document.getElementById('pdf-actions-overlay');
+
+    if (frame) {
+        frame.src = blobUrl;
+        frame.classList.remove('opacity-0');
+        if (placeholder) placeholder.classList.add('hidden');
+        if (overlayActions) overlayActions.classList.remove('hidden');
+
+        const btnWa = document.getElementById('btn-share-wa');
+        const btnMail = document.getElementById('btn-share-mail');
+        if (btnWa) { btnWa.disabled = false; btnWa.classList.remove('opacity-50', 'cursor-not-allowed'); }
+        if (btnMail) { btnMail.disabled = false; btnMail.classList.remove('opacity-50', 'cursor-not-allowed'); }
+
+        const statusEl = document.querySelector('.animate-pulse');
+        if (statusEl && statusEl.textContent.includes('PDF_GENERATOR')) {
+            statusEl.textContent = "● DOCUMENT GÉNÉRÉ";
+            statusEl.classList.add('text-green-400');
+            statusEl.classList.remove('text-neon-blue');
+        }
+    } else {
+        doc.save(`Mission_${Date.now()}.pdf`);
+    }
+
+    speak("Dossier de mission mis à jour. Design scanner actif.");
+}
+
+// Override Global
+window.generatePDF = generatePDF_Refined;
+window.generateRecapPDF = generatePDF_Refined;
+
+
+// =========================================
+// AMBIANCE-BASED SIMULATOR PLACEHOLDERS
+// =========================================
+
+/**
+ * Update simulator placeholders based on selected audio ambiance
+ */
+function updateSimulatorPlaceholders(ambianceKey) {
+    const simDeparture = document.getElementById('sim-departure');
+    const simDestination = document.getElementById('sim-destination');
+
+    if (!simDeparture || !simDestination) return;
+
+    // Mapping ambiance → suggested destinations
+    const ambianceDestinations = {
+        'relax': 'Spa de Ribeauvillé',
+        'puls-lounge': 'Spa de Ribeauvillé',
+        'futuriste': 'Europa-Park (Rust, DE)',
+        'retro': 'Europa-Park (Rust, DE)',
+        'puls-90': 'Europa-Park (Rust, DE)',
+        'puls-80': 'Europa-Park (Rust, DE)',
+        'dab': 'Château du Haut-Kœnigsbourg',
+        'dkl': 'Château du Haut-Kœnigsbourg',
+        'rdl': 'Mont Sainte-Odile',
+        'fg-main': 'Mont Sainte-Odile',
+        'fg-chic': 'Mont Sainte-Odile',
+        'fg-deep': 'Mont Sainte-Odile',
+        'puls-dance': 'Rulantica (Rust, DE)',
+        'puls-club': 'Rulantica (Rust, DE)',
+        'puls-trance': 'Rulantica (Rust, DE)',
+        'puls-hits': 'Parc Expo Colmar',
+        'puls-2000': 'Riquewihr',
+        'silence': '1 Place de la Cathédrale, Colmar'
+    };
+
+    const suggestedDestination = ambianceDestinations[ambianceKey] || '1 Place de la Cathédrale, Colmar';
+
+    // Update placeholders (keep fields empty, only change placeholder text)
+    simDestination.placeholder = `Ex: ${suggestedDestination}`;
+
+    console.log(`[SIMULATOR] Placeholder updated for ambiance "${ambianceKey}": ${suggestedDestination}`);
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const navAmbianceDesktop = document.getElementById('nav-ambiance');
+    const navAmbianceMobile = document.getElementById('nav-ambiance-mobile');
+
+    // Add event listeners to both ambiance selectors
+    if (navAmbianceDesktop) {
+        navAmbianceDesktop.addEventListener('change', (e) => {
+            updateSimulatorPlaceholders(e.target.value);
+        });
+
+        // Set initial placeholder based on default selection
+        updateSimulatorPlaceholders(navAmbianceDesktop.value || 'silence');
+    }
+
+    if (navAmbianceMobile) {
+        navAmbianceMobile.addEventListener('change', (e) => {
+            updateSimulatorPlaceholders(e.target.value);
+        });
+    }
+
+    // Ensure fields are empty on load
+    const simDeparture = document.getElementById('sim-departure');
+    const simDestination = document.getElementById('sim-destination');
+    if (simDeparture) simDeparture.value = '';
+    if (simDestination) simDestination.value = '';
+});
+

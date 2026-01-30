@@ -609,18 +609,120 @@ function detectAstroPhenomena(date, cloudCover, moonPhase, lat) {
     return list;
 }
 
+// --- FUZZY SEARCH UTILITIES ---
+function calculateLevenshtein(a, b) {
+    const matrix = [];
+    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
+            }
+        }
+    }
+    return matrix[b.length][a.length];
+}
+
+function findLocalFuzzyMatch(query) {
+    if (!window.LOCATIONS) return null;
+
+    const normalizedQuery = query.toLowerCase().trim();
+    let bestMatch = null;
+    let minDistance = 3; // Threshold for typo correction
+
+    // Flatten LOCATIONS categories
+    Object.values(window.LOCATIONS).forEach(category => {
+        category.forEach(loc => {
+            const locName = loc.name.toLowerCase();
+            // 1. Precise Match
+            if (locName === normalizedQuery || locName.includes(normalizedQuery)) {
+                bestMatch = loc;
+                minDistance = 0;
+            }
+            // 2. Fuzzy Match (if not precise enough)
+            const dist = calculateLevenshtein(normalizedQuery, locName);
+            if (dist < minDistance) {
+                minDistance = dist;
+                bestMatch = loc;
+            }
+        });
+    });
+
+    if (bestMatch) {
+        console.log(`[GEO] Fuzzy Match found: ${bestMatch.name} (Dist: ${minDistance})`);
+        return {
+            name: bestMatch.name,
+            fullName: `${bestMatch.name}, ${bestMatch.zip}, Alsace`,
+            lat: bestMatch.lat,
+            lon: bestMatch.lon
+        };
+    }
+    return null;
+}
+
+// --- DISTANCE CALCULATION (Haversine) ---
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
 // API FETCHING 
 async function geocodeLocation(query) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data && data.length > 0) {
+    const QG_LAT = 48.0937, QG_LON = 7.5537;
+
+    // 1. RIBEAUVILLE OVERRIDE (Force 68)
+    const normalizedQuery = query.toLowerCase().trim();
+    const ribeauvilleTypos = ['ribeauvillé', 'ribeauville', 'ribeuvillé', 'ribeuville', 'ribeauvillier', 'ribeuviller'];
+
+    if (ribeauvilleTypos.includes(normalizedQuery)) {
+        console.log('[GEO] Ribeauvillé Override Triggered (Force Dpt 68)');
         return {
-            name: data[0].name,
-            fullName: data[0].display_name,
-            lat: parseFloat(data[0].lat),
-            lon: parseFloat(data[0].lon)
+            name: "Ribeauvillé",
+            fullName: "Ribeauvillé, Haut-Rhin, Alsace, 68150, France",
+            lat: 48.1947,
+            lon: 7.3192
         };
+    }
+
+    // 2. LOCAL FUZZY SEARCH (Typo protection against LOCATIONS database)
+    const localMatch = findLocalFuzzyMatch(query);
+    if (localMatch) return localMatch;
+
+    // 3. REGIONAL API SEARCH (Prioritize 200km radius around Baltzenheim)
+    const viewbox = '5.0,50.0,10.0,46.0'; // Approx box for Alsace/Est France
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&viewbox=${viewbox}&bounded=0`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+            // Find first result within 200km radius
+            const bestRegionalMatch = data.find(item => {
+                const dist = calculateDistance(QG_LAT, QG_LON, parseFloat(item.lat), parseFloat(item.lon));
+                return dist <= 200;
+            });
+
+            const finalMatch = bestRegionalMatch || data[0]; // Fallback to first result if none in 200km
+
+            return {
+                name: finalMatch.display_name.split(',')[0],
+                fullName: finalMatch.display_name,
+                lat: parseFloat(finalMatch.lat),
+                lon: parseFloat(finalMatch.lon)
+            };
+        }
+    } catch (e) {
+        console.error('[GEO] Nominatim Error:', e);
     }
     return null;
 }
@@ -670,6 +772,91 @@ async function fetchWeatherData(lat, lon) {
         throw e; // Rethrow to let caller handle it
     }
 }
+
+// RESTORED FUNCTION: Fetch Weather for both locations (Departure & Destination)
+// This fixes the "date bug" by explicitly calculating the day index based on the user's selected date.
+async function fetchBothWeatherForecasts() {
+    const pickupInput = document.getElementById('res-pickup');
+    const dropInput = document.getElementById('res-drop');
+    const dateInput = document.getElementById('res-pickup-datetime');
+
+    if (!pickupInput || !dropInput || !dateInput) return;
+
+    const departureCity = pickupInput.value;
+    const destinationCity = dropInput.value;
+    const selectedDateStr = dateInput.value; // "YYYY-MM-DDTHH:mm"
+
+    if (!departureCity || !destinationCity || !selectedDateStr) return;
+
+    console.log(`[WEATHER] Fetching for: ${departureCity} -> ${destinationCity} on ${selectedDateStr}`);
+
+    try {
+        // 1. Geocode both
+        const depGeo = await geocodeLocation(departureCity);
+        const destGeo = await geocodeLocation(destinationCity);
+
+        if (!depGeo || !destGeo) {
+            console.warn("Geocoding failed for one of the cities.");
+            return;
+        }
+
+        // 2. Fetch Weather Data
+        const depWeather = await fetchWeatherData(depGeo.lat, depGeo.lon);
+        const destWeather = await fetchWeatherData(destGeo.lat, destGeo.lon);
+
+        if (!depWeather || !destWeather) return;
+
+        // 3. Determine Day Index (0 = Today, 1 = Tomorrow, ...)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const tripDate = new Date(selectedDateStr);
+        tripDate.setHours(0, 0, 0, 0);
+
+        const diffTime = tripDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        // Clamp index (0 to 13 because API gives ~14 days)
+        // If date is in the past, use 0 (Today). If too far future, use last available.
+        let dayIndex = diffDays;
+        if (dayIndex < 0) dayIndex = 0;
+        if (dayIndex > 13) dayIndex = 13;
+
+        console.log(`[WEATHER] Day Index: ${dayIndex} (Diff: ${diffDays} days)`);
+
+        // 4. Update Global Data (for other modules)
+        window.weatherDataDeparture = depWeather;
+        window.weatherDataDestination = destWeather;
+
+        // 5. Update UI (Dashboard usually shows Destination)
+        renderDashboard(destWeather, destinationCity, dayIndex);
+
+        // 6. Update Summary in Form (Departure)
+        // Convert API data to simple summary format
+        const daily = depWeather.daily;
+        const summaryData = {
+            destination: departureCity, // Showing departure weather in form summary usually
+            temp: Math.round(daily.temperature_2m_max[dayIndex]),
+            weatherDesc: WMO_CODES[daily.weather_code[dayIndex]] || 'Inconnu',
+            weatherCode: daily.weather_code[dayIndex], // Added for icon
+            windSpeed: Math.round(daily.wind_speed_10m_max[dayIndex]),
+            precipProb: daily.precipitation_sum[dayIndex] > 0 ? 80 : 0, // Rough estimate if sum > 0
+            lat: depGeo.lat,
+            lon: depGeo.lon
+        };
+        // Ensure displayWeatherSummary exists in main.js or here
+        if (typeof displayWeatherSummary === 'function') {
+            displayWeatherSummary(summaryData);
+        }
+
+    } catch (e) {
+        console.error("Error in fetchBothWeatherForecasts:", e);
+    }
+}
+
+// Expose to window
+window.fetchBothWeatherForecasts = fetchBothWeatherForecasts;
+window.geocodeLocation = geocodeLocation; // Ensure exposed
+
 
 
 // --- RENDERERS (STYLE FUTURISTE / CYBERPUNK) ---

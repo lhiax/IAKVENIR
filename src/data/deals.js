@@ -1,34 +1,42 @@
 export const DEALS = [
     {
-        id: "DEAL-88",
-        title: "PACK NOM DE ZEUS",
-        description: "Circuit Route des Vins + Reportage Photo (3 spots)",
-        discount: "-15%",
-        validity: "VALIDE JUSQU'AU : 31 DEC 2025",
-        color: "#ff3333" // Rouge
+        id: "VISIT-ALSACE",
+        title: "DÎNERS INSOLITES",
+        category: "expérience-alsace",
+        description: "Une expérience culinaire unique dans des lieux d'exception en Alsace.",
+        discount: "DÉCOUVERTE",
+        validity: "SAISONNIER",
+        color: "#ff3333",
+        url: "https://www.visit.alsace/vos-diners-insolites-en-alsace/diners-insolites-en-alsace/"
     },
     {
-        id: "DEAL-KITT",
-        title: "MODE SCANNER",
-        description: "Transfert Nocturne Tesla (Après 22h) - Forfait Fixe",
-        discount: "PRIX FIXE",
-        validity: "DISPONIBILITÉ : ILLIMITÉE",
-        color: "#ff9d00" // Orange
+        id: "ETOILES-ALSACE",
+        title: "FORMULES ÉTOILÉES",
+        category: "expérience-alsace",
+        description: "L'excellence gastronomique alsacienne à portée de main.",
+        discount: "PREMIUM",
+        validity: "TOUTE L'ANNÉE",
+        color: "#ff9d00",
+        url: "https://www.etoiles-alsace.com/nos-formules/"
     },
     {
-        id: "SPA-RELAX",
-        title: "DÉTENTE ABSOLUE",
-        description: "Transfert VIP vers Spa & Casino Barrière Ribeauvillé",
-        discount: "CHAMPAGNE",
-        validity: "OFFRE SPÉCIALE WEEK-END",
-        color: "#b8ff00" // Vert
-    },
-    {
-        id: "GASTRO-STAR",
-        title: "ÉTOILES D'ALSACE",
-        description: "Circuit Gastronomique - Illhaeusern / Colmar",
-        discount: "SUR MESURE",
+        id: "CHEZ-MEME",
+        title: "BIÈRE & BRETZELS",
+        category: "expérience-alsace",
+        description: "Cours de cuisine spécial EVG : apprenez à faire vos propres bretzels !",
+        discount: "FUN & TRADITION",
         validity: "SUR RÉSERVATION",
-        color: "#00d4ff" // Bleu
+        color: "#ff9d00",
+        url: "https://www.chez-meme.com/cours-de-cuisine-chez-meme/evg-biere-et-bretzels-enterrement-vie-de-garcon-alsace-colmar-selestat-mulhouse-hommes-idee-viande-bretzel-cours-de-cuisine/"
+    },
+    {
+        id: "PAUSE-COLMAR",
+        title: "PAUSE COLMARIENNE",
+        category: "expérience-alsace",
+        description: "Détente et découverte au coeur de Colmar.",
+        discount: "RELAX",
+        validity: "EN COURS",
+        color: "#b8ff00",
+        url: "https://pausecolmarienne.com/"
     }
 ];
