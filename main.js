@@ -1203,18 +1203,41 @@ window.fetchBothWeatherForecasts = async function () {
             detailsDiv.innerHTML = '<div class="text-neon-blue animate-pulse flex items-center gap-2"><span class="text-xl">📡</span> Analyse satellite pour le ' + pickupDateTime + '...</div>';
         }
 
+        // Check for globally cached coordinates from Simulator (Optimization)
+        // This ensures that "Parc Expo" detected by Simulator is reused here without re-geocoding failure.
+        const startCoords = (typeof LAST_START_COORDS !== 'undefined') ? LAST_START_COORDS : null;
+        const endCoords = (typeof LAST_END_COORDS !== 'undefined') ? LAST_END_COORDS : null;
+
+        if (startCoords) console.log('[WEATHER] Using cached START coordinates from Simulator');
+        if (endCoords) console.log('[WEATHER] Using cached END coordinates from Simulator');
+
         // Fetch both in parallel
         const [depWeather, destWeather] = await Promise.all([
-            fetchWeatherForLocation(departure, pickupDateTime),
-            fetchWeatherForLocation(destination, pickupDateTime)
+            fetchWeatherForLocation(departure, pickupDateTime, startCoords),
+            fetchWeatherForLocation(destination, pickupDateTime, endCoords)
         ]);
 
+        // Specific Error Handling
+        if (!depWeather && detailsDiv) {
+            detailsDiv.innerHTML = '<div class="text-limit-red flex items-center gap-2"><span class="text-xl">⚠️</span> Départ introuvable ou météo indisponible.</div>';
+            if (window.speak) speak("Impossible de localiser la météo pour le lieu de départ.");
+            return;
+        }
+        if (!destWeather && detailsDiv) {
+            detailsDiv.innerHTML = '<div class="text-limit-red flex items-center gap-2"><span class="text-xl">⚠️</span> Destination introuvable ou météo indisponible.</div>';
+            if (window.speak) speak("Impossible de localiser la météo pour la destination.");
+            return;
+        }
+
         if (depWeather && destWeather) {
+            // Function continues normally...
             // Store for PDF
             reservationWeatherData = {
                 departure: depWeather,
                 destination: destWeather
             };
+            // ... (rest of success logic)
+
 
             // Display
             displayDualWeatherSummary(depWeather, destWeather);
@@ -1256,38 +1279,46 @@ window.fetchBothWeatherForecasts = async function () {
             voiceMsg += humorTag;
 
             if (window.speak) {
-                // ANTI-SPAM: Prevent repeating the exact same weather vocalization immediately
-                const currentInputSignature = `${departure}|${destination}|${pickupDateTime}`;
-
-                // Allow re-vocalization only if inputs changed or > 60 seconds passed
-                const now = Date.now();
-                const lastTime = window.lastWeatherVocalTime || 0;
-
-                if (window.lastWeatherVocalSignature === currentInputSignature && (now - lastTime < 60000)) {
-                    console.log('[WEATHER] Vocalization skipped (Duplicate signature & recent)');
-                } else {
-                    console.log('[WEATHER] Vocalizing:', voiceMsg);
-                    speak(voiceMsg);
-                    window.lastWeatherVocalSignature = currentInputSignature;
-                    window.lastWeatherVocalTime = now;
-                }
+                console.log('[WEATHER] Vocalizing:', voiceMsg);
+                speak(voiceMsg);
+            }
+        } else {
+            // ERROR HANDLING: Data not found or date issue
+            const detailsDiv = document.getElementById('res-weather-details');
+            if (detailsDiv) {
+                detailsDiv.innerHTML = '<div class="text-limit-red flex items-center gap-2"><span class="text-xl">⚠️</span> Données météo indisponibles pour cette date/lieu.</div>';
             }
         }
     } catch (error) {
         console.error('[WEATHER] Error fetching dual forecasts:', error);
+        const detailsDiv = document.getElementById('res-weather-details');
+        if (detailsDiv) {
+            detailsDiv.innerHTML = '<div class="text-limit-red flex items-center gap-2"><span class="text-xl">⚠️</span> Erreur de connexion aux satellites météo.</div>';
+        }
     }
     return Promise.resolve(); // Always resolve so .then() can continue
 };
 
 // Helper: Fetch weather for a single location
-async function fetchWeatherForLocation(locationName, dateTime) {
-    if (typeof geocodeLocation !== 'function' || typeof fetchWeatherData !== 'function') {
+async function fetchWeatherForLocation(locationName, dateTime, preResolvedLocation = null) {
+    if ((!preResolvedLocation && typeof geocodeLocation !== 'function') || typeof fetchWeatherData !== 'function') {
         console.error('[WEATHER] Required functions not available');
         return null;
     }
 
-    const location = await geocodeLocation(locationName);
+    let location = preResolvedLocation;
+
+    // If no pre-resolved location, try to geocode
+    if (!location) {
+        // Special case: If the input matches the LAST simulator input exactly, use the cache even if not passed explicitly (safety net)
+        // But normally passing it explicitly is better.
+        location = await geocodeLocation(locationName);
+    }
+
     if (!location) return null;
+
+    // Normalize name if missing (Simulator coords might use 'pretty_name')
+    if (!location.name && location.pretty_name) location.name = location.pretty_name;
 
     const weatherData = await fetchWeatherData(location.lat, location.lon);
     if (!weatherData || !weatherData.hourly) return null;
@@ -5385,53 +5416,49 @@ document.addEventListener('DOMContentLoaded', () => {
             const destination = document.getElementById('res-drop')?.value?.trim();
             const pickupDateTime = document.getElementById('res-pickup-datetime')?.value;
 
-            // Validate inputs: Min 3 chars each
-            if (departure && destination && pickupDateTime) {
-                if (departure.length < 3 || destination.length < 3) return;
+            // Only proceed if date is selected (User Action)
+            if (pickupDateTime) {
+                // Check if addresses are present
+                if (!departure || !destination || departure.length < 3 || destination.length < 3) {
+                    // Feedback: Missing addresses
+                    const detailsDiv = document.getElementById('res-weather-details');
+                    const summaryDiv = document.getElementById('res-weather-summary');
+                    if (detailsDiv && summaryDiv) {
+                        summaryDiv.classList.remove('hidden');
+                        detailsDiv.innerHTML = '<div class="text-limit-red flex items-center gap-2"><span class="text-xl">⚠️</span> Veuillez d\'abord valider un trajet via le simulateur.</div>';
+                        if (window.speak) speak("Données de navigation incomplètes. Veuillez valider un trajet dans le simulateur avant de définir l'horaire.");
+                    }
+                    return;
+                }
 
-                console.log('[WEATHER] All fields valid, triggering automatic weather fetch');
+                console.log('[WEATHER] Date selected & addresses valid. Triggering weather fetch.');
 
                 // 1. Fetch Request/Reservation Logic
                 if (typeof window.fetchBothWeatherForecasts === 'function') {
                     console.log('[WEATHER] Calling fetchBothWeatherForecasts()...');
                     window.fetchBothWeatherForecasts();
-                } else {
-                    console.error('[WEATHER] fetchBothWeatherForecasts is NOT a function');
                 }
 
                 // 2. Update Main Dashboard (Visual Sync)
                 if (typeof window.searchDestination === 'function') {
-                    console.log('[WEATHER] Syncing Main Dashboard with:', destination);
                     const searchInput = document.getElementById('webcam-search-input');
-                    if (searchInput) {
+                    if (searchInput && searchInput.value !== destination) {
                         searchInput.value = destination;
                         window.searchDestination();
                     }
                 }
             }
-        }, 500); // Reduced debounce to 500ms for better responsiveness
+        }, 300); // Quick reaction
     }
 
-    // Listen to all relevant fields
-    const depInput = document.getElementById('res-pickup');
-    const destInput = document.getElementById('res-drop');
+    // Listen ONLY to date field for weather trigger
+    // Address fields are read-only anyway, populated by simulator
     const dateInput = document.getElementById('res-pickup-datetime');
-
     const triggerOptions = { passive: true };
 
-    if (depInput) {
-        depInput.addEventListener('blur', checkAndTriggerWeather, triggerOptions);
-        depInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
-        depInput.addEventListener('change', checkAndTriggerWeather, triggerOptions); // Added Change
-    }
-    if (destInput) {
-        destInput.addEventListener('blur', checkAndTriggerWeather, triggerOptions);
-        destInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
-        destInput.addEventListener('change', checkAndTriggerWeather, triggerOptions); // Added Change
-    }
     if (dateInput) {
         dateInput.addEventListener('change', checkAndTriggerWeather, triggerOptions);
-        dateInput.addEventListener('input', checkAndTriggerWeather, triggerOptions);
+        // input event might be too aggressive for date picker, stick to change
     }
 
     // Expose for external calls (e.g. from Flatpickr)
@@ -6793,11 +6820,11 @@ function initFlatpickr() {
         theme: "dark",
         onChange: function (selectedDates, dateStr, instance) {
             // If this is the pickup datetime field, AUTO-FETCH weather
-            if (instance.element.id === 'res-pickup-datetime' && selectedDates.length > 0) {
+            if (instance.element.id === 'res-pickup-datetime') {
                 console.log('[FLATPICKR] Pickup date/time selected:', dateStr);
 
                 // Brief confirmation (will queue if speech is active)
-                speak("Horaire enregistré.");
+                if (window.speak) speak("Date enregistrée.");
 
                 // Auto-trigger weather check
                 if (typeof window.checkAndTriggerWeather === 'function') {

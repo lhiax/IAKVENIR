@@ -746,14 +746,9 @@ async function fetchWeatherData(lat, lon) {
 
         // Check if we have the minimum required data
         if (!data.daily.time.length ||
-            !data.daily.temperature_2m_max ||
-            !data.daily.temperature_2m_min ||
-            !data.daily.weather_code ||
-            !data.daily.sunrise ||
-            !data.daily.sunset ||
-            !data.daily.precipitation_sum) {
-            console.error('Missing required daily data fields:', Object.keys(data.daily));
-            throw new Error('Données quotidiennes incomplètes');
+            !data.daily.weather_code) {
+            console.warn('Weather API returned partial data:', Object.keys(data.daily));
+            // We proceed even if some daily fields are missing, as long as we have time and codes
         }
 
         if (!data.hourly ||
