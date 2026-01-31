@@ -1123,8 +1123,8 @@ function executeSpeech(text) {
         if (!voice) voice = voices.find(v => v.lang.startsWith(lang)) || voices[0];
 
         utterance.voice = voice;
-        utterance.pitch = (lang === 'fr') ? 0.9 : 1.0;
-        utterance.rate = (lang === 'fr') ? 1.4 : 1.0;
+        utterance.pitch = (lang.startsWith('fr')) ? 0.9 : 1.0;
+        utterance.rate = (lang.startsWith('fr')) ? 1.4 : 1.0;
         utterance.volume = 1.0;
 
         if (typeof pauseRadio === 'function') pauseRadio();

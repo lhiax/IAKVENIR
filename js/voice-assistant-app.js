@@ -196,7 +196,7 @@ class VoiceAssistantApp {
     }
 
     preConfigureDemoAPIs() {
-        const forcedGrokKey = ''; // REPLACED FOR SECURITY - Use Env Variables in Vercel
+        const forcedGrokKey = ''; // API Key removed for security
         this.aiProvider.setAPIKey('grok', forcedGrokKey);
 
         const inputGrok = document.getElementById('api-key-grok');
