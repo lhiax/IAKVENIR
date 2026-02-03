@@ -169,6 +169,14 @@ class VoiceAssistantApp {
                     </select>
                 </div>
                 <div class="voice-setting-group">
+                    <label class="voice-setting-label">Mode Pilote</label>
+                    <div class="voice-toggle mode-selector">
+                        <button class="voice-toggle-btn active" data-mode="immersive" title="Conversation complète">Immersif</button>
+                        <button class="voice-toggle-btn" data-mode="tactical" title="L'essentiel, point barre">Tactique</button>
+                        <button class="voice-toggle-btn" data-mode="silent" title="Chat uniquement">Silencieux</button>
+                    </div>
+                </div>
+                <div class="voice-setting-group">
                     <label class="voice-setting-label">Personnalité</label>
                     <div class="voice-toggle">
                         <button class="voice-toggle-btn active" data-personality="masculine">IA K</button>
@@ -296,6 +304,18 @@ class VoiceAssistantApp {
             });
         });
 
+        // Mode Selection
+        document.querySelectorAll('.mode-selector .voice-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.mode-selector .voice-toggle-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const mode = e.target.dataset.mode;
+                this.voiceAssistant.setProcessingMode(mode);
+                this.savePreferences();
+            });
+        });
+
         // Test Button
         const testBtn = document.getElementById('btn-force-test');
         if (testBtn) {
@@ -384,7 +404,8 @@ class VoiceAssistantApp {
     savePreferences() {
         localStorage.setItem('voice_assistant_prefs', JSON.stringify({
             language: this.personalityEngine.language,
-            personality: this.personalityEngine.personality
+            personality: this.personalityEngine.personality,
+            mode: this.voiceAssistant.processingMode
         }));
     }
 
@@ -398,7 +419,15 @@ class VoiceAssistantApp {
         if (prefs.personality) {
             this.personalityEngine.setPersonality(prefs.personality);
             document.querySelectorAll('.voice-toggle-btn').forEach(btn => {
+                // Only target personality buttons (not mode ones)
+                if (btn.parentElement.classList.contains('mode-selector')) return;
                 btn.classList.toggle('active', btn.dataset.personality === prefs.personality);
+            });
+        }
+        if (prefs.mode) {
+            this.voiceAssistant.setProcessingMode(prefs.mode);
+            document.querySelectorAll('.mode-selector .voice-toggle-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === prefs.mode);
             });
         }
     }

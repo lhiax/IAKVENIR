@@ -9,6 +9,7 @@ class VoiceAssistant {
         this.isListening = false;
         this.currentLanguage = 'fr-FR';
         this.voicePersonality = 'masculine'; // 'masculine' or 'feminine'
+        this.processingMode = 'immersive'; // 'immersive', 'tactical', 'silent'
         this.isAwake = false;
         this.isAwakeManually = false;
         this.recognition = null;
@@ -173,9 +174,31 @@ class VoiceAssistant {
 
         // Voice parameters
         const isKITT = this.voicePersonality === 'masculine';
-        utterance.rate = options.rate || (isKITT ? 1.4 : 1.0); // Reset to 1.4 for balanced speed
-        utterance.pitch = options.pitch || (isKITT ? 0.9 : 1.0); // Slightly lower pitch for KITT
+
+        if (isKITT) {
+            utterance.rate = options.rate || 1.4;
+            utterance.pitch = options.pitch || 0.9;
+        } else {
+            // FEMININE (+18 / Sultry Adjustment)
+            // Slower rate and slightly lower pitch for a "warmer" tone
+            utterance.rate = options.rate || 1.05;
+            utterance.pitch = options.pitch || 1.1;
+        }
+
         utterance.volume = options.volume || 1.0;
+
+        // MODE CHECK
+        if (this.processingMode === 'silent') {
+            console.log('🔇 Silent Mode: Speech suppressed');
+            return; // Do not speak
+        }
+
+        if (this.processingMode === 'tactical' && text.length > 150) {
+            // In tactical mode, maybe truncate or speed up? 
+            // For now, allow it but maybe we set a flag for the AI to be brief.
+            // Or we strictly enforce rate increase.
+            utterance.rate = Math.min(utterance.rate * 1.2, 2.0); // Speak faster in tactical
+        }
 
         // Event handlers
         utterance.onstart = () => {
@@ -259,6 +282,11 @@ class VoiceAssistant {
         return selectedVoice || availableVoices[0];
     }
 
+    // Helper to get available personalities
+    getVoiceForPersonality(type) {
+        return this.selectVoice(this.currentLanguage);
+    }
+
     setLanguage(langCode) {
         if (this.languages[langCode]) {
             this.currentLanguage = langCode;
@@ -273,6 +301,15 @@ class VoiceAssistant {
         if (personality === 'masculine' || personality === 'feminine') {
             this.voicePersonality = personality;
             console.log(`Voice personality changed to: ${personality}`);
+            // Force reload voice to apply tuning
+            this.loadVoices();
+        }
+    }
+
+    setProcessingMode(mode) {
+        if (['immersive', 'tactical', 'silent'].includes(mode)) {
+            this.processingMode = mode;
+            console.log(`Processing mode changed to: ${mode}`);
         }
     }
 

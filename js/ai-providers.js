@@ -50,7 +50,30 @@ class AIProviderManager {
         };
 
         this.loadConfig();
+        this.loadConfig();
         this.resetDailyCountsIfNeeded();
+        this.checkServerConnectivity();
+    }
+
+    async checkServerConnectivity() {
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+                const response = await fetch('/api/chat-grok', {
+                    method: 'OPTIONS', // Lightweight check
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+            } catch (error) {
+                console.warn('⚠️ Local Server Check Failed:', error);
+                // Dispatch event so UI can show a toaster or alert
+                window.dispatchEvent(new CustomEvent('voice-assistant-error', {
+                    detail: { message: "⚠️ Serveur Node.js éteint ? L'IA ne répondra pas. Lancez `npm run start`." }
+                }));
+            }
+        }
     }
 
     loadConfig() {
@@ -274,7 +297,7 @@ class AIProviderManager {
     }
 
     buildSystemPrompt(context) {
-        const { personality, language, timeOfDay, musicAmbiance, userActivity } = context;
+        const { personality, language, timeOfDay, musicAmbiance, userActivity, mode } = context;
 
         let prompt = '';
 
@@ -287,32 +310,37 @@ class AIProviderManager {
             prompt += `Tu t'adresses à l'utilisateur avec respect, comme un partenaire de mission. `;
             prompt += `Reste neutre, courtois mais vif et computationnel. `;
         } else if (personality === 'feminine') {
-            prompt += `You are a sophisticated AI assistant with a warm, engaging personality. `;
-            prompt += `You are elegant, helpful, and have a subtle sense of humor. `;
+            prompt += `Tu es une assistante IA charmante, chaleureuse et un peu séductrice. `;
+            prompt += `Ton ton est doux, engageant et complice. `;
+            prompt += `Tu fais preuve d'empathie et tu aimes taquiner gentiment l'utilisateur. `;
+            prompt += `Utilise un langage fluide et naturel. `;
         }
 
         // Language
         if (language === 'fr-FR') {
-            prompt += `Respond in French. `;
+            prompt += `Réponds en Français. `;
         } else if (language === 'en-US') {
-            prompt += `Respond in English. `;
+            prompt += `Réponds en Anglais. `;
         } else if (language === 'de-DE') {
-            prompt += `Respond in German. `;
+            prompt += `Réponds en Allemand. `;
         }
 
         // Context awareness
         if (timeOfDay) {
-            prompt += `Current time context: ${timeOfDay}. `;
+            prompt += `Contexte temporel: ${timeOfDay}. `;
         }
         if (musicAmbiance) {
-            prompt += `Current ambiance: ${musicAmbiance}. `;
-        }
-        if (userActivity) {
-            prompt += `User is currently: ${userActivity}. `;
+            prompt += `Ambiance actuelle: ${musicAmbiance}. `;
         }
 
-        prompt += `Garde tes réponses très courtes (2 phrases maximum), percutantes et dynamiques. `;
-        prompt += `Évite les salutations inutiles si la conversation est déjà engagée. `;
+        // MODE HANDLING
+        if (mode === 'tactical') {
+            prompt += `MODE TACTIQUE ACTIVÉ: Sois extrêmement bref. Réponds en style télégraphique ou militaire. `;
+            prompt += `Maximum 1 phrase ou 10 mots. Pas de fioritures. Droit au but. `;
+        } else {
+            prompt += `Garde tes réponses concises (2 phrases max), percutantes et dynamiques. `;
+            prompt += `Évite les salutations inutiles si la conversation est déjà engagée. `;
+        }
 
         return prompt;
     }

@@ -2043,3 +2043,48 @@ body.kitt-scrolling::-webkit-scrollbar-thumb {
     transform: scale(1.1);
     box-shadow: 0 0 15px #00d4ff;
 }
+
+/* Voice Settings Toggles */
+.voice-setting-group {
+    margin-bottom: 20px;
+}
+
+.voice-setting-label {
+    display: block;
+    font-family: 'Courier Prime', monospace;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.voice-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 2px;
+}
+
+.voice-toggle-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 8px 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.voice-toggle-btn.active {
+    background: rgba(0, 212, 255, 0.2);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+    font-weight: 600;
+}
+
+.mode-selector .voice-toggle-btn {
+    font-size: 11px; /* Slightly smaller for 3 buttons */
+}

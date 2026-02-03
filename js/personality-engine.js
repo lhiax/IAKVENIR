@@ -156,7 +156,8 @@ class PersonalityEngine {
             language: this.language,
             timeOfDay: this.currentContext.timeOfDay,
             musicAmbiance: this.currentContext.musicAmbiance,
-            userActivity: this.currentContext.userActivity
+            userActivity: this.currentContext.userActivity,
+            mode: this.voiceAssistant.processingMode // Pass current mode (immersive, tactical, silent)
         };
 
         // Send to AI provider
