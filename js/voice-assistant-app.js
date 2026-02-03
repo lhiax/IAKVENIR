@@ -172,7 +172,7 @@ class VoiceAssistantApp {
                     <label class="voice-setting-label">Mode Pilote</label>
                     <div class="voice-toggle mode-selector">
                         <button class="voice-toggle-btn active" data-mode="immersive" title="Conversation complète">Immersif</button>
-                        <button class="voice-toggle-btn" data-mode="tactical" title="L'essentiel, point barre">Tactique</button>
+                        <button class="voice-toggle-btn" data-mode="tactical" title="Mode K: Essentiel & Efficace">K-MODE</button>
                         <button class="voice-toggle-btn" data-mode="silent" title="Chat uniquement">Silencieux</button>
                     </div>
                 </div>
