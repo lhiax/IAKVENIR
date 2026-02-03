@@ -218,23 +218,30 @@ class AIProviderManager {
             headers['Authorization'] = `Bearer ${provider.apiKey}`;
         }
 
-        const response = await fetch(provider.endpoint, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-                model: provider.model,
-                messages: [
-                    { role: 'system', content: systemPrompt },
-                    { role: 'user', content: message }
-                ],
-                temperature: context.personality === 'masculine' ? 0.3 : 0.7,
-                max_tokens: 500
-            })
-        });
+        let response;
+        try {
+            response = await fetch(provider.endpoint, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    model: provider.model,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: message }
+                    ],
+                    temperature: context.personality === 'masculine' ? 0.3 : 0.7,
+                    max_tokens: 500
+                })
+            });
+        } catch (netErr) {
+            throw new Error(`Connection Failed (Network): ${netErr.message}. Is Server Running?`);
+        }
 
         if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`HTTP ${response.status}: ${error}`);
+            const errorText = await response.text();
+            if (response.status === 404) throw new Error(`Server Route Not Found (404). Check server.js`);
+            if (response.status === 500) throw new Error(`Server Internal Error (500). Check API Key.`);
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
         }
 
         const data = await response.json();
