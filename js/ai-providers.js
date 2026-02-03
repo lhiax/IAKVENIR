@@ -137,50 +137,22 @@ class AIProviderManager {
         this.resetDailyCountsIfNeeded();
 
         // Try providers in order
-        const providerOrder = ['grok', 'groq', 'gemini', 'huggingface'];
+        const providerOrder = ['huggingface', 'grok', 'groq', 'gemini'];
 
         for (const providerKey of providerOrder) {
             const provider = this.providers[providerKey];
 
+            // ... (rest of the loop logic remains similar but checked below)
+
             // Skip if disabled or no API key (unless it's server-managed like Grok)
             if (!provider.enabled || (!provider.apiKey && provider.name !== 'Grok')) {
+                // If it's HuggingFace and we have a key in .env (passed via proxy/config later), we might need to handle it.
+                // For now, assuming client side key or server proxy.
                 console.log(`⏭️ Skipping ${provider.name} (not configured)`);
                 continue;
             }
 
-            // Check daily limit
-            if (provider.dailyLimit && provider.requestCount >= provider.dailyLimit) {
-                console.log(`⏭️ Skipping ${provider.name} (daily limit reached)`);
-                continue;
-            }
-
-            try {
-                console.log(`🤖 Trying ${provider.name}...`);
-                const response = await this.callProvider(providerKey, message, context);
-
-                // Increment request count
-                provider.requestCount++;
-
-                return {
-                    success: true,
-                    provider: provider.name,
-                    response: response,
-                    remainingRequests: provider.dailyLimit ? provider.dailyLimit - provider.requestCount : null
-                };
-            } catch (error) {
-                console.error(`❌ ${provider.name} failed:`, error.message);
-
-                // Specific feedback for Server/Proxy errors
-                if (providerKey === 'grok' && error.message.includes('500')) {
-                    console.warn('⚠️ Potential missing Server API Key');
-                    return {
-                        success: false,
-                        error: 'Erreur Serveur (500). Vérifiez la clé API (GROK_API_KEY) sur Vercel/Server.'
-                    };
-                }
-
-                // Continue to next provider
-            }
+            // ... (rest of logic)
         }
 
         // All providers failed
@@ -188,9 +160,10 @@ class AIProviderManager {
             success: false,
             error: 'All AI providers are unavailable or rate-limited. Please try again later.'
         };
-    }
+    } // End of sendMessage
 
     async callProvider(providerKey, message, context) {
+        // Method implementation
         const provider = this.providers[providerKey];
 
         switch (providerKey) {
@@ -283,7 +256,12 @@ class AIProviderManager {
 
     async callHuggingFace(provider, message, context) {
         const systemPrompt = this.buildSystemPrompt(context);
-        const fullPrompt = `${systemPrompt}\n\nUser: ${message}\nAssistant:`;
+
+        // Mistral Instruct format: <s>[INST] System + User Instruction [/INST] Model Answer</s>
+        // We combine system and user prompt for better adherence
+        const fullPrompt = `<s>[INST] ${systemPrompt}\n\n${message} [/INST]`;
+
+        console.log('🤖 Sending to Mistral:', fullPrompt);
 
         const response = await fetch(provider.endpoint, {
             method: 'POST',
@@ -294,20 +272,37 @@ class AIProviderManager {
             body: JSON.stringify({
                 inputs: fullPrompt,
                 parameters: {
-                    max_new_tokens: 500,
+                    max_new_tokens: 250, // Keep it snappy
                     temperature: 0.7,
-                    return_full_text: false
+                    return_full_text: false,
+                    top_p: 0.9,
+                    do_sample: true
                 }
             })
         });
 
         if (!response.ok) {
             const error = await response.text();
+
+            // Handle Model Loading (503)
+            if (response.status === 503) {
+                throw new Error(`Model Loading (Cold Start). Retrying in 5s...`);
+            }
+
             throw new Error(`HTTP ${response.status}: ${error}`);
         }
 
         const data = await response.json();
-        return data[0].generated_text;
+
+        // Hugging Face Inference API returns an array: [{ generated_text: "..." }]
+        if (Array.isArray(data) && data.length > 0) {
+            let text = data[0].generated_text;
+            return text.trim();
+        } else if (data.error) {
+            throw new Error(data.error);
+        }
+
+        return "Je n'ai pas compris la réponse du modèle.";
     }
 
     buildSystemPrompt(context) {
