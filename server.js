@@ -215,9 +215,14 @@ const GROK_RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000;
 const GROK_MAX_REQUESTS = 50;
 
 app.post('/api/chat-grok', async (req, res) => {
+    console.log('[SERVER] 📨 Received Grok Request');
+
     const apiKey = process.env.GROK_API_KEY;
     if (!apiKey) {
+        console.error('[SERVER] ❌ GROK_API_KEY is missing in .env');
         return res.status(500).json({ error: 'Server misconfiguration: GROK_API_KEY missing' });
+    } else {
+        console.log('[SERVER] 🔑 API Key found (starts with):', apiKey.substring(0, 4) + '...');
     }
 
     // Rate Limiting

@@ -56,6 +56,13 @@ class AIProviderManager {
     }
 
     async checkServerConnectivity() {
+        if (window.location.protocol === 'file:') {
+            const msg = "⚠️ ATTENTION: Vous ouvrez le fichier directement.\nPour que l'IA fonctionne, vous devez utiliser un serveur local.\nLancez `npm start` et allez sur `http://localhost:3000`";
+            console.error(msg);
+            alert(msg); // Force user to see this
+            return;
+        }
+
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             try {
                 const controller = new AbortController();
