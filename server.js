@@ -276,6 +276,50 @@ app.post('/api/chat-grok', async (req, res) => {
     }
 });
 
+// HUGGING FACE PROXY (Mistral)
+app.post('/api/chat-huggingface', async (req, res) => {
+    console.log('[SERVER] 📨 Received Hugging Face Request');
+
+    const apiKey = process.env.HUGGINGFACE_API_KEY;
+    if (!apiKey) {
+        console.error('[SERVER] ❌ HUGGINGFACE_API_KEY is missing in .env');
+        return res.status(500).json({ error: 'Server misconfiguration: HUGGINGFACE_API_KEY missing' });
+    }
+
+    try {
+        // Log parameters (without key)
+        console.log('[SERVER] 🤖 Model:', req.body.model || 'mistralai/Mistral-7B-Instruct-v0.3');
+
+        // Use the model designated in request or default
+        const modelUrl = `https://api-inference.huggingface.co/models/${req.body.model || 'mistralai/Mistral-7B-Instruct-v0.3'}`;
+
+        const response = await fetch(modelUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify(req.body) // Forwards inputs/parameters directly
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('[SERVER] HF API Error:', data);
+            // Handle 503 (Model Loading) specifically
+            if (response.status === 503) {
+                return res.status(503).json(data);
+            }
+            return res.status(response.status).json(data);
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error('[SERVER] HF Proxy Error:', error);
+        res.status(500).json({ error: 'Proxy Request Failed' });
+    }
+});
+
 
 // Fallback to index.html for unknown routes (SPA favor)
 app.get('*', (req, res) => {

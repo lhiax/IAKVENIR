@@ -1,7 +1,7 @@
 /**
  * AI Providers Module
  * Multi-provider AI system with automatic fallback
- * Priority: Grok → Groq → Gemini → Hugging Face
+ * Priority: Hugging Face (Mistral) → Grok → Groq → Gemini
  */
 
 class AIProviderManager {
@@ -38,18 +38,17 @@ class AIProviderManager {
                 lastReset: new Date().toDateString()
             },
             huggingface: {
-                name: 'Hugging Face',
-                endpoint: 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2',
-                model: 'mistralai/Mistral-7B-Instruct-v0.2',
-                enabled: false,
-                apiKey: null,
+                name: 'Hugging Face (Mistral)',
+                endpoint: '/api/chat-huggingface', // PROXY Endpoint
+                model: 'mistralai/Mistral-7B-Instruct-v0.3',
+                enabled: true,
+                apiKey: 'server-managed',
                 dailyLimit: 1000,
                 requestCount: 0,
                 lastReset: new Date().toDateString()
             }
         };
 
-        this.loadConfig();
         this.loadConfig();
         this.resetDailyCountsIfNeeded();
         this.checkServerConnectivity();
@@ -136,23 +135,65 @@ class AIProviderManager {
     async sendMessage(message, context = {}) {
         this.resetDailyCountsIfNeeded();
 
-        // Try providers in order
+        // Try providers in order: Hugging Face first
         const providerOrder = ['huggingface', 'grok', 'groq', 'gemini'];
 
         for (const providerKey of providerOrder) {
             const provider = this.providers[providerKey];
 
-            // ... (rest of the loop logic remains similar but checked below)
+            // Skip if disabled or no API key (unless it's server-managed like Grok or HF Proxy)
+            if (!provider.enabled || (!provider.apiKey && provider.name !== 'Grok' && providerKey !== 'huggingface')) {
+                // If HF is proxied, apiKey is 'server-managed'. If null and not Grok, skip.
+                if (providerKey === 'huggingface' && provider.apiKey === 'server-managed') {
+                    // OK to proceed
+                } else if (provider.apiKey === 'server-managed') {
+                    // OK
+                } else {
+                    console.log(`⏭️ Skipping ${provider.name} (not configured)`);
+                    continue;
+                }
+            }
 
-            // Skip if disabled or no API key (unless it's server-managed like Grok)
-            if (!provider.enabled || (!provider.apiKey && provider.name !== 'Grok')) {
-                // If it's HuggingFace and we have a key in .env (passed via proxy/config later), we might need to handle it.
-                // For now, assuming client side key or server proxy.
-                console.log(`⏭️ Skipping ${provider.name} (not configured)`);
+            // Check daily limit
+            if (provider.dailyLimit && provider.requestCount >= provider.dailyLimit) {
+                console.log(`⏭️ Skipping ${provider.name} (daily limit reached)`);
                 continue;
             }
 
-            // ... (rest of logic)
+            try {
+                console.log(`🤖 Trying ${provider.name}...`);
+                const response = await this.callProvider(providerKey, message, context);
+
+                // Increment request count
+                provider.requestCount++;
+
+                return {
+                    success: true,
+                    provider: provider.name,
+                    response: response,
+                    remainingRequests: provider.dailyLimit ? provider.dailyLimit - provider.requestCount : null
+                };
+            } catch (error) {
+                console.error(`❌ ${provider.name} failed:`, error.message);
+
+                // Specific feedback for Server/Proxy errors
+                if ((providerKey === 'grok' || providerKey === 'huggingface') && error.message.includes('500')) {
+                    console.warn(`⚠️ Potential missing Server API Key for ${providerKey}`);
+
+                    if (providerKey === 'huggingface') {
+                        // Fallback to next provider if HF fails
+                        console.warn('HF failed, trying next...');
+                        continue;
+                    }
+
+                    return {
+                        success: false,
+                        error: 'Erreur Serveur (500). Vérifiez la clé API sur Vercel/Server.'
+                    };
+                }
+
+                // Continue to next provider
+            }
         }
 
         // All providers failed
@@ -160,10 +201,9 @@ class AIProviderManager {
             success: false,
             error: 'All AI providers are unavailable or rate-limited. Please try again later.'
         };
-    } // End of sendMessage
+    }
 
     async callProvider(providerKey, message, context) {
-        // Method implementation
         const provider = this.providers[providerKey];
 
         switch (providerKey) {
@@ -239,7 +279,7 @@ class AIProviderManager {
                     }]
                 }],
                 generationConfig: {
-                    temperature: context.personality === 'masculine' ? 0.3 : 0.7, // Lower temperature for KITT
+                    temperature: context.personality === 'masculine' ? 0.3 : 0.7,
                     maxOutputTokens: 500
                 }
             })
@@ -258,21 +298,21 @@ class AIProviderManager {
         const systemPrompt = this.buildSystemPrompt(context);
 
         // Mistral Instruct format: <s>[INST] System + User Instruction [/INST] Model Answer</s>
-        // We combine system and user prompt for better adherence
         const fullPrompt = `<s>[INST] ${systemPrompt}\n\n${message} [/INST]`;
 
-        console.log('🤖 Sending to Mistral:', fullPrompt);
+        console.log('🤖 Sending to Mistral Proxy:', fullPrompt);
 
         const response = await fetch(provider.endpoint, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${provider.apiKey}`,
+                // No Auth needed for proxy, it handles the key
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                model: provider.model, // Required for Proxy to route to correct URL
                 inputs: fullPrompt,
                 parameters: {
-                    max_new_tokens: 250, // Keep it snappy
+                    max_new_tokens: 250,
                     temperature: 0.7,
                     return_full_text: false,
                     top_p: 0.9,
