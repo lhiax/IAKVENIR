@@ -20,6 +20,18 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/fr.js"></script>
 
+    <!-- MEDIA PIPE AI (For ID Photo) -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js"
+        crossorigin="anonymous"></script>
+
+
     <!-- jsPDF (PDF Generation) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -1986,64 +1998,20 @@
                                     <p class="text-gray-600 font-future text-xs tracking-widest">IDENTITÉ REQUISE</p>
                                 </div>
 
-                                <!-- Video Stream -->
-                                <video id="webcam-video" class="absolute inset-0 w-full h-full object-cover hidden"
-                                    autoplay playsinline></video>
-
-                                <!-- Canvas (Hidden) -->
-                                <canvas id="webcam-canvas" class="hidden"></canvas>
+                                <!-- Camera Feed (Video & Canvas) -->
+                                <!-- FIX: 'object-contain' ensures aspect ratio is preserved (no stretching) -->
+                                <video id="webcam-video" autoplay playsinline muted
+                                    class="absolute inset-0 w-full h-full object-contain"></video>
+                                <canvas id="webcam-canvas"
+                                    class="absolute inset-0 w-full h-full object-contain hidden"></canvas>
 
                                 <!-- Result Image -->
                                 <img id="webcam-result" class="absolute inset-0 w-full h-full object-contain hidden"
                                     alt="Identité Validée">
 
                                 <!-- Overlay Guide (Portrait Zone) -->
-                                <div id="camera-overlay"
-                                    class="absolute inset-0 flex items-center justify-center pointer-events-none hidden">
-                                    <!-- Portrait Frame (3:4 Aspect Ratio) -->
-                                    <!-- Viewfinder Overlay (Corners) -->
-                                    <div
-                                        class="relative w-48 h-64 border-2 border-dashed border-neon-blue/30 rounded-lg">
-                                        <!-- Corners -->
-                                        <div
-                                            class="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-neon-blue">
-                                        </div>
-                                        <div
-                                            class="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-neon-blue">
-                                        </div>
-                                        <div
-                                            class="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-neon-blue">
-                                        </div>
-                                        <div
-                                            class="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-neon-blue">
-                                        </div>
-
-                                        <!-- Eye Level Guide (Added) -->
-                                        <div
-                                            class="absolute top-[35%] w-full flex items-center justify-center pointer-events-none">
-                                            <div
-                                                class="w-full h-px bg-red-500/50 border-t border-dashed border-red-500">
-                                            </div>
-                                            <span
-                                                class="absolute bg-black/50 text-red-500 text-[9px] px-1 font-future">NIVEAU
-                                                YEUX</span>
-                                        </div>
-
-                                        <!-- Center Crosshair -->
-                                        <div
-                                            class="absolute top-1/2 left-1/2 w-4 h-0.5 bg-neon-blue/50 -translate-x-1/2 -translate-y-1/2">
-                                        </div>
-                                        <div
-                                            class="absolute top-1/2 left-1/2 w-0.5 h-4 bg-neon-blue/50 -translate-x-1/2 -translate-y-1/2">
-                                        </div>
-
-                                        <div class="absolute -bottom-6 w-full text-center">
-                                            <span
-                                                class="text-[10px] text-neon-blue font-mono bg-black/50 px-2 rounded">ZONE
-                                                ID</span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Overlay Guide (Portrait Zone) - Handled by AI -->
+                                <div id="camera-overlay" class="absolute inset-0 pointer-events-none hidden"></div>
                             </div>
 
                             <!-- Controls -->

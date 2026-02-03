@@ -7490,9 +7490,6 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================
    WEBCAM SCANNER V2 (Fixed Sequence: Instr -> Joke -> Count -> Zero)
    ========================================= */
-/* =========================================
-   WEBCAM SCANNER V8 (Secret Sci-Fi Mode)
-   ========================================= */
 function initWebcamNew() {
     const video = document.getElementById('webcam-video');
     const canvas = document.getElementById('webcam-canvas');
@@ -7508,129 +7505,40 @@ function initWebcamNew() {
     let selfieSegmentation = null;
     let faceDetection = null;
     let camera = null;
-    let lastFaceBox = null;
+    let lastFaceBox = null; // Store latest face for capture
     let captureRequested = false;
-
-    // Secret Mode State
-    let secretModeActive = false;
-    let currentTheme = 'STD'; // STD, KITT, DOC, ALIEN
 
     if (!btnStart) return;
 
-    // --- ANECDOTES (Standard Mode) ---
-    const ANECDOTES = [
-        "Attention ! La dernière personne qui a bougé est restée bloquée en 1985.",
-        "Saviez-vous que sourire réduit le stress ? Mais pour la photo d'identité, restez neutre... c'est dur hein ?",
-        "Calibration des capteurs de beauté... Wow, résultats hors normes ! On immortalise ça.",
-        "Analyse biométrique en cours... Vous ressemblez étrangement à une célébrité. Non, je ne dirai pas laquelle.",
-        "Le saviez-vous ? Les premiers appareils photos prenaient 15 minutes pour une pose. Vous avez de la chance.",
-        "J'ajuste la lumière, le contraste, et... votre charisme naturel. C'est parfait."
-    ];
-
-    // --- SECRET MENU UI ---
-    let secretMenuDiv = null;
-
-    const createSecretMenu = () => {
-        if (document.getElementById('secret-menu-cam')) return;
-
-        const wrapper = document.createElement('div');
-        wrapper.id = 'secret-menu-cam';
-        wrapper.className = 'absolute top-4 left-4 right-4 bg-black/90 text-cyan-400 p-4 rounded border border-cyan-500 z-50 flex flex-col gap-2 shadow-2xl animate-fade-in';
-        wrapper.innerHTML = `
-            <h3 class="font-bold text-center text-sm tracking-widest mb-2 border-b border-cyan-900 pb-1">MODE CLIFFHANGER</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <button data-theme="KITT" class="p-2 bg-gray-900 hover:bg-red-900 border border-red-500 rounded text-xs text-center transition">
-                    🏎️<br>K2000
-                </button>
-                <button data-theme="DOC" class="p-2 bg-gray-900 hover:bg-yellow-900 border border-yellow-500 rounded text-xs text-center transition">
-                    ⚡<br>DOC
-                </button>
-                <button data-theme="ALIEN" class="p-2 bg-gray-900 hover:bg-green-900 border border-green-500 rounded text-xs text-center transition">
-                    👽<br>ALIEN
-                </button>
-                 <button data-theme="HARCOURT" class="p-2 bg-gray-900 hover:bg-gray-700 border border-white rounded text-xs text-center transition">
-                    🎭<br>STUDIO
-                </button>
-            </div>
-            <button id="btn-secret-close" class="mt-2 text-xs text-gray-500 hover:text-white uppercase">Fermer</button>
-        `;
-
-        // Find parent container (webcam panel)
-        const parent = video.parentElement || document.body;
-        parent.style.position = 'relative';
-        parent.appendChild(wrapper);
-        secretMenuDiv = wrapper;
-
-        // Listeners
-        wrapper.querySelectorAll('button[data-theme]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const theme = e.currentTarget.dataset.theme;
-                activateTheme(theme);
-                wrapper.remove(); // Auto close on select
-            });
-        });
-
-        document.getElementById('btn-secret-close').addEventListener('click', () => {
-            wrapper.remove();
-        });
-    };
-
-    const activateTheme = (theme) => {
-        currentTheme = theme;
-        secretModeActive = true;
-        let msg = "";
-
-        switch (theme) {
-            case 'KITT':
-                msg = "Protocole K2000 activé. Bonjour Michael.";
-                btnCapture.style.border = "1px solid red";
-                btnCapture.style.color = "red";
-                break;
-            case 'DOC':
-                msg = "Nom de Zeus ! Les circuits temporels sont allumés !";
-                btnCapture.style.border = "1px solid yellow";
-                btnCapture.style.color = "yellow";
-                break;
-            case 'ALIEN':
-                msg = "Contact établi. Origine inconnue.";
-                btnCapture.style.border = "1px solid #0f0";
-                btnCapture.style.color = "#0f0";
-                break;
-            case 'HARCOURT':
-                msg = "Silence plateau. Lumière divine en place.";
-                btnCapture.style.border = "1px solid white";
-                btnCapture.style.color = "white";
-                break;
-        }
-
-        if (typeof window.speak === 'function') speak(msg, true);
-
-        // Visual Feedback on Screen
-        const badge = document.createElement('div');
-        badge.innerText = "MODE: " + theme;
-        badge.className = "absolute bottom-20 left-1/2 -translate-x-1/2 bg-black/50 px-3 py-1 text-xs font-mono text-white rounded pointer-events-none";
-        video.parentElement.appendChild(badge);
-        setTimeout(() => badge.remove(), 3000);
-    };
-
     // --- AI PIPELINE SETUP ---
     const setupAI = async () => {
+        // 1. Selfie Segmentation (Background Removal)
         if (typeof SelfieSegmentation === 'undefined' || typeof FaceDetection === 'undefined') {
-            console.error("MediaPipe libraries not loaded.");
-            alert("Erreur: Modules AI manquants.");
+            console.error("MediaPipe libraries not loaded. Check index.html");
+            alert("Erreur: Modules AI manquants. Vérifiez votre connexion.");
             return false;
         }
 
         selfieSegmentation = new SelfieSegmentation({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+            }
         });
-        selfieSegmentation.setOptions({ modelSelection: 1 }); // 1 = Landscape (Better for Webcam/Desktop)
+        selfieSegmentation.setOptions({
+            modelSelection: 1, // 0: General, 1: Landscape (lighter)
+        });
         selfieSegmentation.onResults(onSegmentationResults);
 
+        // 2. Face Detection (Tracking)
         faceDetection = new FaceDetection({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${file}`;
+            }
         });
-        faceDetection.setOptions({ model: 'short', minDetectionConfidence: 0.5 });
+        faceDetection.setOptions({
+            model: 'short', // fast
+            minDetectionConfidence: 0.5
+        });
         faceDetection.onResults(onFaceResults);
 
         return true;
@@ -7638,6 +7546,7 @@ function initWebcamNew() {
 
     const onFaceResults = (results) => {
         if (results.detections.length > 0) {
+            // Store raw relative BBox (0..1)
             lastFaceBox = results.detections[0].boundingBox;
         } else {
             lastFaceBox = null;
@@ -7645,13 +7554,18 @@ function initWebcamNew() {
     };
 
     const onSegmentationResults = (results) => {
-        // Live Preview
+        // --- LIVE PREVIEW RENDER ---
+        // FIX DISTORTION: Use Source Dimensions
         canvas.width = results.image.width;
         canvas.height = results.image.height;
+
         const ctx = canvas.getContext('2d');
+
+        // Draw Raw Video (Mirror Effect if needed? Webcam usually mirrored by CSS)
+        // We draw as is.
         ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
 
-        // Tracking UI
+        // Draw Modern Tracking Corners (if face detected)
         if (lastFaceBox) {
             const { xCenter, yCenter, width, height } = lastFaceBox;
             const x = (xCenter - width / 2) * canvas.width;
@@ -7659,400 +7573,218 @@ function initWebcamNew() {
             const w = width * canvas.width;
             const h = height * canvas.height;
 
-            const lineLen = Math.min(w, h) * 0.2;
-            const color = currentTheme === 'KITT' ? '#ff0000' : (currentTheme === 'ALIEN' ? '#00ff00' : '#00ffff');
-
-            ctx.strokeStyle = color;
+            // DRAW CORNERS (Modern UI)
+            const lineLen = Math.min(w, h) * 0.2; // Length of corner lines
+            ctx.strokeStyle = '#00ffff'; // Cyan
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(x, y + lineLen); ctx.lineTo(x, y); ctx.lineTo(x + lineLen, y);
-            ctx.moveTo(x + w - lineLen, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w, y + lineLen);
-            ctx.moveTo(x + w, y + h - lineLen); ctx.lineTo(x + w, y + h); ctx.lineTo(x + w - lineLen, y + h);
-            ctx.moveTo(x + lineLen, y + h); ctx.lineTo(x, y + h); ctx.lineTo(x, y + h - lineLen);
-            ctx.stroke();
 
-            ctx.fillStyle = color;
-            ctx.font = '10px monospace';
-            ctx.fillText(currentTheme === 'STD' ? "ID SCAN" : currentTheme, x, y - 8);
+            ctx.beginPath();
+
+            // Top-Left
+            ctx.moveTo(x, y + lineLen);
+            ctx.lineTo(x, y);
+            ctx.lineTo(x + lineLen, y);
+
+            // Top-Right
+            ctx.moveTo(x + w - lineLen, y);
+            ctx.lineTo(x + w, y);
+            ctx.lineTo(x + w, y + lineLen);
+
+            // Bottom-Right
+            ctx.moveTo(x + w, y + h - lineLen);
+            ctx.lineTo(x + w, y + h);
+            ctx.lineTo(x + w - lineLen, y + h);
+
+            // Bottom-Left
+            ctx.moveTo(x + lineLen, y + h);
+            ctx.lineTo(x, y + h);
+            ctx.lineTo(x, y + h - lineLen);
+
+            ctx.stroke();
         }
 
+        // --- CAPTURE PROCESSING ---
         if (captureRequested) {
             processCapture(results, lastFaceBox);
             captureRequested = false;
         }
     };
 
-    // --- PROCEDURAL FX HELPERS ---
-    const drawThematicFX = (ctx, w, h, theme) => {
-        // 1. BACKGROUNDS
-        if (theme === 'KITT') {
-            // Dark Asphalt
-            ctx.fillStyle = '#111111';
-            ctx.fillRect(0, 0, w, h);
-
-            // Grid Floor
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            for (let i = 0; i < w; i += 40) { ctx.moveTo(i, h / 2); ctx.lineTo(i - (w / 2), h); }
-            ctx.stroke();
-
-        } else if (theme === 'DOC') {
-            // Electric Gradient
-            const grad = ctx.createLinearGradient(0, 0, w, h);
-            grad.addColorStop(0, '#2b004f'); // Deep Purple
-            grad.addColorStop(1, '#0052cc'); // Electric Blue
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-
-        } else if (theme === 'ALIEN') {
-            // Deep Space
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, w, h);
-
-            // Stars
-            ctx.fillStyle = '#ffffff';
-            for (let i = 0; i < 100; i++) {
-                const sx = Math.random() * w;
-                const sy = Math.random() * h;
-                const sz = Math.random() * 2;
-                ctx.fillRect(sx, sy, sz, sz);
-            }
-        } else if (theme === 'HARCOURT') {
-            // HARCOURT: Studio Grey Radial
-            const grad = ctx.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, h);
-            grad.addColorStop(0, '#555555');
-            grad.addColorStop(1, '#111111');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-        } else {
-            // STD: Starry Night (Elegant)
-            // Deep Black/Blue background
-            const grad = ctx.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, '#000000');
-            grad.addColorStop(1, '#0a0a1a'); // Very subtle dark blue at bottom
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-
-            // Subtle Stars
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            for (let i = 0; i < 150; i++) {
-                const sx = Math.random() * w;
-                const sy = Math.random() * h;
-                // Smaller stars for "Pro" look
-                const sz = Math.random() * 1.5;
-                ctx.globalAlpha = Math.random(); // Twinkle effect (static)
-                ctx.fillRect(sx, sy, sz, sz);
-            }
-            ctx.globalAlpha = 1.0; // Reset
-        }
-    };
-
-    const drawForegroundFX = (ctx, w, h, theme) => {
-        if (theme === 'KITT') {
-            // Red Scanner Bar at bottom
-            const barH = 20;
-            const barY = h - 50;
-
-            // Glow
-            ctx.shadowColor = 'red';
-            ctx.shadowBlur = 20;
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
-            ctx.fillRect(20, barY, w - 40, barH);
-
-            // Moving Light (Static for photo, but draws "eye")
-            ctx.fillStyle = '#ffcccc';
-            ctx.fillRect(w / 2 - 30, barY + 2, 60, barH - 4);
-            ctx.shadowBlur = 0; // Reset
-
-        } else if (theme === 'DOC') {
-            // Lightning Bolts
-            ctx.strokeStyle = '#ffff00';
-            ctx.lineWidth = 3;
-            ctx.shadowColor = '#ffff00';
-            ctx.shadowBlur = 10;
-
-            for (let k = 0; k < 3; k++) {
-                ctx.beginPath();
-                let lx = Math.random() * w;
-                let ly = 0;
-                ctx.moveTo(lx, ly);
-                while (ly < h) {
-                    lx += (Math.random() - 0.5) * 50;
-                    ly += Math.random() * 50;
-                    ctx.lineTo(lx, ly);
-                }
-                ctx.stroke();
-            }
-            ctx.shadowBlur = 0;
-
-        } else if (theme === 'ALIEN') {
-            // Green HUD / Vignette
-            const grad = ctx.createRadialGradient(w / 2, h / 2, h / 3, w / 2, h / 2, h);
-            grad.addColorStop(0, 'transparent');
-            grad.addColorStop(1, 'rgba(0, 255, 0, 0.3)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, w, h);
-        }
-    };
-
     const processCapture = (results, faceBox) => {
+        // ID Format Calculation
+        // Standard: 35mm x 45mm (Ratio ~0.77)
+
+        // 1. Determine Crop Region from Source Image
         const srcW = results.image.width;
         const srcH = results.image.height;
+
         let cx, cy, faceH_px;
+
         if (faceBox) {
+            // Use Detected Face
             cx = faceBox.xCenter * srcW;
             cy = faceBox.yCenter * srcH;
             faceH_px = faceBox.height * srcH;
         } else {
-            cx = srcW / 2; cy = srcH / 2; faceH_px = srcH * 0.4;
+            // Fallback: Center of image, assume generic face size
+            cx = srcW / 2;
+            cy = srcH / 2;
+            faceH_px = srcH * 0.4; // Guestimate
         }
 
+        // Calculate Target Image Dimensions (High Res)
+        // ZOOM ADJUSTMENT 2: 40% Face Height (Even more breathing room)
         const targetFacePercent = 0.40;
         const targetImgH = faceH_px / targetFacePercent;
+        const targetImgW = targetImgH * (35 / 45); // Aspect Ratio 0.77
 
-        const finalAspect = 480 / 640;
+        // Calculate Crop Origin (Top-Left)
+        // Center the Face Horizontally -> cx is center of TargetW
+        // Center the Face Vertically? 
+        // We want eyes at ~45% from top. 
+        // Face detection box usually starts at forehead.
+        // Let's rely on standard logic: Place Face Center at 45% of Image Height.
+
+        // HEADROOM FIX: If cropY is too low, we cut the head.
+        // With 40% zoom, the face is smaller, so we need to be careful with centering.
+        // Let's leave cropY logic but ensure we don't go out of bounds (which canvas handles by drawing transparent)
+        // but for ID, we want the person centered.
+
+        const cropX = cx - (targetImgW / 2);
+        const cropY = cy - (targetImgH * 0.45); // Face Center is at 45% of height
+
+        // Create Temp Canvas for Final ID Photo
+        const idCanvas = document.createElement('canvas');
+        idCanvas.width = 480; // Final Export Width 
+        idCanvas.height = 640; // ~3.5/4.5 ratio
+
+        // Match Aspect
+        const finalAspect = idCanvas.width / idCanvas.height;
         const roiH = targetImgH;
         const roiW = roiH * finalAspect;
+
+        // Final Origin
         const finalCropX = cx - (roiW / 2);
         const finalCropY = cy - (roiH * 0.45);
 
-        const idCanvas = document.createElement('canvas');
-        idCanvas.width = 480;
-        idCanvas.height = 640;
         const idCtx = idCanvas.getContext('2d');
 
-        // 1. DRAW THEMATIC BACKGROUND
-        drawThematicFX(idCtx, idCanvas.width, idCanvas.height, currentTheme);
+        // A. Draw White Background (CLEAN SLATE)
+        idCtx.clearRect(0, 0, idCanvas.width, idCanvas.height);
+        idCtx.fillStyle = '#FFFFFF';
+        idCtx.fillRect(0, 0, idCanvas.width, idCanvas.height);
 
-        // 2. Prepare Refined Mask (Erosion + Soft Blur)
+        // B. DEBUG: Draw Mask Only first to check if segmentation works
+        // We will composite manually for safety.
+
+        // Step 1: Draw the Mask (Alpha) onto a clean layer
         const maskCanvas = document.createElement('canvas');
         maskCanvas.width = idCanvas.width;
         maskCanvas.height = idCanvas.height;
         const maskCtx = maskCanvas.getContext('2d');
 
-        // A. Draw Raw Mask with High Contrast (Hardens the edge, removes weak noise)
-        maskCtx.filter = 'contrast(2.0)';
+        // Draw the mask scaled/cropped
         maskCtx.drawImage(results.segmentationMask, finalCropX, finalCropY, roiW, roiH, 0, 0, idCanvas.width, idCanvas.height);
-        maskCtx.filter = 'none';
 
-        // B. Erode Mask (Gamma Compression)
-        // This removes the "white halo" by squaring the alpha channel (0.5 -> 0.25)
-        // The contrast above ensures only the 'true' edges remain to be eroded.
-        maskCtx.globalCompositeOperation = 'source-in';
-        maskCtx.drawImage(maskCanvas, 0, 0);
-        maskCtx.globalCompositeOperation = 'source-over'; // Reset
+        // Step 2: Draw the Person Source, using the Mask
+        // On the final canvas...
+        // We already have White.
+        // Let's Draw the Person on TOP, but masked.
 
-        // C. Apply Soft Blur to the refined mask
-        // We do this when drawing into the cutout canvas below
+        idCtx.globalCompositeOperation = 'source-over'; // Default
 
-        // 3. Cutout Process
+        // We need to 'cut' the person out of the source image using the mask, then place them on white.
+        // Easier way:
+
+        // a. Draw Mask on Temp
+        // b. 'Source-In' the Video on Temp (Temp becomes Cutout Person)
+        // c. Draw Temp on Final White Canvas
+
         const cutoutCanvas = document.createElement('canvas');
         cutoutCanvas.width = idCanvas.width;
         cutoutCanvas.height = idCanvas.height;
         const cutoutCtx = cutoutCanvas.getContext('2d');
 
-        // Apply Blur to the eroded mask for smooth "Feathering"
-        cutoutCtx.filter = 'blur(2px)';
-        cutoutCtx.drawImage(maskCanvas, 0, 0);
-        cutoutCtx.filter = 'none';
+        // a. Draw Mask
+        cutoutCtx.drawImage(results.segmentationMask, finalCropX, finalCropY, roiW, roiH, 0, 0, idCanvas.width, idCanvas.height);
 
+        // b. Source-In Video
         cutoutCtx.globalCompositeOperation = 'source-in';
-
-        // STUDIO FILTER LOGIC
-        if (currentTheme === 'HARCOURT') {
-            // HARCOURT STYLE: Grayscale, High Contrast, Glamour Light
-            cutoutCtx.filter = 'grayscale(1) contrast(1.25) brightness(1.15)';
-        } else {
-            // COLORED THEMES (Inc STD): Boost Color/Pop
-            cutoutCtx.filter = 'contrast(1.10) brightness(1.05) saturate(1.10)';
-        }
-
         cutoutCtx.drawImage(results.image, finalCropX, finalCropY, roiW, roiH, 0, 0, idCanvas.width, idCanvas.height);
-        cutoutCtx.filter = 'none';
 
-        // 4. Place Cutout on Background
+        // c. Draw Cutout on Final (which is already White)
         idCtx.drawImage(cutoutCanvas, 0, 0);
 
-        // STUDIO LIGHTING: Soft Spotlight + Vignette
-        // Use 'overlay' blend mode to simulate light interacting with the photo
-        let lightGrad;
-        if (currentTheme === 'HARCOURT') {
-            // HARCOURT LIGHTING: Dramatically focused
-            lightGrad = idCtx.createRadialGradient(
-                idCanvas.width / 2, idCanvas.height * 0.35, 30,
-                idCanvas.width / 2, idCanvas.height / 2, 500
-            );
-            lightGrad.addColorStop(0, 'rgba(255, 255, 255, 0.25)'); // Strong highlight on face
-            lightGrad.addColorStop(1, 'rgba(0, 0, 0, 0.7)');       // Deep Vignette
-        } else {
-            // STANDARD LIGHTING
-            lightGrad = idCtx.createRadialGradient(
-                idCanvas.width / 2, idCanvas.height * 0.35, 50,
-                idCanvas.width / 2, idCanvas.height / 2, 450
-            );
-            lightGrad.addColorStop(0, 'rgba(255, 255, 255, 0.2)');
-            lightGrad.addColorStop(1, 'rgba(0, 0, 0, 0.5)');
-        }
-        idCtx.globalCompositeOperation = 'overlay';
-        idCtx.fillStyle = lightGrad;
-        idCtx.fillRect(0, 0, idCanvas.width, idCanvas.height);
-        idCtx.globalCompositeOperation = 'source-over'; // Reset for FX
-
-        // 5. DRAW FOREGROUND FX (Overlays)
-        drawForegroundFX(idCtx, idCanvas.width, idCanvas.height, currentTheme);
-
-        // Export
+        // C. Export
         const dataUrl = idCanvas.toDataURL('image/jpeg', 0.95);
-
-        // SECRET MODE: Delay Display?
-        if (window.useSecretCapture) {
-            secretCaptureData = dataUrl;
-            window.useSecretCapture = false; // Reset
-            return; // Don't show yet
-        }
-
         resultImg.src = dataUrl;
         resultImg.classList.remove('hidden');
-        canvas.classList.add('hidden');
+        canvas.classList.add('hidden'); // Hide Preview
         video.classList.add('hidden');
+
         if (camera) camera.stop();
 
+        // UI Updates
         btnCapture.classList.add('hidden');
         btnRetake.classList.remove('hidden');
+
+        // Validation Hook
         if (window.checkMissionReady) window.checkMissionReady();
-        if (typeof window.speak === 'function') speak("Photo validée.");
-    };
-
-    // Helper for Secret Reveal
-    window.revealSecretPhoto = () => {
-        if (!secretCaptureData) return;
-
-        resultImg.src = secretCaptureData;
-        resultImg.classList.remove('hidden');
-        canvas.classList.add('hidden');
-        video.classList.add('hidden');
-        if (camera) camera.stop();
-
-        btnCapture.classList.add('hidden');
-        btnRetake.classList.remove('hidden');
-        if (window.checkMissionReady) window.checkMissionReady();
-
-        // Flash Effect Sound?
-        if (typeof window.speak === 'function') speak("Capture terminée.", true);
-        secretCaptureData = null;
-    };
-
-    // --- SEQUENCES ---
-    // GLOBAL FOR SECRET CAPTURE
-    let secretCaptureData = null;
-
-    const runSequence = async () => {
-        btnCapture.classList.add('pointer-events-none');
-
-        let intro = "";
-
-        if (currentTheme === 'KITT') {
-            intro = "Michael, je suis prêt. Analyse de la structure faciale en cours. Ne bougez pas.";
-        } else if (currentTheme === 'DOC') {
-            intro = "Nom de Zeus ! Regarde la caméra Marty ! Il faut une preuve pour le futur !";
-        } else if (currentTheme === 'ALIEN') {
-            intro = "Sujet humain localisé. Extraction de l'image pour les archives galactiques.";
-        } else if (currentTheme === 'HARCOURT') {
-            intro = "Regard intense. Menton légèrement relevé. Parfait.";
-        } else {
-            // STD: Random Anecdote
-            // "Préparez-vous" added as requested (interpreting "a invente" as "à l'avant" / intro)
-            intro = "Préparez-vous. " + ANECDOTES[Math.floor(Math.random() * ANECDOTES.length)];
-        }
-
-        // Reduced buffer to 0 to minimize delay between speech end and capture
-        // Assuming ~70ms per character is a decent average for TTS speed
-        const estDur = (intro.length * 70);
-
-        if (typeof window.speak === 'function') speak(intro);
-        btnCapture.innerText = "ÉCOUTEZ...";
-
-        // --- SYNCHRONIZED SEQUENCE ---
-        // Goal: Countdown starts BEFORE speech ends, so "0" (Capture) aligns with Speech End (Punchline)
-        const countdownSeconds = 3;
-        const countdownDuration = countdownSeconds * 1000;
-
-        // Wait time before starting visual countdown
-        // If speech is short (e.g. 2s), we start countdown immediately (Math.max(0...))
-        const preCountdownDelay = Math.max(0, estDur - countdownDuration);
-
-        // 1. Wait for the "Solo Speech" part
-        await new Promise(r => setTimeout(r, preCountdownDelay));
-
-        // 2. Start Visual Countdown PARALLEL to the end of speech
-        const count = ["3", "2", "1"];
-        const camContainer = document.getElementById('camera-container');
-
-        for (let c of count) {
-            btnCapture.innerText = c;
-
-            // Flash Effect
-            if (camContainer) {
-                camContainer.classList.add('border-limit-red', 'shadow-[0_0_30px_#ff3333]');
-                setTimeout(() => camContainer.classList.remove('border-limit-red', 'shadow-[0_0_30px_#ff3333]'), 500);
-            }
-
-            await new Promise(r => setTimeout(r, 1000));
-        }
-
-        // 3. CAPTURE NOW (Aligned with end of speech/countdown)
-        if (typeof window.speak === 'function') speak("Flash !", true);
-
-        // Trigger Capture (Not Secret anymore, but TIMED perfectly)
-        // We set captureRequested = true, and the loop in onSegmentationResults will pick it up
-        captureRequested = true;
-
-        btnCapture.innerText = "TRAITEMENT...";
-        btnCapture.classList.add('opacity-50');
-    };
+        if (typeof window.speak === 'function') speak("Photo d'identité générée. Fond blanc appliqué.");
+    }
 
     // --- BTN LISTENERS ---
 
-    // SECRET TRIGGER: Double Click on Canvas
-    canvas.addEventListener('dblclick', () => {
-        if (typeof window.speak === 'function') speak("Accès administrateur détecté.", true);
-        createSecretMenu();
-    });
-
+    // Start Camera & AI
     btnStart.addEventListener('click', async () => {
         const success = await setupAI();
         if (!success) return;
+
         btnStart.innerText = "CHARGEMENT...";
+
         try {
             const videoElement = document.getElementById('webcam-video');
+
+            // Camera Logic
             camera = new Camera(videoElement, {
                 onFrame: async () => {
+                    // Parallel Processing
                     if (faceDetection) await faceDetection.send({ image: videoElement });
                     if (selfieSegmentation) await selfieSegmentation.send({ image: videoElement });
                 },
-                width: 1920, height: 1080
+                width: 1280,
+                height: 720
             });
+
             await camera.start();
+
+            // UI Update
             videoElement.classList.add('hidden');
-            canvas.classList.remove('hidden');
+            canvas.classList.remove('hidden'); // Show Live Preview
             overlay.classList.add('hidden');
             placeholder.classList.add('hidden');
             resultImg.classList.add('hidden');
+
             btnStart.classList.add('hidden');
             btnCapture.classList.remove('hidden');
-            if (typeof window.speak === 'function') speak("Regardez l'objectif.");
+
+            if (typeof window.speak === 'function') speak("Alignez votre visage.");
+
         } catch (err) {
-            console.error(err);
-            alert("Erreur accès caméra.");
+            console.error("Webcam/AI Error:", err);
+            alert("Erreur accès caméra ou AI.");
         }
     });
 
+    // Capture Trigger
     btnCapture.addEventListener('click', () => {
-        runSequence();
+        captureRequested = true; // Flag next frame for processing
+        btnCapture.innerText = "TRAITEMENT...";
+        btnCapture.classList.add('opacity-50', 'pointer-events-none');
     });
 
+    // Retake
     btnRetake.addEventListener('click', () => {
         resultImg.classList.add('hidden');
         canvas.classList.remove('hidden');
@@ -8060,8 +7792,33 @@ function initWebcamNew() {
         btnCapture.classList.remove('hidden');
         btnCapture.innerText = "CAPTURER";
         btnCapture.classList.remove('opacity-50', 'pointer-events-none');
-        btnCapture.style.border = ''; // Reset Secret Styling
-        btnCapture.style.color = '';
+
+        if (camera) camera.start();
+        captureRequested = false;
+    });
+}
+
+        } catch (err) {
+            console.error("Webcam/AI Error:", err);
+            alert("Erreur accès caméra ou AI.");
+        }
+    });
+
+    // Capture Trigger
+    btnCapture.addEventListener('click', () => {
+        captureRequested = true; // Flag next frame for processing
+        btnCapture.innerText = "TRAITEMENT...";
+        btnCapture.classList.add('opacity-50', 'pointer-events-none');
+    });
+
+    // Retake
+    btnRetake.addEventListener('click', () => {
+        resultImg.classList.add('hidden');
+        canvas.classList.remove('hidden');
+        btnRetake.classList.add('hidden');
+        btnCapture.classList.remove('hidden');
+        btnCapture.innerText = "CAPTURER";
+        btnCapture.classList.remove('opacity-50', 'pointer-events-none');
 
         if (camera) camera.start();
         captureRequested = false;

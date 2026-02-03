@@ -138,9 +138,9 @@ class VoiceAssistantApp {
                         <button class="voice-toggle-btn" data-personality="feminine">Féminine</button>
                     </div>
                 </div>
-                <div class="voice-setting-group">
-                    <label class="voice-setting-label">Clé API Grok (xAI)</label>
-                    <input type="password" class="voice-input" id="api-key-grok" placeholder="xai-...">
+                <div class="voice-setting-group" style="display: none;">
+                    <label class="voice-setting-label">Clé API Grok (Gérée par le Serveur)</label>
+                    <input type="password" class="voice-input" id="api-key-grok" placeholder="Serveur configuré" disabled>
                 </div>
                 <div class="api-status">
                     <div class="api-status-dot" id="api-status-dot"></div>

@@ -637,6 +637,13 @@ function findLocalFuzzyMatch(query) {
     Object.values(window.LOCATIONS).forEach(category => {
         category.forEach(loc => {
             const locName = loc.name.toLowerCase();
+
+            // 0. FIRST LETTER CHECK (Performance & Accuracy Optimization)
+            // Prevents "Artzenheim" matching "Baltzenheim" (Levenshtein < 3 but different start)
+            if (normalizedQuery.length > 0 && locName[0] !== normalizedQuery[0]) {
+                return;
+            }
+
             // 1. Precise Match
             if (locName === normalizedQuery || locName.includes(normalizedQuery)) {
                 bestMatch = loc;

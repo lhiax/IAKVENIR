@@ -9,11 +9,11 @@ class AIProviderManager {
         this.providers = {
             grok: {
                 name: 'Grok',
-                endpoint: 'https://api.x.ai/v1/chat/completions',
+                endpoint: '/api/chat-grok', // Secure Proxy
                 model: 'grok-beta',
-                enabled: false,
-                apiKey: null,
-                dailyLimit: null, // Credits-based
+                enabled: true, // Always enabled via proxy
+                apiKey: 'server-managed', // Dummy value
+                dailyLimit: null,
                 requestCount: 0,
                 lastReset: new Date().toDateString()
             },
@@ -112,8 +112,8 @@ class AIProviderManager {
         for (const providerKey of providerOrder) {
             const provider = this.providers[providerKey];
 
-            // Skip if disabled or no API key
-            if (!provider.enabled || !provider.apiKey) {
+            // Skip if disabled or no API key (unless it's server-managed like Grok)
+            if (!provider.enabled || (!provider.apiKey && provider.name !== 'Grok')) {
                 console.log(`⏭️ Skipping ${provider.name} (not configured)`);
                 continue;
             }
@@ -169,19 +169,25 @@ class AIProviderManager {
     async callOpenAICompatible(provider, message, context) {
         const systemPrompt = this.buildSystemPrompt(context);
 
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+
+        // Only add Authorization header if it's not the local proxy (Grok)
+        if (provider.apiKey && provider.apiKey !== 'server-managed') {
+            headers['Authorization'] = `Bearer ${provider.apiKey}`;
+        }
+
         const response = await fetch(provider.endpoint, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${provider.apiKey}`
-            },
+            headers: headers,
             body: JSON.stringify({
                 model: provider.model,
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: message }
                 ],
-                temperature: context.personality === 'masculine' ? 0.3 : 0.7, // Lower temperature for KITT (stable/logical)
+                temperature: context.personality === 'masculine' ? 0.3 : 0.7,
                 max_tokens: 500
             })
         });
