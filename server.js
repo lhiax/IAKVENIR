@@ -209,6 +209,69 @@ app.post('/api/reservations', async (req, res) => {
     }
 });
 
+// API Endpoint for Grok (Proxy)
+const grokIpRequests = new Map();
+const GROK_RATE_LIMIT_WINDOW = 24 * 60 * 60 * 1000;
+const GROK_MAX_REQUESTS = 50;
+
+app.post('/api/chat-grok', async (req, res) => {
+    const apiKey = process.env.GROK_API_KEY;
+    if (!apiKey) {
+        return res.status(500).json({ error: 'Server misconfiguration: GROK_API_KEY missing' });
+    }
+
+    // Rate Limiting
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    let clientData = grokIpRequests.get(ip) || { count: 0, lastReset: now };
+
+    if (now - clientData.lastReset > GROK_RATE_LIMIT_WINDOW) {
+        clientData.count = 0;
+        clientData.lastReset = now;
+    }
+
+    if (clientData.count >= GROK_MAX_REQUESTS) {
+        return res.status(429).json({
+            error: 'Rate limit exceeded',
+            msg: 'Quota journalier atteint pour préserver la gratuité.'
+        });
+    }
+
+    clientData.count++;
+    grokIpRequests.set(ip, clientData);
+
+    try {
+        const { messages, temperature, max_tokens, model } = req.body;
+
+        const response = await fetch('https://api.x.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: model || 'grok-beta',
+                messages: messages,
+                temperature: temperature || 0.7,
+                max_tokens: max_tokens || 500,
+                stream: false
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(`Grok API Error: ${response.status} - ${errText}`);
+        }
+
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.error('[SERVER] Grok Proxy Error:', err);
+        res.status(500).json({ error: 'Failed to fetch from Grok' });
+    }
+});
+
+
 // Fallback to index.html for unknown routes (SPA favor)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
