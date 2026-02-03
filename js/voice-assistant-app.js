@@ -97,7 +97,12 @@ class VoiceAssistantApp {
                 this.addChatMessage('system', result.response);
             } else {
                 this.showTranscript('Système', 'Erreur: ' + result.error);
-                this.addChatMessage('system', 'Erreur: ' + result.error);
+                this.addChatMessage('system', '❌ ' + result.error);
+
+                // Auto-open chat to show the error
+                if (this.chatPanel && this.chatPanel.classList.contains('hidden')) {
+                    this.chatPanel.classList.remove('hidden');
+                }
             }
         };
 

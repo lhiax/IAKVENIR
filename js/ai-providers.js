@@ -139,6 +139,16 @@ class AIProviderManager {
                 };
             } catch (error) {
                 console.error(`❌ ${provider.name} failed:`, error.message);
+
+                // Specific feedback for Server/Proxy errors
+                if (providerKey === 'grok' && error.message.includes('500')) {
+                    console.warn('⚠️ Potential missing Server API Key');
+                    return {
+                        success: false,
+                        error: 'Erreur Serveur (500). Vérifiez la clé API (GROK_API_KEY) sur Vercel/Server.'
+                    };
+                }
+
                 // Continue to next provider
             }
         }
