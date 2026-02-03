@@ -14,7 +14,14 @@ class VoiceAssistantApp {
         this.voiceBtn = null;
         this.settingsBtn = null;
         this.settingsPanel = null;
+        this.settingsPanel = null;
         this.transcriptPanel = null;
+        this.chatPanel = null;
+        this.chatMessages = null;
+        this.chatInput = null;
+        this.chatSendBtn = null;
+        this.chatToggleBtn = null;
+        this.chatCloseBtn = null;
 
         // Audio Visualizer states
         this.micStream = null;
@@ -80,14 +87,17 @@ class VoiceAssistantApp {
 
             // Show transcript
             this.showTranscript('Vous', command);
+            this.addChatMessage('user', command);
 
             // Process with personality engine
             const result = await this.personalityEngine.processCommand(command);
 
             if (result.success) {
                 this.showTranscript('IA K', result.response);
+                this.addChatMessage('system', result.response);
             } else {
                 this.showTranscript('Système', 'Erreur: ' + result.error);
+                this.addChatMessage('system', 'Erreur: ' + result.error);
             }
         };
 
@@ -115,6 +125,28 @@ class VoiceAssistantApp {
         wrapper.style.gap = '10px';
 
         wrapper.innerHTML = `
+            <!-- Chat Button -->
+            <button class="voice-btn-secondary" id="voice-chat-btn" title="Ouvrir le Chat">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            </button>
+
+            <!-- Chat Panel -->
+            <div class="voice-chat-panel hidden" id="voice-chat-panel">
+                <div class="voice-chat-header">
+                    <span>💬 Assistant IA K</span>
+                    <button class="voice-chat-close" id="voice-chat-close">×</button>
+                </div>
+                <div class="voice-chat-messages" id="voice-chat-messages">
+                    <div class="voice-message system">
+                        Initialisation des systèmes... Prêt.
+                    </div>
+                </div>
+                <div class="voice-chat-input-area">
+                    <input type="text" id="voice-chat-input" placeholder="Posez une question..." autocomplete="off">
+                    <button id="voice-chat-send">➤</button>
+                </div>
+            </div>
+
             <!-- Settings Button -->
             <button class="voice-settings-btn" id="voice-settings-btn" title="Paramètres Vocaux">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#00d4ff"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
@@ -190,7 +222,16 @@ class VoiceAssistantApp {
         this.voiceBtn = document.getElementById('voice-main-btn');
         this.settingsBtn = document.getElementById('voice-settings-btn');
         this.settingsPanel = document.getElementById('voice-settings-panel');
+        this.settingsPanel = document.getElementById('voice-settings-panel');
         this.transcriptPanel = document.getElementById('voice-transcript-panel');
+
+        // Chat Elements
+        this.chatPanel = document.getElementById('voice-chat-panel');
+        this.chatMessages = document.getElementById('voice-chat-messages');
+        this.chatInput = document.getElementById('voice-chat-input');
+        this.chatSendBtn = document.getElementById('voice-chat-send');
+        this.chatToggleBtn = document.getElementById('voice-chat-btn');
+        this.chatCloseBtn = document.getElementById('voice-chat-close');
 
         this.setupUIEventListeners();
     }
@@ -258,6 +299,62 @@ class VoiceAssistantApp {
                 this.voiceAssistant.onCommandReceived('Bonjour', 'fr-FR');
             });
         }
+
+        // Chat Toggle
+        if (this.chatToggleBtn) {
+            this.chatToggleBtn.addEventListener('click', () => {
+                this.chatPanel.classList.toggle('hidden');
+                if (!this.chatPanel.classList.contains('hidden')) {
+                    this.chatInput.focus();
+                }
+            });
+        }
+
+        // Chat Close
+        if (this.chatCloseBtn) {
+            this.chatCloseBtn.addEventListener('click', () => {
+                this.chatPanel.classList.add('hidden');
+            });
+        }
+
+        // Chat Send
+        const sendChat = () => {
+            const text = this.chatInput.value.trim();
+            if (text) {
+                this.addChatMessage('user', text);
+                this.voiceAssistant.onCommandReceived(text, this.personalityEngine.language); // Reuse existing logic
+                this.chatInput.value = '';
+            }
+        };
+
+        if (this.chatSendBtn) {
+            this.chatSendBtn.addEventListener('click', sendChat);
+        }
+
+        if (this.chatInput) {
+            this.chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendChat();
+            });
+        }
+    }
+
+    addChatMessage(sender, text) {
+        if (!this.chatMessages) return;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `voice-message ${sender}`;
+        // Detect if text contains HTML (e.g. bolding) from AI
+        if (text.includes('<') && text.includes('>')) {
+            msgDiv.innerHTML = text;
+        } else {
+            msgDiv.textContent = text;
+        }
+
+        this.chatMessages.appendChild(msgDiv);
+        this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+
+        // Open chat if not open (optional, maybe intrusive? Let's keep it closed unless user opened it, or maybe open on active interaction?)
+        // For now, let's just make sure we capture history.
     }
 
     showTranscript(speaker, text) {
